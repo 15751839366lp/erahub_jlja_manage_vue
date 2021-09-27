@@ -142,6 +142,8 @@
 <script>
     import echarts from "echarts";
     import aplayer from "vue-aplayer";
+    import {loginReport} from '../api/system/loginLog'
+
     export default {
         components: {
             //别忘了引入组件
@@ -207,7 +209,7 @@
              * 加载登入报表数据
              */
             async loginReport(username) {
-                const { data: res } = await this.$http.post("system/loginLog/loginReport", {
+                const { data: res } = await loginReport({
                     username: username
                 });
                 if(!res.success){

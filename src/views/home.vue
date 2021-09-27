@@ -3,30 +3,24 @@
         <!--    导航-->
         <el-header>
             <div>
-        <span style="margin-left:20px;">
-          <img
-                  src="../assets/ilogo.png"
-                  width="250px;"
-                  style="margin-left:-10px;"
-                  height="100%;"
-                  alt
-                  srcset
-          />
-        </span>
+                <span style="margin-left:20px;">
+                    <div class="logo">后台管理系统</div>
+                </span>
             </div>
             <el-dropdown>
                 <div class="block">
-                    <el-avatar  :size="50" :src="this.userInfo.avatar" style="cursor: pointer;"></el-avatar>
+                    <el-avatar :size="50" :src="this.userInfo.avatar" style="cursor: pointer;"></el-avatar>
                 </div>
                 <el-dropdown-menu slot="dropdown" trigger="click">
                     <el-dropdown-item>
-                        <span type="danger"  @click="toWelcome"><span class="el-icon-house"></span> &nbsp;系统首页</span>
+                        <span type="danger" @click="toWelcome"><span class="el-icon-house"></span> &nbsp;系统首页</span>
                     </el-dropdown-item>
                     <el-dropdown-item>
                         <span type="danger" @click="getContact"><span class="el-icon-ship"></span> &nbsp;交流讨论</span>
                     </el-dropdown-item>
                     <el-dropdown-item>
-                        <span type="danger" @click="logout"><span class="el-icon-switch-button"></span> &nbsp;退出登入</span>
+                        <span type="danger" @click="logout"><span
+                                class="el-icon-switch-button"></span> &nbsp;退出登入</span>
                     </el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
@@ -46,12 +40,12 @@
                         text-color="rgba(255,255,255,0.7)"
                         unique-opened
                 >
-                    <MenuTree  :menuList="this.menuList"></MenuTree>
+                    <MenuTree :menuList="this.menuList"></MenuTree>
                 </el-menu>
             </el-aside>
 
             <!--右边主体-->
-            <el-main  v-loading="loading">
+            <el-main v-loading="loading">
                 <router-view></router-view>
             </el-main>
         </el-container>
@@ -60,6 +54,7 @@
 
 <script>
     import MenuTree from "../components/MenuTree"; //引进菜单模板
+    import {findMenu,info} from '../api/system/user'
 
     export default {
         data() {
@@ -98,15 +93,15 @@
             /**
              * 去系统首页
              */
-            toWelcome(){
+            toWelcome() {
                 this.$router.push("/welcome");
             },
             /**
              加载菜单数据
              */
             async getMenuList() {
-                const { data: res } = await this.$http.get("system/user/findMenu");
-                if(!res.success){
+                const {data: res} = await findMenu();
+                if (!res.success) {
                     return this.$message.error("获取菜单失败:" + res.msg);
                 }
                 this.menuList = res.data;
@@ -115,8 +110,8 @@
              获取用户信息
              */
             async getUserInfo() {
-                const { data: res } = await this.$http.get("system/user/info");
-                if(!res.success){
+                const {data: res} = await info();
+                if (!res.success) {
                     return this.$message.error("获取用户信息失败:" + res.msg);
                 } else {
                     this.userInfo = res.data;
@@ -132,9 +127,9 @@
             /**
              * 点击交流
              */
-            getContact(){
+            getContact() {
                 const w = window.open('about:blank');
-                w.location.href = 'https://www.zykcoderman.xyz/';
+                w.location.href = '';
             }
         },
         mounted() {
@@ -163,16 +158,27 @@
 
         padding-left: 0px;
     }
+
     .el-aside {
-        background-color:#001529
+        background-color: #001529
     }
+
     .el-main {
         background-color: #eaedf1;
     }
+
+    .logo {
+        margin-left: 30px;
+        float: left;
+        width: 250px;
+        line-height: 70px;
+    }
+
     .home-container {
         width: 100%;
         height: 100% !important;
     }
+
     .toggle-btn {
         background-color: #2d8cf0 !important;
         font-size: 10px;

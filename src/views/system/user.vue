@@ -87,7 +87,7 @@
             </el-form>
 
             <!-- 表格区域 -->
-            <el-table v-loading="loading" size="small" :data="userList" border style="width: 100%;" height="420">
+            <el-table v-loading="loading" size="small" :data="userList" border style="width: 100%;" height="550">
                 <!-- <el-table-column type="selection" width="40"></el-table-column> -->
                 <el-table-column label="#" prop="id" width="50"></el-table-column>
                 <el-table-column prop="username" label="用户名" width="110"></el-table-column>
@@ -347,6 +347,8 @@
 </template>
 <script>
     import axios from "axios";
+    import {roles,assignRoles,findUserList,deleteUser,add,update,edit,updateStatus,findAll} from '../../api/system/user'
+
     export default {
         data() {
             const checkEmail = (rule, value, callback) => {
@@ -392,7 +394,7 @@
                 //查询对象
                 queryMap: {
                     pageNum: 1,
-                    pageSize: 6,
+                    pageSize: 10,
                     username: "",
                     sex: "",
                     nickname: ""
@@ -493,7 +495,7 @@
                     spinner: "el-icon-loading",
                     background: "rgba(0, 0, 0, 0.7)"
                 });
-                const { data: res } = await this.$http.get("system/user/" + id + "/roles");
+                const { data: res } = await roles("/system/user/" + id + "/roles");
                 if (res.success) {
                     this.roles = res.data.roles;
                     this.value = res.data.values;
@@ -513,7 +515,7 @@
                 this.assignDialogVisible = true;
                 this.btnLoading = true;
                 this.btnDisabled = true;
-                const { data: res } = await this.$http.post(
+                const { data: res } = await assignRoles(
                     "system/user/" + this.uid + "/assignRoles",
                     this.value
                 );
@@ -533,9 +535,7 @@
              * 加载用户列表
              */
             async getUserList() {
-                const { data: res } = await this.$http.get("system/user/findUserList", {
-                    params: this.queryMap
-                });
+                const { data: res } = await findUserList(this.queryMap);
                 if(!res.success){
                     return this.$message.error("获取用户列表失败:"+res.data.errorMsg);
                 }
@@ -562,7 +562,7 @@
                     });
                 });
                 if (res === "confirm") {
-                    const { data: res } = await this.$http.delete("system/user/delete/" + id);
+                    const { data: res } = await deleteUser("system/user/delete/" + id);
                     console.log(res);
                     if(res.success){
                         this.$notify.success({
@@ -586,7 +586,7 @@
                     } else {
                         this.btnLoading = true;
                         this.btnDisabled = true;
-                        const { data: res } = await this.$http.post("system/user/add", this.addForm);
+                        const { data: res } = await add(this.addForm);
                         if(res.success){
                             this.$notify.success({
                                 title:'操作成功',
@@ -614,7 +614,7 @@
                     } else {
                         this.btnLoading = true;
                         this.btnDisabled = true;
-                        const { data: res } = await this.$http.put(
+                        const { data: res } = await update(
                             "system/user/update/" + this.editForm.id,
                             this.editForm
                         );
@@ -647,7 +647,7 @@
              * 修改用户信息
              */
             async edit(id) {
-                const { data: res } = await this.$http.get("system/user/edit/" + id);
+                const { data: res } = await edit("system/user/edit/" + id);
                 if(res.success){
                     this.editForm = res.data;
                     this.editDialogVisible = true;
@@ -689,7 +689,7 @@
              * 禁用启用用户
              */
             async changUserStatus(row) {
-                const { data: res } = await this.$http.put(
+                const { data: res } = await updateStatus(
                     "system/user/updateStatus/" + row.id + "/" + row.status
                 );
                 if(!res.success){
@@ -707,7 +707,7 @@
              * 加载所有部门
              */
             async getDepartmets() {
-                const { data: res } = await this.$http.get("system/department/findAll");
+                const { data: res } = await findAll("system/department/findAll");
                 if(!res.success){
                     return this.$message.error("获取部门列表失败:"+res.data.errorMsg);
                 }
