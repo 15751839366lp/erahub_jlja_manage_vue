@@ -1,6 +1,6 @@
 <template>
     <div id="login">
-        <h1 style="position: absolute;color: #fff;left: 50%;transform: translateX(-50%); top: -110px;">新冠-物资管理系统</h1>
+        <h1 style="position: absolute;color: #fff;left: 50%;transform: translateX(-50%); top: -110px;">后台管理系统</h1>
         <el-form
                 :model="userLoginForm"
                 :rules="loginRules"
