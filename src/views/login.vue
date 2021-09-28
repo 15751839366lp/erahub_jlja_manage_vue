@@ -182,10 +182,10 @@
         position: relative;
         -webkit-border-radius: 5px;
         border-radius: 5px;
-        margin: 190px auto;
+        margin: 250px auto;
         width: 370px;
         padding: 40px 35px 15px;
-        background: #fff;
+        background: rgba(255, 255, 255, 0.5);
         border: 1px solid #eaeaea;
     }
 
