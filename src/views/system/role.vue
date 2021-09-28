@@ -164,7 +164,8 @@
 </template>
 
 <script>
-    import axios from "axios";
+    import {findRoleMenu,findRoleList,add,edit,update,deleteRole,updateStatus,authority,excel} from '../../api/system/role'
+
     export default {
         data() {
             return {
@@ -205,12 +206,7 @@
              */
             downExcel() {
                 const $this = this;
-                const res = axios.request({
-                    url: "system/role/excel",
-                    method: "post",
-                    responseType: "blob"
-                })
-                    .then(res => {
+                const res = excel().then(res => {
                         if(res.headers['content-type']==='application/json'){
                             return $this.$message.error("Subject does not have permission [role:export]");
                         }
@@ -229,7 +225,7 @@
             async authority() {
                 this.btnDisabled = true;
                 this.btnLoading = true;
-                const { data: res } = await this.$http.post(
+                const { data: res } = await authority(
                     "system/role/authority/" + this.grantId,
                     [].concat(
                         this.$refs.tree.getCheckedKeys(),
@@ -249,7 +245,7 @@
             //用户授权
             async grant(id) {
                 //加载所有菜单以及用户拥有的菜单权限id
-                const { data: res } = await this.$http.get("system/role/findRoleMenu/" + id);
+                const { data: res } = await findRoleMenu("system/role/findRoleMenu/" + id);
                 if (res.success) {
                     //默认选中的树的数据
                     let that = this;
@@ -266,9 +262,7 @@
             },
             //加载用户列表
             async getRoleList() {
-                const { data: res } = await this.$http.get("system/role/findRoleList", {
-                    params: this.queryMap
-                });
+                const { data: res } = await findRoleList(this.queryMap);
                 if (res.success) {
                     this.roleData = res.data.rows;
                     this.total = res.data.total;
@@ -296,7 +290,7 @@
                     } else {
                         this.btnDisabled = true;
                         this.btnLoading = true;
-                        const { data: res } = await this.$http.post("system/role/add", this.addForm);
+                        const { data: res } = await add(this.addForm);
                         if (res.success) {
                             this.$message.success("添加成功");
                             this.addDialogVisible = false;
@@ -312,7 +306,7 @@
             },
             //编辑
             async edit(id) {
-                const { data: res } = await this.$http.get("system/role/edit/" + id);
+                const { data: res } = await edit("system/role/edit/" + id);
                 if (res.success) {
                     this.editForm = res.data;
                     this.editDialogVisible = true;
@@ -328,7 +322,7 @@
                     } else {
                         this.btnDisabled = true;
                         this.btnLoading = true;
-                        const { data: res } = await this.$http.put(
+                        const { data: res } = await update(
                             "system/role/update/" + this.editForm.id,
                             this.editForm
                         );
@@ -368,7 +362,7 @@
                     });
                 });
                 if (res === "confirm") {
-                    const { data: res } = await this.$http.delete("system/role/delete/" + id);
+                    const { data: res } = await deleteRole("system/role/delete/" + id);
                     console.log(res);
                     if (res.success) {
                         this.$message.success("删除成功");
@@ -380,7 +374,7 @@
             },
             //改变用户禁用状态
             async changRoleStatus(row) {
-                const { data: res } = await this.$http.put(
+                const { data: res } = await updateStatus(
                     "system/role/updateStatus/" + row.id + "/" + row.status
                 );
                 if (!res.success) {

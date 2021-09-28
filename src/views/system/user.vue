@@ -58,31 +58,33 @@
                 </el-form-item>
 
                 <el-form-item label="昵称">
-                    <el-input clearable @clear="searchUser" v-model="queryMap.nickname" placeholder="请输入昵称查询"></el-input>
+                    <el-input clearable @clear="searchUser" v-model="queryMap.nickname"
+                              placeholder="请输入昵称查询"></el-input>
                 </el-form-item>
-                <!-- <el-form-item label="状态">
-                  <el-select
-                    clearable
-                    v-model="queryMap.isban"
-                    @clear="searchUser"
-                    placeholder="请选择用户状态"
-                  >
-                    <el-option label="全部" value=""></el-option>
-                    <el-option label="禁用" value="1"></el-option>
-                    <el-option label="正常" value="0"></el-option>
-                  </el-select>
-                </el-form-item>-->
+<!--                <el-form-item label="状态">-->
+<!--                  <el-select-->
+<!--                    clearable-->
+<!--                    v-model="queryMap.isban"-->
+<!--                    @clear="searchUser"-->
+<!--                    placeholder="请选择用户状态"-->
+<!--                  >-->
+<!--                    <el-option label="全部" value=""></el-option>-->
+<!--                    <el-option label="禁用" value="1"></el-option>-->
+<!--                    <el-option label="正常" value="0"></el-option>-->
+<!--                  </el-select>-->
+<!--                </el-form-item>-->
 
                 <el-form-item style="margin-left:50px;">
-                    <el-button  @click="reset" icon="el-icon-refresh">重置</el-button>
+                    <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
                     <el-button type="primary" @click="searchUser" icon="el-icon-search">查询</el-button>
                     <el-button
                             type="success"
                             icon="el-icon-plus"
                             @click="addDialogVisible=true"
                             v-hasPermission="'user:add'"
-                    >添加</el-button>
-                    <el-button @click="downExcel" v-hasPermission="'user:export'"  icon="el-icon-download">导出</el-button>
+                    >添加
+                    </el-button>
+                    <el-button @click="downExcel" v-hasPermission="'user:export'" icon="el-icon-download">导出</el-button>
                 </el-form-item>
             </el-form>
 
@@ -94,7 +96,7 @@
                 <el-table-column prop="sex" :formatter="showSex" label="性别" width="100">
                     <template slot-scope="scope">
                         <el-tag size="small" type="success" v-if="scope.row.sex===1">帅哥</el-tag>
-                        <el-tag size="small"  type="warning" v-else>美女</el-tag>
+                        <el-tag size="small" type="warning" v-else>美女</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column prop="departmentName" label="所属部门" width="180" sortable></el-table-column>
@@ -106,10 +108,12 @@
                         <el-switch v-model="scope.row.status" @change="changUserStatus(scope.row)"></el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" >
+                <el-table-column label="操作">
                     <template slot-scope="scope">
-                        <el-button   v-hasPermission="'user:edit'" size="small" type="primary" icon="el-icon-edit-outline" @click="edit(scope.row.id)"></el-button>
-                        <el-button v-hasPermission="'user:delete'" type="danger" size="small" icon="el-icon-delete" @click="del(scope.row.id)"></el-button>
+                        <el-button v-hasPermission="'user:edit'" size="small" type="primary" icon="el-icon-edit-outline"
+                                   @click="edit(scope.row.id)"></el-button>
+                        <el-button v-hasPermission="'user:delete'" type="danger" size="small" icon="el-icon-delete"
+                                   @click="del(scope.row.id)"></el-button>
                         <el-tooltip
                                 class="item"
                                 effect="dark"
@@ -347,7 +351,18 @@
 </template>
 <script>
     import axios from "axios";
-    import {roles,assignRoles,findUserList,deleteUser,add,update,edit,updateStatus,findAll} from '../../api/system/user'
+    import {
+        roles,
+        assignRoles,
+        findUserList,
+        deleteUser,
+        add,
+        update,
+        edit,
+        updateStatus,
+        findAll,
+        excel
+    } from '../../api/system/user'
 
     export default {
         data() {
@@ -413,19 +428,19 @@
                 editForm: {}, //更新表单
                 addFormRules: {
                     username: [
-                        { required: true, message: "请输入用户名", trigger: "blur" },
-                        { min: 3, max: 10, message: "长度在 3 到 10 个字符", trigger: "blur" }
+                        {required: true, message: "请输入用户名", trigger: "blur"},
+                        {min: 3, max: 10, message: "长度在 3 到 10 个字符", trigger: "blur"}
                     ],
                     password: [
-                        { required: true, message: "请输入密码", trigger: "blur" },
-                        { min: 3, max: 12, message: "长度在 3 到 12 个字符", trigger: "blur" }
+                        {required: true, message: "请输入密码", trigger: "blur"},
+                        {min: 3, max: 12, message: "长度在 3 到 12 个字符", trigger: "blur"}
                     ],
                     departmentId: [
-                        { required: true, message: "请选择部门", trigger: "blur" }
+                        {required: true, message: "请选择部门", trigger: "blur"}
                     ],
-                    sex: [{ required: true, message: "请选择性别", trigger: "blur" }],
-                    birth: [{ required: true, message: "请填写出生日期", trigger: "blur" }],
-                    email: [{ required: true, validator: checkEmail, trigger: "blur" }],
+                    sex: [{required: true, message: "请选择性别", trigger: "blur"}],
+                    birth: [{required: true, message: "请填写出生日期", trigger: "blur"}],
+                    email: [{required: true, validator: checkEmail, trigger: "blur"}],
                     phoneNumber: [
                         {
                             required: true,
@@ -435,8 +450,8 @@
                         }
                     ],
                     nickname: [
-                        { required: true, message: "请输入昵称", trigger: "blur" },
-                        { min: 5, max: 10, message: "长度在 5 到 10 个字符", trigger: "blur" }
+                        {required: true, message: "请输入昵称", trigger: "blur"},
+                        {min: 5, max: 10, message: "长度在 5 到 10 个字符", trigger: "blur"}
                     ]
                 }, //添加表单验证规则
                 roles: [], //角色
@@ -449,8 +464,8 @@
             /**
              * 重置
              */
-            reset(){
-                this.queryMap= {
+            reset() {
+                this.queryMap = {
                     pageNum: 1,
                     pageSize: 6,
                     username: "",
@@ -463,27 +478,21 @@
              */
             downExcel() {
                 const $this = this;
-                const res = axios
-                    .request({
-                        url: "system/user/excel",
-                        method: "post",
-                        responseType: "blob"
-                    })
-                    .then(res => {
-                        if (res.headers["content-type"] === "application/json") {
-                            return $this.$message.error(
-                                "Subject does not have permission [user:export]"
-                            );
-                        }
-                        const data = res.data;
-                        let url = window.URL.createObjectURL(data); // 将二进制文件转化为可访问的url
-                        const a = document.createElement("a");
-                        document.body.appendChild(a);
-                        a.href = url;
-                        a.download = "用户列表.xls";
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                    });
+                const res = excel().then(res => {
+                    if (res.headers["content-type"] === "application/json") {
+                        return $this.$message.error(
+                            "Subject does not have permission [user:export]"
+                        );
+                    }
+                    const data = res.data;
+                    let url = window.URL.createObjectURL(data); // 将二进制文件转化为可访问的url
+                    const a = document.createElement("a");
+                    document.body.appendChild(a);
+                    a.href = url;
+                    a.download = "用户列表.xls";
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                });
             },
             /**
              * 弹出用户分配角色
@@ -495,7 +504,7 @@
                     spinner: "el-icon-loading",
                     background: "rgba(0, 0, 0, 0.7)"
                 });
-                const { data: res } = await roles("/system/user/" + id + "/roles");
+                const {data: res} = await roles("/system/user/" + id + "/roles");
                 if (res.success) {
                     this.roles = res.data.roles;
                     this.value = res.data.values;
@@ -515,14 +524,14 @@
                 this.assignDialogVisible = true;
                 this.btnLoading = true;
                 this.btnDisabled = true;
-                const { data: res } = await assignRoles(
+                const {data: res} = await assignRoles(
                     "system/user/" + this.uid + "/assignRoles",
                     this.value
                 );
-                if(res.success){
+                if (res.success) {
                     this.$notify.success({
-                        title:'操作成功',
-                        message:'用户分配角色成功',
+                        title: '操作成功',
+                        message: '用户分配角色成功',
                     });
                 } else {
                     this.$message.error("分配角色失败:" + res.data.errorMsg);
@@ -535,9 +544,9 @@
              * 加载用户列表
              */
             async getUserList() {
-                const { data: res } = await findUserList(this.queryMap);
-                if(!res.success){
-                    return this.$message.error("获取用户列表失败:"+res.data.errorMsg);
+                const {data: res} = await findUserList(this.queryMap);
+                if (!res.success) {
+                    return this.$message.error("获取用户列表失败:" + res.data.errorMsg);
                 }
                 this.total = res.data.total;
                 this.userList = res.data.rows;
@@ -562,16 +571,16 @@
                     });
                 });
                 if (res === "confirm") {
-                    const { data: res } = await deleteUser("system/user/delete/" + id);
+                    const {data: res} = await deleteUser("system/user/delete/" + id);
                     console.log(res);
-                    if(res.success){
+                    if (res.success) {
                         this.$notify.success({
-                            title:'操作成功',
-                            message:'用户删除成功',
+                            title: '操作成功',
+                            message: '用户删除成功',
                         });
                         await this.getUserList();
                         await this.getDepartmets();
-                    }else {
+                    } else {
                         this.$message.error(res.data.errorMsg);
                     }
                 }
@@ -586,11 +595,11 @@
                     } else {
                         this.btnLoading = true;
                         this.btnDisabled = true;
-                        const { data: res } = await add(this.addForm);
-                        if(res.success){
+                        const {data: res} = await add(this.addForm);
+                        if (res.success) {
                             this.$notify.success({
-                                title:'操作成功',
-                                message:'用户添加成功',
+                                title: '操作成功',
+                                message: '用户添加成功',
                             });
                             this.addForm = {};
                             await this.getUserList();
@@ -614,11 +623,11 @@
                     } else {
                         this.btnLoading = true;
                         this.btnDisabled = true;
-                        const { data: res } = await update(
+                        const {data: res} = await update(
                             "system/user/update/" + this.editForm.id,
                             this.editForm
                         );
-                        if(res.success){
+                        if (res.success) {
                             this.$notify({
                                 title: "操作成功",
                                 message: "用户基本信息已更新",
@@ -647,8 +656,8 @@
              * 修改用户信息
              */
             async edit(id) {
-                const { data: res } = await edit("system/user/edit/" + id);
-                if(res.success){
+                const {data: res} = await edit("system/user/edit/" + id);
+                if (res.success) {
                     this.editForm = res.data;
                     this.editDialogVisible = true;
                 } else {
@@ -689,10 +698,10 @@
              * 禁用启用用户
              */
             async changUserStatus(row) {
-                const { data: res } = await updateStatus(
+                const {data: res} = await updateStatus(
                     "system/user/updateStatus/" + row.id + "/" + row.status
                 );
-                if(!res.success){
+                if (!res.success) {
                     this.$message.error("更新用户状态失败:" + res.data.errorMsg);
                     row.status = !row.status;
                 } else {
@@ -707,9 +716,9 @@
              * 加载所有部门
              */
             async getDepartmets() {
-                const { data: res } = await findAll("system/department/findAll");
-                if(!res.success){
-                    return this.$message.error("获取部门列表失败:"+res.data.errorMsg);
+                const {data: res} = await findAll("system/department/findAll");
+                if (!res.success) {
+                    return this.$message.error("获取部门列表失败:" + res.data.errorMsg);
                 }
                 this.departments = res.data;
             },

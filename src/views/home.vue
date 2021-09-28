@@ -34,6 +34,7 @@
                         class="el-menu-vertical-demo"
                         :collapse="isOpen"
                         :router="true"
+                        active-text-color="#20a0ff"
                         :default-active="activePath"
                         background-color="#001529"
                         :collapse-transition="false"

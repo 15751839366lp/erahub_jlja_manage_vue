@@ -88,3 +88,11 @@ export function findAll() {
         method: 'get',
     });
 }
+
+export function excel() {
+    return service.request({
+        url: "system/user/excel",
+        method: "post",
+        responseType: "blob"
+    });
+}
