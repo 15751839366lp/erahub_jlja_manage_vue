@@ -49,7 +49,7 @@
                         stripe
                         :data="departmentData"
                         style="width: 100%;margin-top:20px;"
-                        height="460"
+                        height="550"
                 >
                     <el-table-column prop="id" type="index" label="ID" width="50"></el-table-column>
                     <el-table-column prop="phone" label="办公电话" width="180"></el-table-column>
@@ -164,7 +164,8 @@
 </template>
 
 <script>
-    import axios from "axios";
+    import {update,edit,findDepartmentList,deleteDepartment,add,excel} from '../../api/system/department'
+
     export default {
         data() {
             const checkPhone = (rule, value, callback) => {
@@ -221,13 +222,7 @@
              */
             downExcel() {
                 const $this = this;
-                const res = axios
-                    .request({
-                        url: "system/department/excel",
-                        method: "post",
-                        responseType: "blob"
-                    })
-                    .then(res => {
+                const res = excel().then(res => {
                         if (res.headers["content-type"] === "application/json") {
                             return $this.$message.error(
                                 "Subject does not have permission [department:export]"
@@ -269,7 +264,7 @@
                     });
                 });
                 if ("confirm" === res) {
-                    const {data: res} = await this.$http.delete(
+                    const {data: res} = await deleteDepartment(
                         "system/department/delete/" + id
                     );
                     if (res.success) {
@@ -289,11 +284,11 @@
                         return;
                     } else {
                         (this.btnLoading = true), (this.btnDisabled = true);
-                        const {data: res} = await this.$http.put(
+                        const {data: res} = await update(
                             "system/department/update/" + this.editRuleForm.id,
                             this.editRuleForm
                         );
-                        if (res.code === 200) {
+                        if (res.success) {
                             this.$notify({
                                 title: "成功",
                                 message: "部门信息更新",
@@ -315,7 +310,7 @@
              * @param {Object} id
              */
             edit: async function (id) {
-                const {data: res} = await this.$http.get("system/department/edit/" + id);
+                const {data: res} = await edit("system/department/edit/" + id);
                 if (res.success) {
                     this.editRuleForm = res.data;
                 } else {
@@ -330,10 +325,7 @@
                         return;
                     } else {
                         (this.btnLoading = true), (this.btnDisabled = true);
-                        const {data: res} = await this.$http.post(
-                            "system/department/add",
-                            this.addRuleForm
-                        );
+                        const {data: res} = await add(this.addRuleForm);
                         if (res.success) {
                             this.$message.success("部门添加成功");
                             this.addRuleForm = {};
@@ -348,12 +340,8 @@
             },
             //加载部门别列表
             async getDepartmentList() {
-                const { data: res } = await this.$http.get(
-                    "system/department/findDepartmentList",
-                    {
-                        params: this.queryMap
-                    }
-                );
+                console.log(process.env.NODE_ENV)
+                const { data: res } = await findDepartmentList(this.queryMap);
                 if (!res.success) {
                     return this.$message.error("获取用户列表失败:"+res.data.errorMsg);
                 } else {

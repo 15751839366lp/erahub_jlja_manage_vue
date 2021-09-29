@@ -163,7 +163,8 @@
 </template>
 
 <script>
-    import axios from "axios";
+    import {update,edit,tree,deleteMenu,add,excel} from '../../api/system/menu'
+
     let id = 1000;
 
     export default {
@@ -234,12 +235,7 @@
              */
             downExcel() {
                 var $this = this;
-                const res = axios.request({
-                    url: "/menu/excel",
-                    method: "post",
-                    responseType: "blob"
-                })
-                    .then(res => {
+                const res = excel().then(res => {
                         if(res.headers['content-type']==='application/json'){
                             return $this.$message.error("Subject does not have permission [menu:export]");
                         }
@@ -263,7 +259,7 @@
                     } else {
                         this.btnLoading = true;
                         this.btnDisabled = true;
-                        const { data: res } = await this.$http.put(
+                        const { data: res } = await update(
                             "system/menu/update/" + this.editForm.id,
                             this.editForm
                         );
@@ -287,7 +283,7 @@
             //点击编辑节点
             async edit(data) {
                 this.editTitle = "编辑：【" + data.menuName + "】";
-                const { data: res } = await this.$http.get("system/menu/edit/" + data.id);
+                const { data: res } = await edit("system/menu/edit/" + data.id);
                 if (res.success) {
                     this.editForm = res.data;
                     this.editlogVisible = true;
@@ -311,7 +307,7 @@
             },
             //加载菜单树
             async getMenuTree() {
-                const { data: res } = await this.$http.get("system/menu/tree");
+                const { data: res } = await tree();
                 if (res.success) {
                     this.data = res.data.tree;
                     this.open = res.data.open;
@@ -348,7 +344,7 @@
                 });
                 if (res === "confirm") {
                     console.log(node);
-                    const { data: res } = await this.$http.delete(
+                    const { data: res } = await deleteMenu(
                         "system/menu/delete/" + node.data.id
                     );
                     if (res.success) {
@@ -367,7 +363,7 @@
                     } else {
                         this.btnLoading = true;
                         this.btnDisabled = true;
-                        const { data: res } = await this.$http.post("system/menu/add", this.addForm);
+                        const { data: res } = await add(this.addForm);
                         if (res.success) {
                             this.$message.success("节点添加成功");
                             this.addDialogVisible = false;
@@ -399,44 +395,37 @@
             renderContent(h, { node, data, store }) {
                 return (
                     <span class="custom-tree-node">
-                    <span>
-                    <i class={data.icon}></i>&nbsp;&nbsp;&nbsp;{node.label}
-                {node.data.type == 0 ?  <el-tag style='margin-left:20px;'  effect='plain' size='mini'>菜单</el-tag>:
-                    <el-tag style='margin-left:20px;' type='warning' effect='plain' size='mini'>权限  [{node.data.perms}]</el-tag>
+                        <span>
+                            <i class={data.icon}>
+                            </i>&nbsp;&nbsp;&nbsp;{node.label}
+                            {
+                                node.data.type == 0 ?  <el-tag style='margin-left:20px;'  effect='plain' size='mini'>菜单</el-tag>:
+                                <el-tag style='margin-left:20px;' type='warning' effect='plain' size='mini'>权限  [{node.data.perms}]</el-tag>
+                            }
+                        </span>
+                        <span>
+                            <el-button size="mini" type="text" on-click={() => {this.edit(data);return false;}}>
+                                <i class="el-icon-edit"></i>&nbsp;编辑
+                            </el-button>
+                            <el-button
+                                size="mini"
+                                type="text"
+                                on-click={() => {
+                                    this.openAdd(data);
+                                }}>
+                                <i class="el-icon-plus"></i>&nbsp;增加
+                            </el-button>
 
-                }
-            </span>
-                <span>
-                <el-button
-                size="mini"
-                type="text"
-                on-click={() => {
-                    this.edit(data);
-                    return false;
-                }}
-            >
-            <i class="el-icon-edit"></i>&nbsp;编辑
-                    </el-button>
-                    <el-button
-                size="mini"
-                type="text"
-                on-click={() => {
-                    this.openAdd(data);
-                }}
-            >
-            <i class="el-icon-plus"></i>&nbsp;增加
-                    </el-button>
-
-                    <el-button
-                size="mini"
-                type="text"
-                on-click={() => this.delNode(node, data)}
-            >
-            <i class="el-icon-delete"></i>&nbsp;删除
-                    </el-button>
+                            <el-button
+                                size="mini"
+                                type="text"
+                                on-click={() => this.delNode(node, data)}
+                            >
+                            <i class="el-icon-delete"></i>&nbsp;删除
+                            </el-button>
+                        </span>
                     </span>
-                    </span>
-            );
+                );
             }
         }
     };

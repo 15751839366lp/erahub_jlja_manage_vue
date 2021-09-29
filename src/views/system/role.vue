@@ -47,7 +47,7 @@
                         :data="roleData"
                         border
                         style="width: 100%;margin-top:20px;"
-                        height="470"
+                        height="550"
                         size="small"
                 >
                     <el-table-column prop="id" label="ID" width="180"></el-table-column>

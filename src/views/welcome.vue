@@ -108,17 +108,7 @@
                         <el-carousel height="180px">
                             <el-carousel-item v-for="item in 3" :key="item"></el-carousel-item>
                         </el-carousel>
-                        <aplayer
-                                style="margin-top:20px;margin-bottom:30px;"
-                                autoplay
-                                :music="{
-                  title: '给我一个理由忘记',
-                  artist: 'A-Lin',
-                  src: 'http://music.163.com/song/media/outer/url?id=25640799.mp3',
-                  pic: 'http://p2.music.126.net/0POVOSSjqgVoOUGc5haWBQ==/109951163392311918.jpg'
-              }"
-                                :list="musicList"
-                        ></aplayer>
+
                         <el-divider>其他项目</el-divider>
                         <el-row :gutter="20">
                             <el-col :span="6"><div class="grid-content bg-purple"><el-button @click="getPage('http://116.85.25.106/backend/loginPage.do')">通用管理系统</el-button></div></el-col>
@@ -313,11 +303,12 @@
         created() {
             this.userInfo = this.$store.state.userInfo;
             const roles = this.userInfo.isAdmin ? "超级管理员" : this.userInfo.roles;
+            let rolesShow = this.userInfo.roles != null && this.userInfo.roles.length > 1  ? this.userInfo.roles[0] + "  ..." : this.userInfo.roles;
             this.tableInfo.push({
                 username: this.userInfo.username,
                 nickname: this.userInfo.nickname,
                 department: this.userInfo.department,
-                roles: roles
+                roles: rolesShow
             });
         },
         mounted: function() {

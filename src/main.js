@@ -19,6 +19,8 @@ Vue.use(echarts)
 NProgress.configure({ease: 'ease', speed: 500});
 NProgress.configure({minimum: 0.3});
 
+
+
 /**
  * 自定义权限指令
  */
