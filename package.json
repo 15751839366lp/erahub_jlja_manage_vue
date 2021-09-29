@@ -1,5 +1,5 @@
 {
-  "name": "Xinguan",
+  "name": "erahub_jlja_manage",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -14,7 +14,6 @@
     "jsonp": "^0.2.1",
     "nprogress": "^0.2.0",
     "vue": "^2.6.11",
-    "vue-aplayer": "^1.6.1",
     "vue-puzzle-vcode": "^1.1.2",
     "vue-router": "^3.1.5",
     "vue-table-with-tree-grid": "^0.2.4",

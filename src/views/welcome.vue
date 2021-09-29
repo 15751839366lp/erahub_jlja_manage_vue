@@ -131,13 +131,11 @@
 </template>
 <script>
     import echarts from "echarts";
-    import aplayer from "vue-aplayer";
     import {loginReport} from '../api/system/loginLog'
 
     export default {
         components: {
             //别忘了引入组件
-            aplayer: aplayer
         },
 
         data() {
