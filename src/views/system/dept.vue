@@ -91,7 +91,7 @@
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                     :current-page="this.queryMap.pageNum"
-                    :page-sizes="[7, 10, 15, 20]"
+                    :page-sizes="[5, 10, 30, 50]"
                     :page-size="this.queryMap.pageSize"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="total"
@@ -193,7 +193,7 @@
                 addDialogVisible: false, //添加弹框是否显示
                 total: 0, //总共多少条数据
                 departmentData: [], //表格数据
-                queryMap: { pageNum: 1, pageSize: 7, name: "" }, //查询对象
+                queryMap: { pageNum: 1, pageSize: 10, name: "" }, //查询对象
                 addRuleForm: {}, //添加表单数据
                 editRuleForm: {}, //修改表单数据
                 addRules: {

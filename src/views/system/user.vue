@@ -139,7 +139,7 @@
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                     :current-page="queryMap.pageNo"
-                    :page-sizes="[6, 10, 20, 30]"
+                    :page-sizes="[5, 10, 30, 50]"
                     :page-size="queryMap.pageSize"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="total"
@@ -467,7 +467,7 @@
             reset() {
                 this.queryMap = {
                     pageNum: 1,
-                    pageSize: 6,
+                    pageSize: 10,
                     username: "",
                     sex: "",
                     nickname: ""

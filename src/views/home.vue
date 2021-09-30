@@ -45,9 +45,11 @@
                 </el-menu>
             </el-aside>
 
+
             <!--右边主体-->
             <el-main v-loading="loading">
-                <router-view></router-view>
+                <Tags/>
+                <router-view style="margin-top: 20px"></router-view>
             </el-main>
         </el-container>
     </el-container>
@@ -55,6 +57,7 @@
 
 <script>
     import MenuTree from "../components/MenuTree"; //引进菜单模板
+    import Tags from "../components/Tags"; //引进菜单模板
     import {findMenu,info} from '../api/system/user'
 
     export default {
@@ -62,13 +65,14 @@
             return {
                 loading: true,
                 activePath: "", //激活的路径
-                isOpen: false,
+                isOpen: this.$store.state.component.collapse,
                 menuList: {},
                 userInfo: {},
             };
         },
         components: {
-            MenuTree
+            MenuTree,
+            Tags
         },
         methods: {
             /**

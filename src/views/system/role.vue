@@ -87,7 +87,7 @@
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                     :current-page="queryMap.pageNum"
-                    :page-sizes="[8, 16, 32, 64]"
+                    :page-sizes="[5, 10, 30, 50]"
                     :page-size="queryMap.pageSize"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="total"
@@ -173,7 +173,7 @@
                 btnDisabled: false,
                 loading: true,
                 total: 0,
-                queryMap: { roleName: "", pageNum: 1, pageSize: 8 }, //查询条件
+                queryMap: { roleName: "", pageNum: 1, pageSize: 10 }, //查询条件
                 roleData: [], //角色表格数据
                 addForm: {}, //添加数据
                 editForm: {}, //编辑数据
