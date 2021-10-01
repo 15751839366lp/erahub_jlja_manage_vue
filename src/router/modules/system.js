@@ -3,7 +3,7 @@ const system = [
         path: '/system/welcome',
         name: 'Welcome',
         meta:{
-            title: "首页"
+            title: "系统首页"
         },
         component: () => import( '../../views/welcome.vue'), //系统欢迎页
     }, {
@@ -55,6 +55,9 @@ const system = [
     },
     {
         path: "/error/401",
+        meta:{
+            title: "错误访问"
+        },
         component: () => import( '../../views/error/401'),
     }
 ]

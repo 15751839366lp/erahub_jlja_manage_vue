@@ -42,7 +42,6 @@
                                 type="primary"
                                 class="el-icon-mobile-phone"
                                 @click="handleSubmit"
-                                :loading="loading"
                         >登录
                         </el-button>
                         <el-button class="el-icon-refresh" @click="resetForm">重置</el-button>
@@ -65,6 +64,7 @@
 <script>
     import Vcode from "vue-puzzle-vcode"
     import Particles from '../components/particles/index.vue'
+    import { Loading } from 'element-ui';
     import {login,info} from '../api/system/user'
 
     export default {
@@ -75,7 +75,6 @@
                 dialogVisible: false,
                 imgCode: undefined,
                 //表单用户登入数据
-                loading: false,
                 userLoginForm: {
                     username: "",
                     password: ""
@@ -117,7 +116,7 @@
             },
             //验证成功
             async success() {
-                this.loading = true;
+                let loading = Loading.service({ fullscreen: true });
                 //发起登入请求
                 const {data: res} = await login(this.userLoginForm);
                 if (res.success) {
@@ -136,7 +135,7 @@
                         type: "error"
                     });
                 }
-                this.loading = false;
+                loading.close();
             },
 
             /**

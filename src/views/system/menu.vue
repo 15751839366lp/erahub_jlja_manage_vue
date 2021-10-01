@@ -272,6 +272,8 @@
                             this.editForm = {};
                             this.editlogVisible = false;
                             await this.getMenuTree();
+                            this.btnLoading = false;
+                            this.btnDisabled = false;
                         } else {
                             this.btnLoading = false;
                             this.btnDisabled = false;
@@ -368,6 +370,8 @@
                             this.$message.success("节点添加成功");
                             this.addDialogVisible = false;
                             await this.getMenuTree();
+                            this.btnLoading=false;
+                            this.btnDisabled = false;
                         } else {
                             this.$message.error("节点添加失败:"+res.data.errorMsg);
                         }

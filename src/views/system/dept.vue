@@ -330,6 +330,8 @@
                             this.$message.success("部门添加成功");
                             this.addRuleForm = {};
                             await this.getDepartmentList();
+                            this.btnLoading=false;
+                            this.btnDisabled = false;
                         } else {
                             return this.$message.error("部门添加失败:" + res.data.errorMsg);
                         }

@@ -333,6 +333,8 @@
                                 type: "success"
                             });
                             await this.getRoleList();
+                            this.btnLoading=false;
+                            this.btnDisabled = false;
                         } else {
                             this.$message.error("角色信息更新失败:" + res.data.errorMsg);
                         }

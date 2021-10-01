@@ -604,6 +604,8 @@
                             this.addForm = {};
                             await this.getUserList();
                             await this.getDepartmets();
+                            this.btnLoading=false;
+                            this.btnDisabled = false;
                         } else {
                             return this.$message.error("用户添加失败:" + res.data.errorMsg);
                         }
@@ -636,6 +638,8 @@
                             this.editForm = {};
                             await this.getUserList();
                             await this.getDepartmets();
+                            this.btnLoading=false;
+                            this.btnDisabled = false;
                         } else {
                             this.$message.error("用户信息更新失败:" + res.data.errorMsg);
                         }

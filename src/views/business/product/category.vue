@@ -197,6 +197,8 @@
                                 type: "success"
                             });
                             await this.getCategoryList();
+                            this.btnLoading = false;
+                            this.btnDisabled = false;
                         } else {
                             this.$message.error("分类信息更新失败:" + res.data.errorMsg);
                         }
@@ -283,6 +285,8 @@
                         if (res.success) {
                             this.$message.success("分类添加成功");
                             await this.getCategoryList();
+                            this.btnLoading = false;
+                            this.btnDisabled = false;
                         } else {
                             return this.$message.error("分类添加失败:" + res.data.errorMsg);
                         }
