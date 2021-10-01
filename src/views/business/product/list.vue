@@ -49,7 +49,8 @@
                 </el-col>
                 <el-col :span="8">
                     <el-button size="small" type="primary" icon="el-icon-search" @click="search">查找</el-button>
-                    <el-button size="small" icon="el-icon-refresh-right" type="warning" @click="resetForm">重置</el-button>
+                    <el-button size="small" icon="el-icon-refresh-right" type="warning" @click="resetForm">重置
+                    </el-button>
                     <el-button size="small" type="success" icon="el-icon-circle-plus-outline" @click="openAdd"
                                v-hasPermission="'product:add'">添加
                     </el-button>
@@ -74,16 +75,16 @@
                         <!--            <template slot-scope="scope">-->
                         <!--              <img-->
                         <!--                slot="error"-->
-                        <!--                :src="'https://www.zykhome.club/'+scope.row.imageUrl"-->
+                        <!--                :src="'http://127.0.0.1:8989/'+scope.row.imageUrl"-->
                         <!--                alt-->
                         <!--                style="width: 55px;height:55px"-->
                         <!--              />-->
                         <!--            </template>-->
                         <template slot-scope="scope">
                             <el-popover placement="right" trigger="hover">
-                                <img :src="'https://www.zykhome.club/'+scope.row.imageUrl"
+                                <img :src="'http://127.0.0.1:8989/'+scope.row.imageUrl"
                                      style="height: 200px;width: 200px"/>
-                                <img slot="reference" :src="'https://www.zykhome.club/'+scope.row.imageUrl"
+                                <img slot="reference" :src="'http://127.0.0.1:8989/'+scope.row.imageUrl"
                                      :alt="scope.row.imgUrl" style="height: 38px;width: 38px;cursor: pointer">
                             </el-popover>
                         </template>
@@ -353,10 +354,22 @@
 </template>
 
 <script>
+    import {
+        publish,
+        deleteProduct,
+        update,
+        edit,
+        add,
+        remove,
+        back,
+        findProductList
+    } from '../../../api/business/product'
+    import {categoryTree} from '../../../api/business/productCategory'
+
     export default {
         data() {
             return {
-                uploadApi:this.BASE_API_URL+'system/upload/image',
+                uploadApi: '/api/system/upload/image',
                 btnLoading: false,
                 btnDisabled: false,
                 loading: true,
@@ -459,7 +472,7 @@
              * 物资添加审核
              */
             async publish(id) {
-                const {data: res} = await this.$http.put("business/product/publish/" + id);
+                const {data: res} = await publish("/business/product/publish/" + id);
                 if (!res.success) {
                     return this.$message.error("审核失败:" + res.data.errorMsg);
                 } else {
@@ -486,7 +499,7 @@
                     });
                 });
                 if (res === "confirm") {
-                    const {data: res} = await this.$http.delete("business/product/delete/" + id);
+                    const {data: res} = await deleteProduct("/business/product/delete/" + id);
                     if (res.success) {
                         this.$message.success("物资删除成功");
                         await this.getproductList();
@@ -505,8 +518,8 @@
                     } else {
                         this.btnDisabled = true;
                         this.btnLoading = true;
-                        const {data: res} = await this.$http.put(
-                            "business/product/update/" + this.editRuleForm.id,
+                        const {data: res} = await update(
+                            "/business/product/update/" + this.editRuleForm.id,
                             this.editRuleForm
                         );
                         if (res.success) {
@@ -530,12 +543,12 @@
              * 编辑物资
              */
             async edit(id) {
-                const {data: res} = await this.$http.get("business/product/edit/" + id);
+                const {data: res} = await edit("/business/product/edit/" + id);
                 if (res.success) {
                     this.editRuleForm = res.data;
                     const item = res.data;
                     this.imgFilesList.push({
-                        url: "https://www.zykhome.club/" + item.imageUrl,
+                        url: "http://127.0.0.1:8989/" + item.imageUrl,
                         name: item.name,
                         id: item.id
                     });
@@ -560,10 +573,7 @@
                     } else {
                         this.btnDisabled = true;
                         this.btnLoading = true;
-                        const {data: res} = await this.$http.post(
-                            "product/add",
-                            this.addRuleForm
-                        );
+                        const {data: res} = await add(this.addRuleForm);
                         if (res.success) {
                             this.$message.success("物资添加成功");
                             this.addRuleForm = {};
@@ -581,7 +591,7 @@
              * 移除回收站
              */
             async remove(id) {
-                const {data: res} = await this.$http.put("business/product/remove/" + id);
+                const {data: res} = await remove("/business/product/remove/" + id);
                 if (!res.success) {
                     return this.$message.error("移入回收站失败:" + res.data.errorMsg);
                 } else {
@@ -593,7 +603,7 @@
              * 从回收站恢复
              */
             async back(id) {
-                const {data: res} = await this.$http.put("product/back/" + id);
+                const {data: res} = await back("/business/product/back/" + id);
                 if (!res.success) {
                     return this.$message.error("从回收站恢复失败:" + res.data.errorMsg);
                 } else {
@@ -605,9 +615,7 @@
              * 加载物资列表
              */
             async getproductList() {
-                const {data: res} = await this.$http.get("business/product/findProductList", {
-                    params: this.queryMap
-                });
+                const {data: res} = await findProductList(this.queryMap);
                 if (!res.success) {
                     return this.$message.error("获取物资列表失败");
                 } else {
@@ -619,9 +627,7 @@
              * 加载物资类别
              */
             async getCatetorys() {
-                const {data: res} = await this.$http.get(
-                    "business/productCategory/categoryTree"
-                );
+                const {data: res} = await categoryTree();
                 if (!res.success) {
                     return this.$message.error("获取物资类别失败");
                 } else {

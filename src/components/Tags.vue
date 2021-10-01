@@ -31,17 +31,20 @@
         name: "Tags", //模板名称
         data() {
             return {
-                tagsList: this.$store.state.component.tagsList,
+                // tagsList: [],
             };
         },
         computed: {
             showTags(){
                 return this.tagsList.length > 0;
+            },
+            tagsList(){
+                return this.$store.state.component.tagsList;
             }
         },
         methods: {
             isActive(path) {
-                this.$route.fullPath
+                return path === this.$route.fullPath;
             },
             // 关闭单个标签
             closeTags(index) {
@@ -101,9 +104,14 @@
         created() {
             this.setTags(this.$route);
         },
-        beforeRouteUpdate(to) {
-            this.setTags(to);
+        watch: {
+            $route(to, from) {
+                this.setTags(to);
+            }
         },
+        // beforeRouteUpdate(to, from, next) {
+        //     this.setTags(to);
+        // },
     }
 </script>
 
@@ -150,6 +158,7 @@
 
     .tags-li.active {
         color: #fff;
+        background: #409EFF;
     }
 
     .tags-li-title {

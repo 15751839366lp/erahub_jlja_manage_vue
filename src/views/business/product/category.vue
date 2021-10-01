@@ -110,6 +110,8 @@
 </template>
 
 <script>
+    import {update,edit,deleteProductCategory,categoryTree,getParentCategoryTree,add} from '../../../api/business/productCategory'
+
     export default {
         data() {
             return {
@@ -184,8 +186,8 @@
                     } else {
                         this.btnLoading = true;
                         this.btnDisabled = true;
-                        const {data: res} = await this.$http.put(
-                            "business/productCategory/update/" + this.editRuleForm.id,
+                        const {data: res} = await update(
+                            "/business/productCategory/update/" + this.editRuleForm.id,
                             this.editRuleForm
                         );
                         if (res.success) {
@@ -206,7 +208,7 @@
             },
             //修改
             async edit(id) {
-                const { data: res } = await this.$http.get("business/productCategory/edit/" + id);
+                const { data: res } = await edit("/business/productCategory/edit/" + id);
                 if (res.success) {
                     this.editRuleForm = res.data;
                 } else {
@@ -231,8 +233,8 @@
                     });
                 });
                 if (res === "confirm") {
-                    const { data: res } = await this.$http.delete(
-                        "business/productCategory/delete/" + id
+                    const { data: res } = await deleteProductCategory(
+                        "/business/productCategory/delete/" + id
                     );
                     console.log(res);
                     if (res.success) {
@@ -255,21 +257,14 @@
             },
             //加载分类数据
             async getCategoryList() {
-                const { data: res } = await this.$http.get(
-                    "business/productCategory/categoryTree",
-                    {
-                        params: this.queryMap
-                    }
-                );
+                const { data: res } = await categoryTree(this.queryMap);
                 if (!res.success) return this.$message.error("分类列表失败");
                 this.categorys = res.data.rows;
                 this.total = res.data.total;
             },
             //加载父级分类数据
             async getParentCategoryList() {
-                const { data: res } = await this.$http.get(
-                    "business/productCategory/getParentCategoryTree"
-                );
+                const { data: res } = await getParentCategoryTree();
                 if (!res.success) return this.$message.error("父级分类列表失败:"+res.data.errorMsg);
                 this.parentCategorys = res.data;
             },
@@ -284,10 +279,7 @@
                         if(this.addRuleForm.pid == null){
                             this.addRuleForm.pid=0;
                         }
-                        const { data: res } = await this.$http.post(
-                            "business/productCategory/add",
-                            this.addRuleForm
-                        );
+                        const { data: res } = await add(this.addRuleForm);
                         if (res.success) {
                             this.$message.success("分类添加成功");
                             await this.getCategoryList();

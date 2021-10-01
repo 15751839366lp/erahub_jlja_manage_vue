@@ -223,6 +223,8 @@
 </template>
 
 <script>
+    import {history,isReport,report} from '../../../api/business/health'
+    import {getProvinces} from '../../../api/business/businessUtils'
 
     export default {
         data() {
@@ -280,9 +282,7 @@
 
             //打卡历史记录
             async reportHistory(){
-                const { data: res } = await this.$http.get("business/health/history",{
-                    params: this.queryMap
-                });
+                const { data: res } = await history(this.queryMap);
                 if(!res.success){
                     return this.$message.error("历史记录获取失败:" + res.msg);
                 }else {
@@ -292,7 +292,7 @@
             },
             //今日是否已签到
             async isReport(){
-                const { data: res } = await this.$http.get("business/health/isReport");
+                const { data: res } = await isReport();
                 if(!res.success){
                     return this.$message.error("今日健康报备检查错误:" + res.msg);
                 }else {
@@ -320,10 +320,7 @@
                             this.ruleForm.city +
                             "/" +
                             this.ruleForm.origin;
-                        const { data: res } = await this.$http.post(
-                            "business/health/report",
-                            this.ruleForm
-                        );
+                        const { data: res } = await report(this.ruleForm);
                         if (res.success) {
                             this.reported=true;
                             this.ruleForm.createTime=this.nowTime;
@@ -396,7 +393,7 @@
             },
 
             _getJsonData() {
-                this.$http.get("/json/provinces.json").then(res => {
+                getProvinces().then(res => {
                     this.provinceList = [];
                     this.cityList = [];
                     this.originList = [];

@@ -217,7 +217,7 @@
               >
                 <template slot-scope="scope">
                   <img
-                          :src="'https://www.zykhome.club/'+scope.row.imageUrl"
+                          :src="'http://127.0.0.1:8989/'+scope.row.imageUrl"
                           alt
                           style="width: 30px;height:30px"
                   />
@@ -246,6 +246,8 @@
 </template>
 
 <script>
+    import {publish,detail,remove,deleteOutStock,back,findOutStockList} from '../../../api/business/outStock'
+
     export default {
         data() {
             return {
@@ -266,7 +268,7 @@
              */
             async publish(id){
 
-                const { data: res } = await this.$http.put("business/outStock/publish/"+id);
+                const { data: res } = await publish("/business/outStock/publish/"+id);
                 if (!res.success) {
                     return this.$message.error("审核失败:"+res.data.errorMsg);
                 } else {
@@ -294,7 +296,7 @@
              */
             async detail(id) {
                 this.detailId=id;
-                const {data: res} = await this.$http.get("business/outStock/detail/" + id+"?pageNum="+this.pageNum);
+                const {data: res} = await detail("/business/outStock/detail/" + id+"?pageNum="+this.pageNum);
                 if (!res.success) {
                     this.$message.error("获取明细失败:" + res.data.errorMsg);
                 } else {
@@ -311,7 +313,7 @@
              * 从回收站恢复
              */
             async back(id){
-                const { data: res } = await this.$http.put("business/outStock/back/"+id);
+                const { data: res } = await back("/business/outStock/back/"+id);
                 if (!res.success) {
                     return this.$message.error("从回收站恢复失败:"+res.data.errorMsg);
                 } else {
@@ -324,7 +326,7 @@
              * 移除回收站
              */
             async remove(id) {
-                const {data: res} = await this.$http.put("business/outStock/remove/" + id);
+                const {data: res} = await remove("/business/outStock/remove/" + id);
                 if (!res.success) {
                     return this.$message.error("移入回收站失败:" + res.data.errorMsg);
                 } else {
@@ -343,9 +345,7 @@
              * 加载表格数据
              */
             async loadTableData() {
-                const {data: res} = await this.$http.get("business/outStock/findOutStockList", {
-                    params: this.queryMap
-                });
+                const {data: res} = await findOutStockList(this.queryMap);
                 if (!res.success) {
                     return this.$message.error("获取列表失败:"+res.data.errorMsg);
                 } else {
@@ -376,7 +376,7 @@
             /**删除明细
              */
             async del(id) {
-                const {data: res} = await this.$http.get("business/outStock/delete/" + id);
+                const {data: res} = await deleteOutStock("/business/outStock/delete/" + id);
                 if (!res.success) {
                     return this.$message.error("删除失败:" + res.data.errorMsg);
                 } else {

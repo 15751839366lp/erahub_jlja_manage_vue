@@ -2,8 +2,12 @@
     <el-container class="home-container">
         <!--    导航-->
         <el-header>
+            <div class="collapse-btn" @click="collapseChage">
+                <i v-if="!isOpen" class="el-icon-s-fold"></i>
+                <i v-else class="el-icon-s-unfold"></i>
+            </div>
             <div>
-                <span style="margin-left:20px;">
+                <span style="margin-left:20px;float: left">
                     <div class="logo">后台管理系统</div>
                 </span>
             </div>
@@ -19,8 +23,7 @@
                         <span type="danger" @click="getContact"><span class="el-icon-ship"></span> &nbsp;交流讨论</span>
                     </el-dropdown-item>
                     <el-dropdown-item>
-                        <span type="danger" @click="logout"><span
-                                class="el-icon-switch-button"></span> &nbsp;退出登入</span>
+                        <span type="danger" @click="logout(true)"><span class="el-icon-switch-button"></span> &nbsp;退出登入</span>
                     </el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
@@ -28,8 +31,7 @@
         <!--主体-->
         <el-container style="height: 500px;">
             <!--菜单-->
-            <el-aside :width="isOpen===true?'64px':'200px'">
-                <div class="toggle-btn" @click="toggleMenu">|||</div>
+<!--            <el-aside :width="isOpen===true?'64px':'200px'">-->
                 <el-menu
                         class="el-menu-vertical-demo"
                         :collapse="isOpen"
@@ -37,13 +39,13 @@
                         active-text-color="#20a0ff"
                         :default-active="activePath"
                         background-color="#001529"
-                        :collapse-transition="false"
+                        :collapse-transition="true"
                         text-color="rgba(255,255,255,0.7)"
                         unique-opened
                 >
                     <MenuTree :menuList="this.menuList"></MenuTree>
                 </el-menu>
-            </el-aside>
+<!--            </el-aside>-->
 
 
             <!--右边主体-->
@@ -58,14 +60,12 @@
 <script>
     import MenuTree from "../components/MenuTree"; //引进菜单模板
     import Tags from "../components/Tags"; //引进菜单模板
-    import {findMenu,info} from '../api/system/user'
+    import {findMenu, info} from '../api/system/user'
 
     export default {
         data() {
             return {
                 loading: true,
-                activePath: "", //激活的路径
-                isOpen: this.$store.state.component.collapse,
                 menuList: {},
                 userInfo: {},
             };
@@ -74,32 +74,49 @@
             MenuTree,
             Tags
         },
+        computed: {
+            //激活的路径
+            activePath() {
+                return this.$route.path;
+            },
+            isOpen() {
+                return this.$store.state.component.collapse;
+            }
+        },
         methods: {
             /**
              *
              * 退出登入
              */
-            async logout() {
-                const res = await this.$confirm("此操作将退出系统, 是否继续?", "提示", {
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消",
-                    type: "warning"
-                }).catch(() => {
-                    this.$message({
-                        type: "info",
-                        message: "已取消退出登入"
+            collapseChage() {
+                this.$store.commit("component/handleCollapse", !this.$store.state.component.collapse);
+            },
+            async logout(isClick) {
+                if (isClick) {
+                    const res = await this.$confirm("此操作将退出系统, 是否继续?", "提示", {
+                        confirmButtonText: "确定",
+                        cancelButtonText: "取消",
+                        type: "warning"
+                    }).catch(() => {
+                        this.$message({
+                            type: "info",
+                            message: "已取消退出登入"
+                        });
                     });
-                });
-                if (res === "confirm") {
-                    LocalStorage.clearAll();
+                    if (res === "confirm") {
+                        LocalStorage.clearAll();
+                        await this.$router.push("/login");
+                    }
+                } else {
                     await this.$router.push("/login");
                 }
+
             },
             /**
              * 去系统首页
              */
             toWelcome() {
-                this.$router.push("/welcome");
+                this.$router.push("/system/welcome");
             },
             /**
              加载菜单数据
@@ -107,7 +124,8 @@
             async getMenuList() {
                 const {data: res} = await findMenu();
                 if (!res.success) {
-                    return this.$message.error("获取菜单失败:" + res.msg);
+                    this.$message.error("获取菜单失败:" + res.data.errorMsg)
+                    await this.logout(false);
                 }
                 this.menuList = res.data;
             },
@@ -117,17 +135,11 @@
             async getUserInfo() {
                 const {data: res} = await info();
                 if (!res.success) {
-                    return this.$message.error("获取用户信息失败:" + res.msg);
+                    return this.$message.error("获取用户信息失败:" + res.data.errorMsg);
                 } else {
                     this.userInfo = res.data;
                     this.$store.commit("setUserInfo", res.data);
                 }
-            },
-            /**
-             * 菜单伸缩
-             */
-            toggleMenu() {
-                this.isOpen = !this.isOpen;
             },
             /**
              * 点击交流
@@ -142,7 +154,7 @@
         },
         created() {
             this.getMenuList();
-            this.activePath = window.sessionStorage.getItem("activePath");
+            // this.activePath(window.sessionStorage.getItem("activePath"));
             setTimeout(() => {
                 this.loading = false;
             }, 500);
@@ -164,8 +176,11 @@
         padding-left: 0px;
     }
 
-    .el-aside {
-        background-color: #001529
+    .collapse-btn {
+        float: left;
+        padding: 0 21px;
+        cursor: pointer;
+        line-height: 70px;
     }
 
     .el-main {
@@ -182,6 +197,11 @@
     .home-container {
         width: 100%;
         height: 100% !important;
+    }
+
+    .el-menu-vertical-demo:not(.el-menu--collapse) {
+        width: 200px;
+        min-height: 400px;
     }
 
     .toggle-btn {

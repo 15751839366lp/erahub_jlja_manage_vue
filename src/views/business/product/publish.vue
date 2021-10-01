@@ -247,16 +247,16 @@
                                 <!--            <template slot-scope="scope">-->
                                 <!--              <img-->
                                 <!--                slot="error"-->
-                                <!--                :src="'https://www.zykhome.club/'+scope.row.imageUrl"-->
+                                <!--                :src="'http://127.0.0.1:8989/'+scope.row.imageUrl"-->
                                 <!--                alt-->
                                 <!--                style="width: 55px;height:55px"-->
                                 <!--              />-->
                                 <!--            </template>-->
                                 <template slot-scope="scope">
                                     <el-popover placement="right" trigger="hover">
-                                        <img :src="'https://www.zykhome.club/'+scope.row.imageUrl"
+                                        <img :src="'http://127.0.0.1:8989/'+scope.row.imageUrl"
                                              style="height: 200px;width: 200px"/>
-                                        <img slot="reference" :src="'https://www.zykhome.club/'+scope.row.imageUrl"
+                                        <img slot="reference" :src="'http://127.0.0.1:8989/'+scope.row.imageUrl"
                                              :alt="scope.row.imgUrl" style="height: 32px;width: 32px;cursor: pointer">
                                     </el-popover>
                                 </template>
@@ -305,7 +305,7 @@
                   >
                     <template slot-scope="scope">
                       <img
-                              :src="'https://www.zykhome.club/'+scope.row.imageUrl"
+                              :src="'http://127.0.0.1:8989/'+scope.row.imageUrl"
                               alt
                               style="width: 50px;height:30px"
                       />
@@ -349,6 +349,12 @@
     </div>
 </template>
 <script>
+    import {getProvinces} from '../../../api/business/businessUtils'
+    import {categoryTree} from '../../../api/business/productCategory'
+    import {findProductStocks} from '../../../api/business/product'
+    import {addOutStock} from '../../../api/business/outStock'
+    import {findAll} from '../../../api/business/consumer'
+
     export default {
         data() {
             var checkPhone = (rule, value, callback) => {
@@ -461,9 +467,7 @@
              * 加载商品类别
              */
             async getCatetorys() {
-                const { data: res } = await this.$http.get(
-                    "productCategory/categoryTree"
-                );
+                const { data: res } = await categoryTree();
                 if (!res.success) {
                     return this.$message.error("获取商品类别失败:"+res.data.errorMsg);
                 } else {
@@ -474,9 +478,7 @@
              * 加载商品列表(可出库)
              */
             async loadTableData() {
-                const { data: res } = await this.$http.get("business/product/findProductStocks", {
-                    params: this.queryMap
-                });
+                const { data: res } = await findProductStocks(this.queryMap);
                 if (!res.success) {
                     return this.$message.error("获取商品列表失败:"+res.data.errorMsg);
                 } else {
@@ -580,7 +582,7 @@
             },
 
             _getJsonData() {
-                this.$http.get("/json/provinces.json").then(res => {
+                getProvinces("/json/provinces.json").then(res => {
                     this.provinceList = [];
                     this.cityList = [];
                     this.originList = [];
@@ -638,7 +640,7 @@
             /**加载去向数据
              */
             async getConsumers() {
-                const { data: res } = await this.$http.get("consumer/findAll");
+                const { data: res } = await findAll("consumer/findAll");
                 if (!res.success) {
                     return this.$message.error("获取去向数据失败:"+res.data.errorMsg);
                 } else {
@@ -710,10 +712,7 @@
                             });
                         });
                         if (res === "confirm") {
-                            const { data: res } = await this.$http.post(
-                                "outStock/addOutStock",
-                                this.addRuleForm
-                            );
+                            const { data: res } = await addOutStock(this.addRuleForm);
                             if (res.success) {
                                 this.$message.warning("物资发放进入审核状态");
                                 await this.$router.push("/outStocks");

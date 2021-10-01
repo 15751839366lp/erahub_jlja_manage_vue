@@ -264,6 +264,9 @@
 </template>
 
 <script>
+    import {getProvinces} from '../../../api/business/businessUtils'
+    import {deleteSupplier,update,edit,add,findSupplierList} from '../../../api/business/supplier'
+
     export default {
         data() {
             var checkEmail = (rule, value, callback) => {
@@ -370,7 +373,7 @@
                     });
                 });
                 if (res === "confirm") {
-                    const { data: res } = await this.$http.delete("business/supplier/delete/" + id);
+                    const { data: res } = await deleteSupplier("business/supplier/delete/" + id);
                     if (res.success) {
                         this.$message.success("来源删除成功");
                         await this.getSupplierList();
@@ -386,7 +389,7 @@
                         return;
                     } else {
 
-                        const { data: res } = await this.$http.put(
+                        const { data: res } = await update(
                             "business/supplier/update/" + this.editRuleForm.id,
                             this.editRuleForm
                         );
@@ -408,7 +411,7 @@
             },
             //编辑
             async edit(id) {
-                const { data: res } = await this.$http.get("business/supplier/edit/" + id);
+                const { data: res } = await edit("business/supplier/edit/" + id);
                 if (res.success) {
                     this.editRuleForm = res.data;
                 } else {
@@ -428,10 +431,7 @@
                             this.addRuleForm.city +
                             "/" +
                             this.addRuleForm.origin;
-                        const { data: res } = await this.$http.post(
-                            "business/supplier/add",
-                            this.addRuleForm
-                        );
+                        const { data: res } = await add(this.addRuleForm);
                         if (res.success) {
                             this.$message.success("来源添加成功");
                             this.addRuleForm = {};
@@ -445,9 +445,7 @@
             },
             //加载系别列表
             async getSupplierList() {
-                const { data: res } = await this.$http.get("business/supplier/findSupplierList", {
-                    params: this.queryMap
-                });
+                const { data: res } = await findSupplierList(this.queryMap);
                 if (!res.success) {
                     return this.$message.error("获取用户列表失败:"+res.data.errorMsg);
                 } else {
@@ -525,7 +523,7 @@
             },
 
             _getJsonData() {
-                this.$http.get("/json/provinces.json").then(res => {
+                getProvinces("/json/provinces.json").then(res => {
                     this.provinceList = [];
                     this.cityList = [];
                     this.originList = [];

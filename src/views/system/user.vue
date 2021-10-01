@@ -608,8 +608,8 @@
                             return this.$message.error("用户添加失败:" + res.data.errorMsg);
                         }
                         this.addDialogVisible = false;
-                        this.btnLoading = false;
                         this.btnDisabled = false;
+                        this.btnLoading = false;
                     }
                 });
             },

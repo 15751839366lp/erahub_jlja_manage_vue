@@ -244,15 +244,15 @@
                                 <!--            <template slot-scope="scope">-->
                                 <!--              <img-->
                                 <!--                slot="error"-->
-                                <!--                :src="'https://www.zykhome.club/'+scope.row.imageUrl"-->
+                                <!--                :src="'http://127.0.0.1:8989/'+scope.row.imageUrl"-->
                                 <!--                alt-->
                                 <!--                style="width: 55px;height:55px"-->
                                 <!--              />-->
                                 <!--            </template>-->
                                 <template slot-scope="scope">
                                     <el-popover placement="right"  trigger="hover">
-                                        <img :src="'https://www.zykhome.club/'+scope.row.imageUrl"  style="height: 200px;width: 200px"/>
-                                        <img  slot="reference" :src="'https://www.zykhome.club/'+scope.row.imageUrl" :alt="scope.row.imgUrl" style="height: 32px;width: 32px;cursor: pointer">
+                                        <img :src="'http://127.0.0.1:8989/'+scope.row.imageUrl"  style="height: 200px;width: 200px"/>
+                                        <img  slot="reference" :src="'http://127.0.0.1:8989/'+scope.row.imageUrl" :alt="scope.row.imgUrl" style="height: 32px;width: 32px;cursor: pointer">
                                     </el-popover>
                                 </template>
                             </el-table-column>
@@ -291,7 +291,7 @@
                   >
                     <template slot-scope="scope">
                       <img
-                              :src="'https://www.zykhome.club/'+scope.row.imageUrl"
+                              :src="'http://127.0.0.1:8989/'+scope.row.imageUrl"
                               alt
                               style="width: 50px;height:30px"
                       />
@@ -332,6 +332,13 @@
     </div>
 </template>
 <script>
+
+    import {findAll} from '../../../api/business/supplier'
+    import {addIntoStock} from '../../../api/business/inStock'
+    import {findProducts} from '../../../api/business/product'
+    import {categoryTree} from '../../../api/business/productCategory'
+    import {getProvinces} from '../../../api/business/businessUtils'
+
     export default {
         data() {
             var checkEmail = (rule, value, callback) => {
@@ -505,10 +512,7 @@
                             });
                         });
                         if (res === "confirm") {
-                            const { data: res } = await this.$http.post(
-                                "business/inStock/addIntoStock",
-                                this.addRuleForm
-                            );
+                            const { data: res } = await addIntoStock(this.addRuleForm);
                             if (res.success) {
                                 this.$message.warning("物资入库进入审核状态");
                                 await this.$router.push("/business/product/in-stocks");
@@ -525,9 +529,7 @@
              * 加载商品列表(可入库)
              */
             async loadTableData() {
-                const { data: res } = await this.$http.get("business/product/findProducts", {
-                    params: this.queryMap
-                });
+                const { data: res } = await findProducts(this.queryMap);
                 if (!res.success) {
                     return this.$message.error("获取商品列表失败");
                 } else {
@@ -550,9 +552,7 @@
              * 加载商品类别
              */
             async getCatetorys() {
-                const { data: res } = await this.$http.get(
-                    "business/productCategory/categoryTree"
-                );
+                const { data: res } = await categoryTree();
                 if (!res.success) {
                     return this.$message.error("获取商品类别失败");
                 } else {
@@ -562,7 +562,7 @@
             /**加载来源数据
              */
             async getSuppliers() {
-                const { data: res } = await this.$http.get("business/supplier/findAll");
+                const { data: res } = await findAll();
                 if (!res.success) {
                     return this.$message.error("获取来源数据失败:"+res.data.errorMsg);
                 } else {
@@ -674,7 +674,7 @@
             },
 
             _getJsonData() {
-                this.$http.get("/json/provinces.json").then(res => {
+                getProvinces().then(res => {
                     this.provinceList = [];
                     this.cityList = [];
                     this.originList = [];

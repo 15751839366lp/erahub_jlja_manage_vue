@@ -13,7 +13,7 @@
                         <span>用户信息</span>
                         <el-button style="float: right;" size="mini" plain loading type="primary">用户中心</el-button>
                         <el-button
-                                @click="getPage('https://github.com/zykzhangyukang/Xinguan')"
+                                @click="getPage('')"
                                 type="primary"
                                 plain
                                 style="float: right;margin-right: 10px;"
@@ -112,9 +112,9 @@
                         <el-divider>其他项目</el-divider>
                         <el-row :gutter="20">
                             <el-col :span="6"><div class="grid-content bg-purple"><el-button @click="getPage('http://116.85.25.106/backend/loginPage.do')">通用管理系统</el-button></div></el-col>
-                            <el-col :span="6"><div class="grid-content bg-purple"><el-button @click="getPage('http://www.zykcoderman.xyz/')">社区项目</el-button></div></el-col>
+                            <el-col :span="6"><div class="grid-content bg-purple"><el-button @click="getPage('')">社区项目</el-button></div></el-col>
                             <el-col :span="6"><div class="grid-content bg-purple"><el-button @click="getPage('http://116.85.25.106')">商城项目</el-button></div></el-col>
-                            <el-col :span="6"><div class="grid-content bg-purple"><el-button @click="getPage('https://github.com/zykzhangyukang')">Githhub</el-button></div></el-col>
+                            <el-col :span="6"><div class="grid-content bg-purple"><el-button @click="getPage('')">Githhub</el-button></div></el-col>
                         </el-row>
                         <el-divider></el-divider>
 
@@ -146,43 +146,6 @@
                 value: new Date(),
                 userInfo: {},
                 tableInfo: [],
-                musicList:[{
-                    "artist": "Eminem",
-                    "lrc": "",
-                    "title": "Airplanes",
-                    "src": "http://music.163.com/song/media/outer/url?id=26714821.mp3",
-                    "pic": "http://p4.music.126.net/H9HJibEzTL34aIT6nsqKsQ==/5682276092402519.jpg"
-                },{
-                    "artist": "Tinashe",
-                    "lrc": "",
-                    "title": "Story of Us",
-                    "src": "http://music.163.com/song/media/outer/url?id=1403428061.mp3",
-                    "pic": "http://p3.music.126.net/l2XttTpEa14IEZtUsQX1HA==/109951164486978461.jpg"
-                }, {
-                    "artist": "Chris Brown",
-                    "lrc": "",
-                    "title": "War For You",
-                    "src": "http://music.163.com/song/media/outer/url?id=30431534.mp3",
-                    "pic": "http://p3.music.126.net/YWkl1JXVKm7bOBAew72lGg==/109951163958771792.jpg"
-                }, {
-                    "artist": "Sarah Darling",
-                    "lrc": "",
-                    "title": "Jack of Hearts",
-                    "src": "http://music.163.com/song/media/outer/url?id=19132440.mp3",
-                    "pic": "http://p4.music.126.net/4q3kpn5VLo3x7hVWttj0QA==/109951164802108652.jpg"
-                }, {
-                    "artist": "Benjamin Ingrosso",
-                    "lrc": "",
-                    "title": "Costa Rica",
-                    "src": "http://music.163.com/song/media/outer/url?id=1372897252.mp3",
-                    "pic": "http://p4.music.126.net/mmm97zC81t73rToPFuXXnw==/109951164159882466.jpg"
-                }, {
-                    "artist": "Yo Trane",
-                    "lrc": "",
-                    "title": "Affection",
-                    "src": "http://music.163.com/song/media/outer/url?id=1393553542.mp3",
-                    "pic": "http://p4.music.126.net/T_vdbfQPO4HE4zVE_8rgCQ==/109951164389023010.jpg"
-                }]
             };
         },
         methods: {
@@ -201,7 +164,7 @@
                     username: username
                 });
                 if(!res.success){
-                    return this.$message.error("获取登入报表数据失败:" + res.msg);
+                    return this.$message.error("获取登入报表数据失败:" + res.data.errorMsg);
                 } else {
                     const $this = this;
                     this.xData = [];
@@ -300,8 +263,13 @@
 
         created() {
             this.userInfo = this.$store.state.userInfo;
-            const roles = this.userInfo.isAdmin ? "超级管理员" : this.userInfo.roles;
-            let rolesShow = this.userInfo.roles != null && this.userInfo.roles.length > 1  ? this.userInfo.roles[0] + "  ..." : this.userInfo.roles;
+            let rolesShow = null;
+            if(this.userInfo.isAdmin){
+                rolesShow = this.userInfo.isAdmin ? "超级管理员" : this.userInfo.roles;
+            }else{
+                rolesShow = this.userInfo.roles != null && this.userInfo.roles.length > 1  ? this.userInfo.roles[0] + "  ..." : this.userInfo.roles;
+            }
+
             this.tableInfo.push({
                 username: this.userInfo.username,
                 nickname: this.userInfo.nickname,
