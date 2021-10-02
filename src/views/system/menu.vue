@@ -226,7 +226,7 @@
             this.getMenuTree();
             setTimeout(() => {
                 this.loading = false;
-            }, 500);
+            }, 300);
         },
         methods: {
 
@@ -244,7 +244,7 @@
                         const a = document.createElement("a");
                         document.body.appendChild(a);
                         a.href = url;
-                        a.download = "菜单列表.xls";
+                        a.download = "菜单列表.xlsx";
                         a.click();
                         window.URL.revokeObjectURL(url);
                     });

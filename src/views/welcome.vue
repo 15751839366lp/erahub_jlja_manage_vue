@@ -24,7 +24,7 @@
                         <el-avatar
                                 shape="square"
                                 :size="80"
-                                :src="userInfo.avatar"
+                                :src="require('../assets/test03.jpg')"
                                 style="float:left;"
                                 :key="1"
                         ></el-avatar>

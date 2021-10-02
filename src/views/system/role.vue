@@ -215,7 +215,7 @@
                         const a = document.createElement("a");
                         document.body.appendChild(a);
                         a.href = url;
-                        a.download = "角色列表.xls";
+                        a.download = "角色列表.xlsx";
                         a.click();
                         window.URL.revokeObjectURL(url);
                     });

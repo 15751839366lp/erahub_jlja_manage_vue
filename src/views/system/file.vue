@@ -120,7 +120,7 @@
         data() {
             return {
                 //todo
-                uploadUrl: "/system/upload/image",
+                uploadUrl: "/api/system/upload/image",
                 centerDialogVisible: false,
                 loading: true,
                 total: 0,
@@ -182,7 +182,7 @@
                 } else {
                     const $this = this;
                     this.total = res.data.total;
-                    this.list = res.data.list;
+                    this.list = res.data.records;
                     this.srcList = [];
                     this.list.forEach(function (item) {
                         $this.srcList.push('' + item.path);
@@ -217,7 +217,7 @@
             this.ageImageList();
             setTimeout(() => {
                 this.loading = false;
-            }, 500);
+            }, 300);
         }
     };
 </script>

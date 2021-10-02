@@ -1,9 +1,10 @@
 import axios from 'axios'
 import {Message, MessageBox } from 'element-ui';
+import router from '../router';
 
 //创建axios的一个实例
 var service = axios.create({
-    baseURL: "/api", //接口统一域名
+    baseURL: process.env.NODE_ENV==='production' ? process.env.VUE_APP_API_URL : "/api",//接口统一域名
     timeout: 6000, //设置超时
 })
 
@@ -28,6 +29,10 @@ service.interceptors.request.use((config) => {
 //响应拦截器
 service.interceptors.response.use((response) => {
 
+    if(response.data.data != null && response.data.data.errorMsg != null && response.data.data.errorMsg != undefined && response.data.data.errorMsg == "用户未认证"){
+        LocalStorage.clearAll();
+        sessionStorage.clear();
+    }
     //响应成功
     return response;
 }, (error) => {

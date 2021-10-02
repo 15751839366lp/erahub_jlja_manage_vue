@@ -429,30 +429,30 @@
                 addFormRules: {
                     username: [
                         {required: true, message: "请输入用户名", trigger: "blur"},
-                        {min: 3, max: 10, message: "长度在 3 到 10 个字符", trigger: "blur"}
+                        {min: 3, max: 20, message: "长度在 3 到 20 个字符", trigger: "blur"}
                     ],
                     password: [
                         {required: true, message: "请输入密码", trigger: "blur"},
-                        {min: 3, max: 12, message: "长度在 3 到 12 个字符", trigger: "blur"}
+                        {min: 3, max: 20, message: "长度在 3 到 20 个字符", trigger: "blur"}
                     ],
                     departmentId: [
                         {required: true, message: "请选择部门", trigger: "blur"}
                     ],
                     sex: [{required: true, message: "请选择性别", trigger: "blur"}],
-                    birth: [{required: true, message: "请填写出生日期", trigger: "blur"}],
-                    email: [{required: true, validator: checkEmail, trigger: "blur"}],
-                    phoneNumber: [
-                        {
-                            required: true,
-                            message: "请输入联系方式",
-                            validator: checkPhone,
-                            trigger: "blur"
-                        }
-                    ],
-                    nickname: [
-                        {required: true, message: "请输入昵称", trigger: "blur"},
-                        {min: 5, max: 10, message: "长度在 5 到 10 个字符", trigger: "blur"}
-                    ]
+                    // birth: [{required: true, message: "请填写出生日期", trigger: "blur"}],
+                    // email: [{required: true, validator: checkEmail, trigger: "blur"}],
+                    // phoneNumber: [
+                    //     {
+                    //         required: true,
+                    //         message: "请输入联系方式",
+                    //         validator: checkPhone,
+                    //         trigger: "blur"
+                    //     }
+                    // ],
+                    // nickname: [
+                    //     {required: true, message: "请输入昵称", trigger: "blur"},
+                    //     {min: 5, max: 10, message: "长度在 5 到 10 个字符", trigger: "blur"}
+                    // ]
                 }, //添加表单验证规则
                 roles: [], //角色
                 value: [], //用户拥有的角色
@@ -489,7 +489,7 @@
                     const a = document.createElement("a");
                     document.body.appendChild(a);
                     a.href = url;
-                    a.download = "用户列表.xls";
+                    a.download = "用户列表.xlsx";
                     a.click();
                     window.URL.revokeObjectURL(url);
                 });

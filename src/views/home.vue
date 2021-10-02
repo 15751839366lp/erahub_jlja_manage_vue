@@ -13,7 +13,7 @@
             </div>
             <el-dropdown>
                 <div class="block">
-                    <el-avatar :size="50" :src="this.userInfo.avatar" style="cursor: pointer;"></el-avatar>
+                    <el-avatar :size="50" :src="require('../assets/test03.jpg')" style="cursor: pointer;"></el-avatar>
                 </div>
                 <el-dropdown-menu slot="dropdown" trigger="click">
                     <el-dropdown-item>
@@ -104,10 +104,17 @@
                         });
                     });
                     if (res === "confirm") {
+                        this.$store.commit("component/clearTags");
+                        this.$store.commit("clearUserInfo");
                         LocalStorage.clearAll();
+                        sessionStorage.clear();
                         await this.$router.push("/login");
                     }
                 } else {
+                    this.$store.commit("component/clearTags");
+                    this.$store.commit("clearUserInfo");
+                    LocalStorage.clearAll();
+                    sessionStorage.clear();
                     await this.$router.push("/login");
                 }
 
@@ -125,7 +132,6 @@
                 const {data: res} = await findMenu();
                 if (!res.success) {
                     this.$message.error("获取菜单失败:" + res.data.errorMsg)
-                    await this.logout(false);
                 }
                 this.menuList = res.data;
             },
@@ -134,6 +140,7 @@
              */
             async getUserInfo() {
                 const {data: res} = await info();
+
                 if (!res.success) {
                     return this.$message.error("获取用户信息失败:" + res.data.errorMsg);
                 } else {

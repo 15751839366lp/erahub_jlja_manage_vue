@@ -233,7 +233,7 @@
                         var a = document.createElement("a");
                         document.body.appendChild(a);
                         a.href = url;
-                        a.download = "部门列表.xls";
+                        a.download = "部门列表.xlsx";
                         a.click();
                         window.URL.revokeObjectURL(url);
                     });
@@ -376,7 +376,7 @@
             this.getDepartmentList();
             setTimeout(() => {
                 this.loading = false;
-            }, 500);
+            }, 300);
         }
     };
 </script>
