@@ -23,7 +23,7 @@ export function add(data) {
     });
 }
 
-export function edit(url) {
+export function editRole(url) {
     return service.request({
         url: url,
         method: 'get',

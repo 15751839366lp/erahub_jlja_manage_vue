@@ -23,7 +23,8 @@
                                     icon="el-icon-plus"
                                     style="margin-left:20px;"
                                     @click="openParentAdd"
-                            >父级</el-button>
+                            >父级
+                            </el-button>
                         </div>
                     </el-col>
                     <el-col :span="2">
@@ -32,7 +33,8 @@
                                 style="margin-left:20px;"
                                 icon="el-icon-download"
                                 @click="downExcel"
-                        >导出</el-button>
+                        >导出
+                        </el-button>
                     </el-col>
 
                 </el-row>
@@ -50,12 +52,12 @@
                         :props="defaultProps"
                         highlight-current
                         :filter-node-method="filterNode"
-                        ref="tree"
+                        ref="treeRef"
                 ></el-tree>
             </div>
         </el-card>
         <!-- 节点新增弹出框 -->
-        <el-dialog :title="addTitle" :visible.sync="addDialogVisible" @close="addClose" width="50%">
+        <el-dialog :title="addTitle" v-model="addDialogVisible" @close="addClose" width="50%">
       <span>
         <el-form
                 size="mini"
@@ -77,35 +79,31 @@
             <el-input v-model="addForm.icon"></el-input>
           </el-form-item>
           <el-form-item label="是否可用" prop="disabled">
-            <template>
               <el-radio v-model="addForm.disabled" label="false">可用</el-radio>
               <el-radio v-model="addForm.disabled" label="true">禁用</el-radio>
-            </template>
           </el-form-item>
           <el-form-item label="是否展开" prop="open">
-            <template>
               <el-radio v-model="addForm.open" label="1">展开</el-radio>
               <el-radio v-model="addForm.open" label="0">关闭</el-radio>
-            </template>
           </el-form-item>
           <el-form-item label="排序" prop="orderNum">
             <el-input-number v-model="addForm.orderNum" :min="1" :max="10" label="描述文字"></el-input-number>
           </el-form-item>
           <el-form-item label="类型" prop="type">
-            <template>
               <el-radio v-model="addForm.type" label="0">菜单</el-radio>
               <el-radio v-model="addForm.type" label="1">按钮</el-radio>
-            </template>
           </el-form-item>
         </el-form>
       </span>
-            <span slot="footer" class="dialog-footer">
+            <template #footer>
+            <span class="dialog-footer">
         <el-button @click="addDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="addNode" :loading="btnLoading" :disabled="btnDisabled">确 定</el-button>
       </span>
+            </template>
         </el-dialog>
         <!-- 编辑节点弹出框 -->
-        <el-dialog :title="editTitle" :visible.sync="editlogVisible" width="50%" @close="editClose">
+        <el-dialog :title="editTitle" v-model="editlogVisible" width="50%" @close="editClose">
       <span>
         <el-form
                 size="mini"
@@ -127,29 +125,24 @@
             <el-input v-model="editForm.icon"></el-input>
           </el-form-item>
           <el-form-item label="是否可用" prop="disabled">
-            <template>
               <el-radio v-model="editForm.disabled" :label="false">可用</el-radio>
               <el-radio v-model="editForm.disabled" :label="true">禁用</el-radio>
-            </template>
           </el-form-item>
           <el-form-item label="是否展开" prop="open">
-            <template>
               <el-radio v-model="editForm.open" :label="1">展开</el-radio>
               <el-radio v-model="editForm.open" :label="0">关闭</el-radio>
-            </template>
           </el-form-item>
           <el-form-item label="排序" prop="orderNum">
             <el-input-number v-model="editForm.orderNum" :min="1" :max="10" label="描述文字"></el-input-number>
           </el-form-item>
           <el-form-item label="类型" prop="type">
-            <template>
               <el-radio v-model="editForm.type" :label="0">菜单</el-radio>
               <el-radio v-model="editForm.type" :label="1">按钮</el-radio>
-            </template>
           </el-form-item>
         </el-form>
       </span>
-            <span slot="footer" class="dialog-footer">
+            <template #footer>
+            <span class="dialog-footer">
         <el-button @click="editlogVisible = false">取 消</el-button>
         <el-button
                 type="primary"
@@ -158,179 +151,189 @@
                 :disabled="btnDisabled"
         >确 定</el-button>
       </span>
+            </template>
         </el-dialog>
     </div>
 </template>
 
 <script>
-    import {update,edit,tree,deleteMenu,add,excel} from '../../api/system/menu'
+    import {ref, reactive, computed, watch} from "vue";
+    import {ElMessage, ElLoading, ElNotification, ElMessageBox} from "element-plus";
+    import {update, editMenu, tree, deleteMenu, add, excel} from '../../api/system/menu'
 
     let id = 1000;
 
     export default {
-        watch: {
-            filterText(val) {
-                this.$refs.tree.filter(val);
-            }
-        },
+        setup() {
+            const data = ref([]);
 
-        data() {
-            const data = [];
+            const btnLoading = ref(false)
+            const btnDisabled = ref(false)
+            const loading = ref(true)
+            const open = ref([])  //展开节点
+            const filterText = ref("") //节点过滤文本
+            const addDialogVisible = ref(false) //新增节点弹出框
+            const editlogVisible = ref(false) //编辑节点弹出框
+            const addTitle = ref("")
+            const editTitle = ref("")
+            const addForm = ref({
+                parentId: "",
+                menuName: "",
+                url: "",
+                type: "",
+                orderNum: "",
+                disabled: "",
+                open: "",
+                perms: ""
+            }) //添加请求表单数据
+            const editForm = ref(null) //编辑节点表单数据
+            const addFormRules = ref({
+                menuName: [
+                    {required: true, message: "节点名称不能为空", trigger: "blur"},
+                    {min: 3, max: 10, message: "长度在 3 到 10 个字符", trigger: "blur"}
+                ],
+                disabled: [
+                    {required: true, message: "节点状态不能为空", trigger: "blur"}
+                ],
 
-            return {
-                btnLoading: false,
-                btnDisabled: false,
-                loading: true,
-                open: [], //展开节点
-                filterText: "", //节点过滤文本
-                addDialogVisible: false, //新增节点弹出框
-                editlogVisible: false, //编辑节点弹出框
-                addTitle: "",
-                editTitle: "",
-                addForm: {
-                    parentId: "",
-                    menuName: "",
-                    url: "",
-                    type: "",
-                    orderNum: "",
-                    disabled: "",
-                    open: "",
-                    perms: ""
-                }, //添加请求表单数据
-                editForm: {}, //编辑节点表单数据
-                addFormRules: {
-                    menuName: [
-                        { required: true, message: "节点名称不能为空", trigger: "blur" },
-                        { min: 3, max: 10, message: "长度在 3 到 10 个字符", trigger: "blur" }
-                    ],
-                    disabled: [
-                        { required: true, message: "节点状态不能为空", trigger: "blur" }
-                    ],
+                orderNum: [
+                    {required: true, message: "排序不能为空", trigger: "blur"}
+                ],
+                type: [{required: true, message: "类型不能为空", trigger: "blur"}],
+                open: [{required: true, message: "是否展开不能为空", trigger: "blur"}]
+            }) //添加表单验证规则
+            const pNode = ref(null) //父节点
+            const treeData = computed(() => {
+                JSON.parse(JSON.stringify(data.value))
+            })
 
-                    orderNum: [
-                        { required: true, message: "排序不能为空", trigger: "blur" }
-                    ],
-                    type: [{ required: true, message: "类型不能为空", trigger: "blur" }],
-                    open: [{ required: true, message: "是否展开不能为空", trigger: "blur" }]
-                }, //添加表单验证规则
-                pNode: {}, //父节点
-                data: JSON.parse(JSON.stringify(data)),
+            const defaultProps = reactive({
+                children: "children",
+                label: "menuName"
+            })
 
-                defaultProps: {
-                    children: "children",
-                    label: "menuName"
-                }
-            };
-        },
-        created() {
-            this.getMenuTree();
-            setTimeout(() => {
-                this.loading = false;
-            }, 300);
-        },
-        methods: {
+            const treeRef = ref(null)
+            const editFormRef = ref(null)
+            const addFormRef = ref(null)
+
+
+            watch(filterText, (newVal, oldVal) => {
+                treeRef.value.filter(newVal);
+            })
 
             /**
              * 加载菜单表格
              */
-            downExcel() {
-                var $this = this;
-                const res = excel().then(res => {
-                        if(res.headers['content-type']==='application/json'){
-                            return $this.$message.error("Subject does not have permission [menu:export]");
-                        }
-                        const data = res.data;
-                        let url = window.URL.createObjectURL(data); // 将二进制文件转化为可访问的url
-                        const a = document.createElement("a");
-                        document.body.appendChild(a);
-                        a.href = url;
-                        a.download = "菜单列表.xlsx";
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                    });
-            },
-
-
+            const downExcel = () => {
+                excel().then(res => {
+                    if (res.headers['content-type'] === 'application/json') {
+                        return ElMessage.error("Subject does not have permission [menu:export]");
+                    }
+                    const data = res.data;
+                    let url = window.URL.createObjectURL(data); // 将二进制文件转化为可访问的url
+                    const a = document.createElement("a");
+                    document.body.appendChild(a);
+                    a.href = url;
+                    a.download = "菜单列表.xlsx";
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                });
+            }
             //更新菜单
-            async updateMenu() {
-                this.$refs.editFormRef.validate(async valid => {
+            const updateMenu = () => {
+                editFormRef.value.validate(valid => {
                     if (!valid) {
                         return;
                     } else {
-                        this.btnLoading = true;
-                        this.btnDisabled = true;
-                        const { data: res } = await update(
-                            "system/menu/update/" + this.editForm.id,
-                            this.editForm
-                        );
-                        if (res.success) {
-                            this.$message({
-                                title: "成功",
-                                message: "节点信息更新",
-                                type: "success"
-                            });
-                            this.editForm = {};
-                            this.editlogVisible = false;
-                            await this.getMenuTree();
-                            this.btnLoading = false;
-                            this.btnDisabled = false;
-                        } else {
-                            this.btnLoading = false;
-                            this.btnDisabled = false;
-                            return this.$message.error("更新菜单失败"+res.data.errorMsg);
-                        }
+                        btnLoading.value = true;
+                        btnDisabled.value = true;
+                        update(
+                            "system/menu/update/" + editForm.value.id,
+                            editForm.value
+                        ).then((res) => {
+                            if (res.data.success) {
+                                ElNotification({
+                                    type: "success",
+                                    title: "成功",
+                                    message: "节点信息更新",
+                                });
+                                editForm.value = {};
+                                editlogVisible.value = false;
+                                getMenuTree();
+                                btnLoading.value = false;
+                                btnDisabled.value = false;
+                            } else {
+                                btnLoading.value = false;
+                                btnDisabled.value = false;
+                                return ElMessage.error("更新菜单失败" + res.data.data.errorMsg);
+                            }
+                        }).catch((res) => {
+                            btnLoading.value = false;
+                            btnDisabled.value = false;
+                            return ElMessage.error("更新菜单失败" + res.data.data.errorMsg);
+                        });
+
                     }
                 });
-            },
+            }
             //点击编辑节点
-            async edit(data) {
-                this.editTitle = "编辑：【" + data.menuName + "】";
-                const { data: res } = await edit("system/menu/edit/" + data.id);
-                if (res.success) {
-                    this.editForm = res.data;
-                    this.editlogVisible = true;
-                } else {
-                    return this.$message.error("节点编辑失败:" + res.data.errorMsg);
-                }
-            },
+            const edit = (data) => {
+                editTitle.value = "编辑：【" + data.menuName + "】";
+                editMenu("system/menu/edit/" + data.id).then((res) => {
+                    if (res.data.success) {
+                        editForm.value = res.data.data;
+                        editlogVisible.value = true;
+                    } else {
+                        return ElMessage.error("节点编辑失败:" + res.data.data.errorMsg);
+                    }
+                }).catch((res) => {
+                    return ElMessage.error("节点编辑失败" + res);
+                });
+
+            }
             //过滤节点
-            filterNode(value, data) {
+            const filterNode = (value, data) => {
                 if (!value) return true;
                 return data.menuName.indexOf(value) !== -1;
-            },
+            }
             //关闭添加
-            addClose() {
-                this.$refs.addFormRef.clearValidate();
-                this.addForm = {};
-            },
-            editClose() {
-                this.$refs.editFormRef.clearValidate();
-                this.editForm = {};
-            },
+            const addClose = () => {
+                addFormRef.value.clearValidate();
+                addForm.value = {};
+            }
+            const editClose = () => {
+                editFormRef.value.clearValidate();
+                editForm.value = {};
+            }
             //加载菜单树
-            async getMenuTree() {
-                const { data: res } = await tree();
-                if (res.success) {
-                    this.data = res.data.tree;
-                    this.open = res.data.open;
-                }
-            },
+            const getMenuTree = () => {
+                tree().then((res) => {
+                    if (res.data.success) {
+                        data.value = res.data.data.tree;
+                        open.value = res.data.data.open;
+                    } else {
+                        ElMessage.error("加载菜单树失败:" + res.data.data.errorMsg);
+                    }
+                }).catch((res) => {
+                    ElMessage.error("加载菜单树失败:" + res);
+                });
+            }
             //打开添加框
-            openAdd(data) {
-                this.addTitle = "添加节点 ：当前【" + data.menuName + "】";
-                this.addDialogVisible = true;
-                this.addForm.parentId = data.id;
-                this.pNode = data;
-            },
+            const openAdd = (data) => {
+                addTitle.value = "添加节点 ：当前【" + data.menuName + "】";
+                addDialogVisible.value = true;
+                addForm.value.parentId = data.id;
+                pNode.value = data;
+            }
             //添加最高父级节点
-            openParentAdd(data) {
-                this.addTitle = "添加第一父级";
-                this.addDialogVisible = true;
-                this.addForm.parentId = 0;
-            },
+            const openParentAdd = (data) => {
+                addTitle.value = "添加第一父级";
+                addDialogVisible.value = true;
+                addForm.value.parentId = 0;
+            }
             //点击删除按钮
-            async delNode(node, data) {
-                const res = await this.$confirm(
+            const delNode = (node, data) => {
+                ElMessageBox.confirm(
                     "此操作将永久删除该节点, 是否继续?",
                     "提示",
                     {
@@ -338,101 +341,185 @@
                         cancelButtonText: "取消",
                         type: "warning"
                     }
-                ).catch(() => {
-                    this.$message({
+                ).then((res) => {
+                    if (res === "confirm") {
+                        console.log(node);
+                        deleteMenu(
+                            "system/menu/delete/" + node.data.id
+                        ).then((res) => {
+                            if (res.data.success) {
+                                ElMessage.success("节点删除成功");
+                                getMenuTree();
+                            } else {
+                                ElMessage.error("节点删除失败:" + res.data.data.errorMsg);
+                            }
+                        }).catch((res) => {
+                            ElMessage.error("节点删除失败:" + res);
+                        });
+                    }
+                }).catch(() => {
+                    ElMessage({
                         type: "info",
                         message: "已取消删除"
                     });
                 });
-                if (res === "confirm") {
-                    console.log(node);
-                    const { data: res } = await deleteMenu(
-                        "system/menu/delete/" + node.data.id
-                    );
-                    if (res.success) {
-                        this.$message.success("节点删除成功");
-                        await this.getMenuTree();
-                    } else {
-                        this.$message.error("节点删除失败:" + res.data.errorMsg);
-                    }
-                }
-            },
+            }
             //发送添加节点请求
-            async addNode() {
-                this.$refs.addFormRef.validate(async valid => {
+            const addNode = () => {
+                addFormRef.value.validate(valid => {
                     if (!valid) {
                         return;
                     } else {
-                        this.btnLoading = true;
-                        this.btnDisabled = true;
-                        const { data: res } = await add(this.addForm);
-                        if (res.success) {
-                            this.$message.success("节点添加成功");
-                            this.addDialogVisible = false;
-                            await this.getMenuTree();
-                            this.btnLoading=false;
-                            this.btnDisabled = false;
-                        } else {
-                            this.$message.error("节点添加失败:"+res.data.errorMsg);
-                        }
-                        this.btnLoading=false;
-                        this.btnDisabled = false;
+                        btnLoading.value = true;
+                        btnDisabled.value = true;
+                        add(addForm.value).then((res) => {
+                            if (res.data.success) {
+                                ElMessage.success("节点添加成功");
+                                addDialogVisible.value = false;
+                                getMenuTree();
+                                btnLoading.value = false;
+                                btnDisabled.value = false;
+                            } else {
+                                ElMessage.error("节点添加失败:" + res.data.data.errorMsg);
+                            }
+                            btnLoading.value = false;
+                            btnDisabled.value = false;
+                        }).catch((res) => {
+                            btnLoading.value = false;
+                            btnDisabled.value = false;
+                            ElMessage.error("节点添加失败:" + res);
+                        });
+
                     }
                 });
-            },
-            //前端添加节点
-            append(data, newChild) {
-                //   var newChild = { id: 1231, label: "qqqqq", children: [] };
-                if (!data.children) {
-                    this.$set(data, "children", []);
-                }
-                data.children.push(newChild);
-            },
+            }
+            // //前端添加节点
+            // const append = (data, newChild) => {
+            //     //   var newChild = { id: 1231, label: "qqqqq", children: [] };
+            //     if (!data.children) {
+            //         this.$set(data, "children", []);
+            //     }
+            //     data.children.push(newChild);
+            // },
 
-            remove(node, data) {
-                const parent = node.parent;
-                const children = parent.data.children || parent.data;
-                const index = children.findIndex(d => d.id === data.id);
-                children.splice(index, 1);
-            },
+            // const remove = (node, data) => {
+            //     const parent = node.parent;
+            //     const children = parent.data.children || parent.data;
+            //     const index = children.findIndex(d => d.id === data.id);
+            //     children.splice(index, 1);
+            // },
 
-            renderContent(h, { node, data, store }) {
-                return (
-                    <span class="custom-tree-node">
-                        <span>
-                            <i class={data.icon}>
-                            </i>&nbsp;&nbsp;&nbsp;{node.label}
+            const renderContent = (h, {node, data, store}) => {
+                return h(
+                    'span',
+                    {
+                        class: 'custom-tree-node',
+                    },
+                    h(
+                        'span',
+                        null,
+                        h(
+                            'i',
                             {
-                                node.data.type == 0 ?  <el-tag style='margin-left:20px;'  effect='plain' size='mini'>菜单</el-tag>:
-                                <el-tag style='margin-left:20px;' type='warning' effect='plain' size='mini'>权限  [{node.data.perms}]</el-tag>
-                            }
-                        </span>
-                        <span>
-                            <el-button size="mini" type="text" on-click={() => {this.edit(data);return false;}}>
-                                <i class="el-icon-edit"></i>&nbsp;编辑
-                            </el-button>
-                            <el-button
-                                size="mini"
-                                type="text"
-                                on-click={() => {
-                                    this.openAdd(data);
-                                }}>
-                                <i class="el-icon-plus"></i>&nbsp;增加
-                            </el-button>
+                                class: data.icon
+                            },
+                            "   " + node.label,
+                            node.data.type == 0 ?
+                                h("span",{class: "el-tag el-tag--mini el-tag--plain",style: "margin-left: 20px;"},"菜单")
+                                :
+                                h("span",{class: "el-tag el-tag--warning el-tag--mini el-tag--plain",style: "margin-left: 20px;"},"权限  " + node.data.perms)
+                        ),
+                    ),
+                    h(
+                        'span',
+                        null,
+                        h(
+                            'button',
+                            {
+                                class: "el-button el-button--text el-button--mini",
+                                onClick: () => edit(data),
+                            },
+                            h(
+                                'i',
+                                {
+                                    class: "el-icon-edit",
+                                },
+                                ' 编辑'
+                            ),
+                        ),
+                        h(
+                            'button',
+                            {
+                                class: "el-button el-button--text el-button--mini",
+                                onClick: () => (openAdd(data)),
+                            },
+                            h(
+                                'i',
+                                {
+                                    class: "el-icon-plus",
+                                },
+                                ' 增加'
+                            ),
+                        ),
+                        h(
+                            'button',
+                            {
+                                class: "el-button el-button--text el-button--mini",
+                                onClick: () => delNode(node, data),
+                            },
+                            h(
+                                'i',
+                                {
+                                    class: "el-icon-delete",
+                                },
+                                ' 删除'
+                            ),
+                        ),
+                    )
+                )
+            };
 
-                            <el-button
-                                size="mini"
-                                type="text"
-                                on-click={() => this.delNode(node, data)}
-                            >
-                            <i class="el-icon-delete"></i>&nbsp;删除
-                            </el-button>
-                        </span>
-                    </span>
-                );
+            getMenuTree();
+            setTimeout(() => {
+                loading.value = false;
+            }, 300);
+
+            return {
+                data,
+                btnLoading,
+                btnDisabled,
+                loading,
+                open,
+                filterText,
+                addDialogVisible,
+                editlogVisible,
+                addTitle,
+                editTitle,
+                addForm,
+                editForm,
+                addFormRules,
+                pNode,
+                treeData,
+                defaultProps,
+                treeRef,
+                filterText,
+                editFormRef,
+                addFormRef,
+                downExcel,
+                updateMenu,
+                edit,
+                filterNode,
+                addClose,
+                editClose,
+                getMenuTree,
+                openAdd,
+                openParentAdd,
+                delNode,
+                addNode,
+                renderContent
             }
         }
-    };
+    }
 </script>
 
 <style>
@@ -445,3 +532,4 @@
         padding-right: 8px;
     }
 </style>
+

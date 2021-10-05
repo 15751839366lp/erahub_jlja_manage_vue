@@ -61,18 +61,18 @@
                     <el-input clearable @clear="searchUser" v-model="queryMap.nickname"
                               placeholder="请输入昵称查询"></el-input>
                 </el-form-item>
-<!--                <el-form-item label="状态">-->
-<!--                  <el-select-->
-<!--                    clearable-->
-<!--                    v-model="queryMap.isban"-->
-<!--                    @clear="searchUser"-->
-<!--                    placeholder="请选择用户状态"-->
-<!--                  >-->
-<!--                    <el-option label="全部" value=""></el-option>-->
-<!--                    <el-option label="禁用" value="1"></el-option>-->
-<!--                    <el-option label="正常" value="0"></el-option>-->
-<!--                  </el-select>-->
-<!--                </el-form-item>-->
+                <!--                <el-form-item label="状态">-->
+                <!--                  <el-select-->
+                <!--                    clearable-->
+                <!--                    v-model="queryMap.isban"-->
+                <!--                    @clear="searchUser"-->
+                <!--                    placeholder="请选择用户状态"-->
+                <!--                  >-->
+                <!--                    <el-option label="全部" value=""></el-option>-->
+                <!--                    <el-option label="禁用" value="1"></el-option>-->
+                <!--                    <el-option label="正常" value="0"></el-option>-->
+                <!--                  </el-select>-->
+                <!--                </el-form-item>-->
 
                 <el-form-item style="margin-left:50px;">
                     <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
@@ -80,7 +80,7 @@
                     <el-button
                             type="success"
                             icon="el-icon-plus"
-                            @click="addDialogVisible=true"
+                            @click="openAddDialog"
                             v-hasPermission="'user:add'"
                     >添加
                     </el-button>
@@ -94,7 +94,7 @@
                 <el-table-column label="#" prop="id" width="50"></el-table-column>
                 <el-table-column prop="username" label="用户名" width="110"></el-table-column>
                 <el-table-column prop="sex" :formatter="showSex" label="性别" width="100">
-                    <template slot-scope="scope">
+                    <template #default="scope">
                         <el-tag size="small" type="success" v-if="scope.row.sex===1">帅哥</el-tag>
                         <el-tag size="small" type="warning" v-else>美女</el-tag>
                     </template>
@@ -104,12 +104,12 @@
                 <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
                 <el-table-column prop="phoneNumber" label="电话" width="150"></el-table-column>
                 <el-table-column prop="isban" label="是否禁用" width="100">
-                    <template slot-scope="scope">
+                    <template #default="scope">
                         <el-switch v-model="scope.row.status" @change="changUserStatus(scope.row)"></el-switch>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作">
-                    <template slot-scope="scope">
+                    <template #default="scope">
                         <el-button v-hasPermission="'user:edit'" size="small" type="primary" icon="el-icon-edit-outline"
                                    @click="edit(scope.row.id)"></el-button>
                         <el-button v-hasPermission="'user:delete'" type="danger" size="small" icon="el-icon-delete"
@@ -125,7 +125,7 @@
                                     type="warning"
                                     size="small"
                                     icon="el-icon-s-tools"
-                                    @click="assignRoles(scope.row.id)"
+                                    @click="openAssignRoles(scope.row.id)"
                             ></el-button>
                         </el-tooltip>
                     </template>
@@ -138,7 +138,7 @@
                     background
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
-                    :current-page="queryMap.pageNo"
+                    :current-page="queryMap.pageNum"
                     :page-sizes="[5, 10, 30, 50]"
                     :page-size="queryMap.pageSize"
                     layout="total, sizes, prev, pager, next, jumper"
@@ -146,195 +146,197 @@
             ></el-pagination>
 
             <!-- 添加对话框 -->
-            <el-dialog title="添加用户" @close="closeDialog" :visible.sync="addDialogVisible" width="50%;">
-                <!-- 表单 -->
-                <span>
-          <el-form
-                  :model="addForm"
-                  :label-position="labelPosition"
-                  :rules="addFormRules"
-                  ref="addFormRef"
-                  label-width="80px"
-          >
-            <el-row>
-              <el-col :span="10">
-                <div class="grid-content bg-purple">
-                  <el-form-item label="用户名" prop="username">
-                    <el-input v-model="addForm.username"></el-input>
-                  </el-form-item>
-                </div>
-              </el-col>
-              <el-col :span="12">
-                <div class="grid-content bg-purple-light">
-                  <el-form-item label="部门" prop="departmentId">
-                    <el-select v-model="addForm.departmentId" placeholder="请选择所属部门">
-                      <el-option
-                              v-for="department in departments"
-                              :key="department.id"
-                              :label="department.name"
-                              :value="department.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </div>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="10">
-                <div class="grid-content bg-purple">
-                  <el-form-item label="昵称" prop="nickname">
-                    <el-input v-model="addForm.nickname"></el-input>
-                  </el-form-item>
-                </div>
-              </el-col>
-              <el-col :span="12">
-                <div class="grid-content bg-purple-light">
-                  <el-form-item label="性别" prop="sex">
-                    <el-radio-group v-model="addForm.sex">
-                      <el-radio :label="1">帅哥</el-radio>
-                      <el-radio :label="0">美女</el-radio>
-                    </el-radio-group>
-                  </el-form-item>
-                </div>
-              </el-col>
-            </el-row>
-            <el-form-item label="密码" prop="password">
-              <el-input v-model="addForm.password"></el-input>
-            </el-form-item>
-            <el-form-item label="邮箱" prop="email">
-              <el-input v-model="addForm.email"></el-input>
-            </el-form-item>
-            <el-form-item label="手机" prop="phoneNumber">
-              <el-input v-model="addForm.phoneNumber"></el-input>
-            </el-form-item>
-            <el-form-item prop="birth" label="生日">
-              <el-col :span="11">
-                <el-date-picker
-                        type="date"
-                        value-format="yyyy年MM月dd日"
-                        placeholder="选择出生日期"
-                        v-model="addForm.birth"
-                        style="width: 100%;"
-                ></el-date-picker>
-              </el-col>
-            </el-form-item>
-          </el-form>
-        </span>
-
-                <span slot="footer" class="dialog-footer">
-          <el-button @click="addDialogVisible = false">取 消</el-button>
-          <el-button
-                  type="primary"
-                  @click="addUser"
-                  :loading="btnLoading"
-                  :disabled="btnDisabled"
-          >确 定</el-button>
-        </span>
+            <el-dialog title="添加用户" @close="closeDialog" v-model="addDialogVisible">
+                        <!-- 表单 -->
+                        <span>
+                  <el-form
+                          :model="addForm"
+                          :label-position="labelPosition"
+                          :rules="addFormRules"
+                          ref="addFormRef"
+                          label-width="80px"
+                  >
+                    <el-row>
+                      <el-col :span="10">
+                        <div class="grid-content bg-purple">
+                          <el-form-item label="用户名" prop="username">
+                            <el-input v-model="addForm.username"></el-input>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                      <el-col :span="12">
+                        <div class="grid-content bg-purple-light">
+                          <el-form-item label="部门" prop="departmentId">
+                            <el-select v-model="addForm.departmentId" placeholder="请选择所属部门">
+                              <el-option
+                                      v-for="department in departments"
+                                      :key="department.id"
+                                      :label="department.name"
+                                      :value="department.id"
+                              ></el-option>
+                            </el-select>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                    </el-row>
+                    <el-row>
+                      <el-col :span="10">
+                        <div class="grid-content bg-purple">
+                          <el-form-item label="昵称" prop="nickname">
+                            <el-input v-model="addForm.nickname"></el-input>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                      <el-col :span="12">
+                        <div class="grid-content bg-purple-light">
+                          <el-form-item label="性别" prop="sex">
+                            <el-radio-group v-model="addForm.sex">
+                              <el-radio :label="1">帅哥</el-radio>
+                              <el-radio :label="0">美女</el-radio>
+                            </el-radio-group>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                    </el-row>
+                    <el-form-item label="密码" prop="password">
+                      <el-input v-model="addForm.password"></el-input>
+                    </el-form-item>
+                    <el-form-item label="邮箱" prop="email">
+                      <el-input v-model="addForm.email"></el-input>
+                    </el-form-item>
+                    <el-form-item label="手机" prop="phoneNumber">
+                      <el-input v-model="addForm.phoneNumber"></el-input>
+                    </el-form-item>
+                    <el-form-item prop="birth" label="生日">
+                      <el-col :span="11">
+                        <el-date-picker
+                                type="date"
+                                value-format="YYYY年MM月DD日"
+                                placeholder="选择出生日期"
+                                v-model="addForm.birth"
+                                style="width: 100%;"
+                        ></el-date-picker>
+                      </el-col>
+                    </el-form-item>
+                  </el-form>
+                </span>
+                <template #footer>
+                    <span class="dialog-footer">
+                        <el-button @click="addDialogVisible = false">取 消</el-button>
+                        <el-button
+                                type="primary"
+                                @click="addUser"
+                                :loading="btnLoading"
+                                :disabled="btnDisabled"
+                        >确 定</el-button>
+                    </span>
+                </template>
             </el-dialog>
             <!-- 修改对话框 -->
-            <el-dialog title="修改用户" :visible.sync="editDialogVisible" width="50%" @close="editClose">
-        <span>
-          <el-form
-                  :model="editForm"
-                  :label-position="labelPosition"
-                  :rules="addFormRules"
-                  ref="editFormRef"
-                  label-width="80px"
-          >
-            <el-row>
-              <el-col :span="10">
-                <div class="grid-content bg-purple">
-                  <el-form-item label="用户名" prop="username">
-                    <el-input v-model="editForm.username" :disabled="true"></el-input>
-                    <el-input
-                            type="hidden"
-                            v-model="editForm.id"
-                            :disabled="true"
-                            style="display:none;"
-                    ></el-input>
-                  </el-form-item>
-                </div>
-              </el-col>
-              <el-col :span="12">
-                <div class="grid-content bg-purple-light">
-                  <el-form-item label="部门" prop="departmentId">
-                    <el-select v-model="editForm.departmentId" placeholder="请选择所属部门">
-                      <el-option
-                              v-for="department in departments"
-                              :key="department.id"
-                              :label="department.name"
-                              :value="department.id"
-                      ></el-option>
-                    </el-select>
-                  </el-form-item>
-                </div>
-              </el-col>
-            </el-row>
+            <el-dialog title="修改用户" v-model="editDialogVisible" @close="editClose">
+                    <span>
+                      <el-form
+                              :model="editForm"
+                              :label-position="labelPosition"
+                              :rules="addFormRules"
+                              ref="editFormRef"
+                              label-width="80px"
+                      >
+                        <el-row>
+                          <el-col :span="10">
+                            <div class="grid-content bg-purple">
+                              <el-form-item label="用户名" prop="username">
+                                <el-input v-model="editForm.username" :disabled="true"></el-input>
+                                <el-input
+                                        type="hidden"
+                                        v-model="editForm.id"
+                                        :disabled="true"
+                                        style="display:none;"
+                                ></el-input>
+                              </el-form-item>
+                            </div>
+                          </el-col>
+                          <el-col :span="12">
+                            <div class="grid-content bg-purple-light">
+                              <el-form-item label="部门" prop="departmentId">
+                                <el-select v-model="editForm.departmentId" placeholder="请选择所属部门">
+                                  <el-option
+                                          v-for="department in departments"
+                                          :key="department.id"
+                                          :label="department.name"
+                                          :value="department.id"
+                                  ></el-option>
+                                </el-select>
+                              </el-form-item>
+                            </div>
+                          </el-col>
+                        </el-row>
 
-            <el-row>
-              <el-col :span="10">
-                <div class="grid-content bg-purple">
-                  <el-form-item label="昵称" prop="nickname">
-                    <el-input v-model="editForm.nickname"></el-input>
-                  </el-form-item>
-                </div>
-              </el-col>
-              <el-col :span="12">
-                <div class="grid-content bg-purple-light">
-                  <el-form-item label="性别" prop="sex">
-                    <el-radio-group v-model="editForm.sex">
-                      <el-radio :label="1">帅哥</el-radio>
-                      <el-radio :label="0">美女</el-radio>
-                    </el-radio-group>
-                  </el-form-item>
-                </div>
-              </el-col>
-            </el-row>
+                        <el-row>
+                          <el-col :span="10">
+                            <div class="grid-content bg-purple">
+                              <el-form-item label="昵称" prop="nickname">
+                                <el-input v-model="editForm.nickname"></el-input>
+                              </el-form-item>
+                            </div>
+                          </el-col>
+                          <el-col :span="12">
+                            <div class="grid-content bg-purple-light">
+                              <el-form-item label="性别" prop="sex">
+                                <el-radio-group v-model="editForm.sex">
+                                  <el-radio :label="1">帅哥</el-radio>
+                                  <el-radio :label="0">美女</el-radio>
+                                </el-radio-group>
+                              </el-form-item>
+                            </div>
+                          </el-col>
+                        </el-row>
 
-            <el-form-item label="邮箱" prop="email">
-              <el-input v-model="editForm.email"></el-input>
-            </el-form-item>
-            <el-form-item label="联系方式" prop="phoneNumber">
-              <el-input v-model="editForm.phoneNumber"></el-input>
-            </el-form-item>
-            <el-form-item prop="birth" label="生日">
-              <el-col :span="11">
-                <el-date-picker
-                        type="date"
-                        value-format="yyyy年MM月dd日"
-                        placeholder="选择出生日期"
-                        v-model="editForm.birth"
-                        style="width: 100%;"
-                ></el-date-picker>
-              </el-col>
-            </el-form-item>
-          </el-form>
-        </span>
-
-                <span slot="footer" class="dialog-footer">
-          <el-button @click="editDialogVisible = false">取 消</el-button>
-          <el-button
-                  type="primary"
-                  @click="updateUser"
-                  :loading="btnLoading"
-                  :disabled="btnDisabled"
-          >确 定</el-button>
-        </span>
+                        <el-form-item label="邮箱" prop="email">
+                          <el-input v-model="editForm.email"></el-input>
+                        </el-form-item>
+                        <el-form-item label="联系方式" prop="phoneNumber">
+                          <el-input v-model="editForm.phoneNumber"></el-input>
+                        </el-form-item>
+                        <el-form-item prop="birth" label="生日">
+                          <el-col :span="11">
+                            <el-date-picker
+                                    type="date"
+                                    value-format="YYYY年MM月DD日"
+                                    placeholder="选择出生日期"
+                                    v-model="editForm.birth"
+                                    style="width: 100%;"
+                            ></el-date-picker>
+                          </el-col>
+                        </el-form-item>
+                      </el-form>
+                    </span>
+                            <template #footer>
+                            <span class="dialog-footer">
+                      <el-button @click="editDialogVisible = false">取 消</el-button>
+                      <el-button
+                              type="primary"
+                              @click="updateUser"
+                              :loading="btnLoading"
+                              :disabled="btnDisabled"
+                      >确 定</el-button>
+                    </span>
+                            </template>
             </el-dialog>
             <!-- 分配角色对话框 -->
-            <el-dialog center title="分配角色" :visible.sync="assignDialogVisible" width="49%">
+            <el-dialog center title="分配角色" v-model="assignDialogVisible">
         <span>
-          <template>
             <el-transfer
                     filterable
                     :titles="['未拥有','已拥有']"
                     :button-texts="['到左边', '到右边']"
                     v-model="value"
                     :data="roles"
+                    style="text-align: left; display: inline-block"
             ></el-transfer>
-          </template>
         </span>
-                <span slot="footer" class="dialog-footer">
+                <template #footer>
+                <span class="dialog-footer">
           <el-button @click="assignDialogVisible = false" class="el-icon-close">取消分配</el-button>
           <el-button
                   v-hasPermission="'user:assign'"
@@ -345,142 +347,153 @@
                   :disabled="btnDisabled"
           >确定分配</el-button>
         </span>
+                </template>
             </el-dialog>
         </el-card>
     </div>
 </template>
 <script>
-    import axios from "axios";
+
+    import {ref, reactive } from "vue";
+    import {ElMessage, ElLoading, ElNotification, ElMessageBox} from "element-plus";
     import {
-        roles,
+        getRoles,
         assignRoles,
         findUserList,
         deleteUser,
         add,
         update,
-        edit,
+        editUser,
         updateStatus,
         findAll,
         excel
     } from '../../api/system/user'
 
     export default {
-        data() {
-            const checkEmail = (rule, value, callback) => {
-                const mailReg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
-                if (!value) {
-                    return callback(new Error("邮箱不能为空"));
-                }
-                setTimeout(() => {
-                    if (mailReg.test(value)) {
-                        callback();
-                    } else {
-                        callback(new Error("请输入正确的邮箱格式"));
-                    }
-                }, 100);
-            };
-            const checkPhone = (rule, value, callback) => {
-                const phoneReg = /^1[34578]\d{9}$$/;
-                if (!value) {
-                    return callback(new Error("电话号码不能为空"));
-                }
-                setTimeout(() => {
-                    if (!Number.isInteger(+value)) {
-                        callback(new Error("请输入数字值"));
-                    } else {
-                        if (phoneReg.test(value)) {
-                            callback();
-                        } else {
-                            callback(new Error("电话号码格式不正确"));
-                        }
-                    }
-                }, 100);
-            };
-            return {
-                btnLoading: false,
-                btnDisabled: false,
-                departments: [],
-                loading: true,
-                total: 0,
-                addDialogVisible: false, //添加对话框,
-                editDialogVisible: false, //修改对话框
-                assignDialogVisible: false, //分配角色对话框
-                labelPosition: "right", //lable对齐方式
-                //查询对象
-                queryMap: {
-                    pageNum: 1,
-                    pageSize: 10,
-                    username: "",
-                    sex: "",
-                    nickname: ""
-                },
-                userList: [],
+        setup() {
+            let btnLoading = ref(false)
+            let btnDisabled = ref(false)
+            let departments = ref([])
+            let loading = ref(true)
+            let total = ref(0)
+            let addDialogVisible = ref(false) //添加对话框,
+            let editDialogVisible = ref(false) //修改对话框
+            let assignDialogVisible = ref(false) //分配角色对话框
+            let labelPosition = ref("right") //lable对齐方式
+            //查询对象
+            let queryMap = reactive({
+                pageNum: 1,
+                pageSize: 10,
+                username: "",
+                sex: "",
+                nickname: ""
+            })
+            let userList = ref([])
 
-                addForm: {
-                    username: "",
-                    nickname: "",
-                    password: "",
-                    email: "",
-                    phoneNumber: "",
-                    sex: "",
-                    birth: ""
-                }, //添加表单
-                editForm: {}, //更新表单
-                addFormRules: {
-                    username: [
-                        {required: true, message: "请输入用户名", trigger: "blur"},
-                        {min: 3, max: 20, message: "长度在 3 到 20 个字符", trigger: "blur"}
-                    ],
-                    password: [
-                        {required: true, message: "请输入密码", trigger: "blur"},
-                        {min: 3, max: 20, message: "长度在 3 到 20 个字符", trigger: "blur"}
-                    ],
-                    departmentId: [
-                        {required: true, message: "请选择部门", trigger: "blur"}
-                    ],
-                    sex: [{required: true, message: "请选择性别", trigger: "blur"}],
-                    // birth: [{required: true, message: "请填写出生日期", trigger: "blur"}],
-                    // email: [{required: true, validator: checkEmail, trigger: "blur"}],
-                    // phoneNumber: [
-                    //     {
-                    //         required: true,
-                    //         message: "请输入联系方式",
-                    //         validator: checkPhone,
-                    //         trigger: "blur"
-                    //     }
-                    // ],
-                    // nickname: [
-                    //     {required: true, message: "请输入昵称", trigger: "blur"},
-                    //     {min: 5, max: 10, message: "长度在 5 到 10 个字符", trigger: "blur"}
-                    // ]
-                }, //添加表单验证规则
-                roles: [], //角色
-                value: [], //用户拥有的角色
-                uid: ""
-            };
-        },
-        methods: {
+            let addForm = ref({
+                username: "",
+                nickname: "",
+                password: "",
+                email: "",
+                phoneNumber: "",
+                sex: "",
+                birth: ""
+            }) //添加表单
+            let editForm = ref({
+                id: "",
+                departmentId: "",
+                username: "",
+                nickname: "",
+                password: "",
+                email: "",
+                phoneNumber: "",
+                sex: "",
+                birth: ""
+            }) //更新表单
+            const addFormRules = {
+                username: [
+                    {required: true, message: "请输入用户名", trigger: "blur"},
+                    {min: 3, max: 12, message: "长度在 3 到 12 个字符", trigger: "blur"}
+                ],
+                password: [
+                    {required: true, message: "请输入用户密码", trigger: "blur"},
+                    {min: 6, max: 15, message: "长度在 6 到 15 个字符", trigger: "blur"}
+                ],
+                departmentId: [
+                    {required: true, message: "请选择部门", trigger: "blur"}
+                ],
+                sex: [{required: true, message: "请选择性别", trigger: "blur"}],
+                birth: [{required: false, message: "请填写出生日期", trigger: "blur"}],
+                // email: [
+                //     {
+                //         required: false,
+                //         validator: (rule, value, callback) => {
+                //             const mailReg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+                //
+                //             setTimeout(() => {
+                //                 if (mailReg.test(value)) {
+                //                     callback();
+                //                 } else {
+                //                     callback(new Error("请输入正确的邮箱格式"));
+                //                 }
+                //             }, 100);
+                //         },
+                //         trigger: "blur"}
+                // ],
+                // phoneNumber: [
+                //     {
+                //         required: false,
+                //         message: "请输入联系方式",
+                //         validator: (rule, value, callback) => {
+                //             const phoneReg = /^1[34578]\d{9}$$/;
+                //
+                //             setTimeout(() => {
+                //                 if (!Number.isInteger(+value)) {
+                //                     callback(new Error("请输入数字值"));
+                //                 } else {
+                //                     if (phoneReg.test(value)) {
+                //                         callback();
+                //                     } else {
+                //                         callback(new Error("电话号码格式不正确"));
+                //                     }
+                //                 }
+                //             }, 100);
+                //         },
+                //         trigger: "blur"
+                //     }
+                // ],
+                nickname: [
+                    {required: false, message: "请输入昵称", trigger: "blur"},
+                    {min: 5, max: 10, message: "长度在 5 到 10 个字符", trigger: "blur"}
+                ]
+            } //添加表单验证规则
+            let roles = ref([]) //角色
+            let value = ref([]) //用户拥有的角色
+            let uid = ref("")
+
+            const addFormRef = ref(null);
+            const editFormRef = ref(null);
 
             /**
              * 重置
              */
-            reset() {
-                this.queryMap = {
-                    pageNum: 1,
-                    pageSize: 10,
-                    username: "",
-                    sex: "",
-                    nickname: ""
-                };
-            },
+            const reset = () => {
+                queryMap.pageNum = 1
+                queryMap.pageSize = 10
+                queryMap.username = ""
+                queryMap.sex = ""
+                queryMap.nickname = ""
+                queryMap.email = ""
+                queryMap.departmentId = null
+                getUserList();
+            }
             /**
              * 加载用户表格
              */
-            downExcel() {
-                const $this = this;
-                const res = excel().then(res => {
+            const downExcel = () => {
+                excel().then(res => {
                     if (res.headers["content-type"] === "application/json") {
-                        return $this.$message.error(
+                        return ElMessage.error(
                             "Subject does not have permission [user:export]"
                         );
                     }
@@ -493,70 +506,85 @@
                     a.click();
                     window.URL.revokeObjectURL(url);
                 });
-            },
+            }
             /**
              * 弹出用户分配角色
              */
-            async assignRoles(id) {
-                const loading = this.$loading({
+            const openAssignRoles = (id) => {
+                const elLoading = ElLoading.service({
                     lock: true,
                     text: "Loading",
                     spinner: "el-icon-loading",
                     background: "rgba(0, 0, 0, 0.7)"
                 });
-                const {data: res} = await roles("/system/user/" + id + "/roles");
-                if (res.success) {
-                    this.roles = res.data.roles;
-                    this.value = res.data.values;
-                    this.uid = id;
-                    setTimeout(() => {
-                        loading.close();
-                        this.assignDialogVisible = true;
-                    }, 400);
-                } else {
-                    this.$message.error("分配角色失败:" + res.data.errorMsg);
-                }
-            },
+                getRoles("/system/user/" + id + "/roles").then((res) => {
+                    if (res.data.success) {
+                        roles.value = res.data.data.roles;
+                        value.value = res.data.data.values;
+                        uid.value = id;
+                        setTimeout(() => {
+                            elLoading.close();
+                            assignDialogVisible.value = true;
+                        }, 400);
+                    } else {
+                        ElMessage.error("分配角色失败:" + res.data.data.errorMsg);
+                    }
+                }).catch((res) => {
+                    ElMessage.error("分配角色失败:" + res);
+                });
+
+            }
             /**
              * 确定分配角色
              */
-            async doAssignRoles() {
-                this.assignDialogVisible = true;
-                this.btnLoading = true;
-                this.btnDisabled = true;
-                const {data: res} = await assignRoles(
-                    "system/user/" + this.uid + "/assignRoles",
-                    this.value
-                );
-                if (res.success) {
-                    this.$notify.success({
-                        title: '操作成功',
-                        message: '用户分配角色成功',
-                    });
-                } else {
-                    this.$message.error("分配角色失败:" + res.data.errorMsg);
-                }
-                this.assignDialogVisible = false;
-                this.btnLoading = false;
-                this.btnDisabled = false;
-            },
+            const doAssignRoles = () => {
+                assignDialogVisible.value = true;
+                btnLoading.value = true;
+                btnDisabled.value = true;
+                assignRoles(
+                    "system/user/" + uid.value + "/assignRoles",
+                    value.value
+                ).then((res) => {
+                    if (res.data.success) {
+                        ElNotification({
+                            type: "success",
+                            title: '操作成功',
+                            message: '用户分配角色成功',
+                        });
+                    } else {
+                        ElMessage.error("分配角色失败:" + res.data.data.errorMsg);
+                    }
+                    assignDialogVisible.value = false;
+                    btnLoading.value = false;
+                    btnDisabled.value = false;
+                }).catch((res) => {
+                    ElMessage.error("分配角色失败:" + res);
+                    assignDialogVisible.value = false;
+                    btnLoading.value = false;
+                    btnDisabled.value = false;
+                });
+
+            }
             /**
              * 加载用户列表
              */
-            async getUserList() {
-                const {data: res} = await findUserList(this.queryMap);
-                if (!res.success) {
-                    return this.$message.error("获取用户列表失败:" + res.data.errorMsg);
-                }
-                this.total = res.data.total;
-                this.userList = res.data.rows;
-            },
+            const getUserList = () => {
+                findUserList(queryMap).then((res) => {
+                    if (!res.data.success) {
+                        return ElMessage.error("获取用户列表失败:" + res.data.data.errorMsg);
+                    }
+                    total.value = res.data.data.total;
+                    userList.value = res.data.data.rows;
+                }).catch((res) => {
+                    ElMessage.error("加载用户列表 失败:" + res);
+                });
+            }
 
             /**
              * 删除用户
              */
-            async del(id) {
-                const res = await this.$confirm(
+            const del = (id) => {
+                const res = ElMessageBox.confirm(
                     "此操作将永久删除该用户, 是否继续?",
                     "提示",
                     {
@@ -564,181 +592,256 @@
                         cancelButtonText: "取消",
                         type: "warning"
                     }
-                ).catch(() => {
-                    this.$message({
+                ).then((res) => {
+                    if (res === "confirm") {
+                        deleteUser("system/user/delete/" + id).then((res) => {
+                            console.log(res);
+                            if (res.data.success) {
+                                ElNotification({
+                                    type: "success",
+                                    title: '操作成功',
+                                    message: '用户删除成功',
+                                });
+                                getUserList();
+                                getDepartmets();
+                            } else {
+                                ElMessage.error(res.data.data.errorMsg);
+                            }
+                        }).catch((res) => {
+                            ElMessage.error("用户删除失败:" + res);
+                        });
+                    }
+                }).catch(() => {
+                    ElMessage({
                         type: "info",
                         message: "已取消删除"
                     });
                 });
-                if (res === "confirm") {
-                    const {data: res} = await deleteUser("system/user/delete/" + id);
-                    console.log(res);
-                    if (res.success) {
-                        this.$notify.success({
-                            title: '操作成功',
-                            message: '用户删除成功',
-                        });
-                        await this.getUserList();
-                        await this.getDepartmets();
-                    } else {
-                        this.$message.error(res.data.errorMsg);
-                    }
-                }
-            },
+            }
             /**
              * 添加用户
              */
-            async addUser() {
-                this.$refs.addFormRef.validate(async valid => {
+            const openAddDialog = () => {
+                addDialogVisible.value = true
+            }
+            const addUser = () => {
+                addFormRef.value.validate(valid => {
                     if (!valid) {
                         return;
                     } else {
-                        this.btnLoading = true;
-                        this.btnDisabled = true;
-                        const {data: res} = await add(this.addForm);
-                        if (res.success) {
-                            this.$notify.success({
-                                title: '操作成功',
-                                message: '用户添加成功',
-                            });
-                            this.addForm = {};
-                            await this.getUserList();
-                            await this.getDepartmets();
-                            this.btnLoading=false;
-                            this.btnDisabled = false;
-                        } else {
-                            return this.$message.error("用户添加失败:" + res.data.errorMsg);
-                        }
-                        this.addDialogVisible = false;
-                        this.btnDisabled = false;
-                        this.btnLoading = false;
+                        btnLoading.value = true;
+                        btnDisabled.value = true;
+                        add(addForm.value).then((res) => {
+                            if (res.data.success) {
+                                ElNotification({
+                                    type: "success",
+                                    title: '操作成功',
+                                    message: '用户添加成功',
+                                });
+                                addFormRef.value.resetFields();
+                                // Object.keys(addForm).forEach(key => delete addForm[key])
+                                getUserList();
+                                getDepartmets();
+                                btnLoading.value = false;
+                                btnDisabled.value = false;
+                            } else {
+                                return ElMessage.error("用户添加失败:" + res.data.data.errorMsg);
+                            }
+                            addDialogVisible.value = false;
+                            btnDisabled.value = false;
+                            btnLoading.value = false;
+                        }).catch((res) => {
+                            ElMessage.error("用户添加失败:" + res);
+                            addFormRef.value.resetFields();
+                            // Object.keys(addForm).forEach(key => delete addForm[key])
+                            addDialogVisible.value = false;
+                            btnDisabled.value = false;
+                            btnLoading.value = false;
+                        });
+                        ;
                     }
                 });
-            },
+            }
             /**
              * 更新用户
              */
-            async updateUser() {
-                this.$refs.editFormRef.validate(async valid => {
+            const updateUser = () => {
+                editFormRef.value.validate(valid => {
                     if (!valid) {
                         return;
                     } else {
-                        this.btnLoading = true;
-                        this.btnDisabled = true;
-                        const {data: res} = await update(
-                            "system/user/update/" + this.editForm.id,
-                            this.editForm
-                        );
-                        if (res.success) {
-                            this.$notify({
-                                title: "操作成功",
-                                message: "用户基本信息已更新",
-                                type: "success"
-                            });
-                            this.editForm = {};
-                            await this.getUserList();
-                            await this.getDepartmets();
-                            this.btnLoading=false;
-                            this.btnDisabled = false;
-                        } else {
-                            this.$message.error("用户信息更新失败:" + res.data.errorMsg);
-                        }
-                        this.editDialogVisible = false;
-                        this.btnLoading = false;
-                        this.btnDisabled = false;
+                        btnLoading.value = true;
+                        btnDisabled.value = true;
+                        update(
+                            "system/user/update/" + editForm.value.id,
+                            editForm.value
+                        ).then((res) => {
+                            if (res.data.success) {
+                                ElNotification({
+                                    title: "操作成功",
+                                    message: "用户基本信息已更新",
+                                    type: "success"
+                                });
+                                getUserList();
+                                getDepartmets();
+                                btnLoading.value = false;
+                                btnDisabled.value = false;
+                            } else {
+                                ElMessage.error("用户信息更新失败:" + res.data.data.errorMsg);
+                            }
+                            editFormRef.value.resetFields();
+                            editDialogVisible.value = false;
+                            btnLoading.value = false;
+                            btnDisabled.value = false;
+                        }).catch((res) => {
+                            ElMessage.error("用户信息更新失败:" + res);
+                            editFormRef.value.resetFields();
+                            editDialogVisible.value = false;
+                            btnLoading.value = false;
+                            btnDisabled.value = false;
+                        });
+
                     }
                 });
-            },
+            }
             /**
              * 搜索用户
              */
-            searchUser() {
-                this.queryMap.pageNum = 1;
-                this.getUserList();
-            },
+            const searchUser = () => {
+                queryMap.pageNum = 1;
+                getUserList();
+            }
             /**
              * 修改用户信息
              */
-            async edit(id) {
-                const {data: res} = await edit("system/user/edit/" + id);
-                if (res.success) {
-                    this.editForm = res.data;
-                    this.editDialogVisible = true;
-                } else {
-                    return this.$message.error("用户信息编辑失败:" + res.data.errorMsg);
-                }
-            },
+            const edit = (id) => {
+                editUser("system/user/edit/" + id).then((res) => {
+                    if (res.data.success) {
+                        editForm.value = res.data.data;
+                        editDialogVisible.value = true;
+                    } else {
+                        return ElMessage.error("用户信息编辑失败:" + res.data.data.errorMsg);
+                    }
+                }).catch((res) => {
+                    ElMessage.error("用户信息更新失败:" + res);
+                });
+            }
             /**
              *  改变页码
              */
-            handleSizeChange(newSize) {
-                this.queryMap.pageSize = newSize;
-                this.getUserList();
-            },
+            const handleSizeChange = (newSize) => {
+                queryMap.pageSize = newSize;
+                getUserList();
+            }
             /**
              * 翻页
              */
-            handleCurrentChange(current) {
-                this.queryMap.pageNum = current;
-                this.getUserList();
-            },
-
+            const handleCurrentChange = (current) => {
+                queryMap.pageNum = current;
+                getUserList();
+            }
             /**
              * 关闭添加弹出框
              */
-            closeDialog() {
-                this.$refs.addFormRef.clearValidate();
-                this.addForm.birth = "";
-                this.addForm = {};
-            },
+            const closeDialog = () => {
+                addFormRef.value.clearValidate();
+                addForm.value.birth = "";
+                addForm.value = {};
+            }
             /**
              * 关闭编辑弹出框
              */
-            editClose() {
-                this.$refs.editFormRef.clearValidate();
-                this.editForm = {};
-            },
+            const editClose = () => {
+                editFormRef.value.clearValidate();
+                editForm.value = {};
+            }
             /**
              * 禁用启用用户
              */
-            async changUserStatus(row) {
-                const {data: res} = await updateStatus(
+            const changUserStatus = (row) => {
+                updateStatus(
                     "system/user/updateStatus/" + row.id + "/" + row.status
-                );
-                if (!res.success) {
-                    this.$message.error("更新用户状态失败:" + res.data.errorMsg);
-                    row.status = !row.status;
-                } else {
-                    const message = row.status ? '用户状态已禁用' : '用户状态已启用';
-                    this.$notify.success({
-                        title: '操作成功',
-                        message: message,
-                    });
-                }
-            },
+                ).then((res) => {
+                    if (!res.data.success) {
+                        ElMessage.error("更新用户状态失败:" + res.data.data.errorMsg);
+                        row.status = !row.status;
+                    } else {
+                        const message = row.status ? '用户状态已禁用' : '用户状态已启用';
+                        ElNotification({
+                            type: "success",
+                            title: '操作成功',
+                            message: message,
+                        });
+                    }
+                }).catch((res) => {
+                    ElMessage.error("更新用户状态失败:" + res);
+                });
+            }
             /**
              * 加载所有部门
              */
-            async getDepartmets() {
-                const {data: res} = await findAll("system/department/findAll");
-                if (!res.success) {
-                    return this.$message.error("获取部门列表失败:" + res.data.errorMsg);
-                }
-                this.departments = res.data;
-            },
+            const getDepartmets = () => {
+                findAll().then((res) => {
+                    if (!res.data.success) {
+                        return ElMessage.error("获取部门列表失败:" + res.data.data.errorMsg);
+                    }
+                    departments.value = res.data.data;
+                }).catch((res) => {
+                    ElMessage.error("更新用户状态失败:" + res);
+                });
+            }
             /**
              * 显示用户性别
              */
-            showSex(row, column) {
+            const showSex = (row, column) => {
                 return row.sex === 1 ? "帅哥" : "美女";
-            },
-        },
-        created() {
-            this.getUserList();
-            this.getDepartmets();
+            }
+
+            getUserList();
+            getDepartmets();
             setTimeout(() => {
-                this.loading = false;
+                loading.value = false;
             }, 500);
+
+            return {
+                btnLoading,
+                btnDisabled,
+                departments,
+                loading,
+                total,
+                addDialogVisible,
+                editDialogVisible,
+                assignDialogVisible,
+                labelPosition,
+                queryMap,
+                userList,
+                addForm,
+                editForm,
+                addFormRules,
+                roles,
+                value,
+                uid,
+                addFormRef,
+                editFormRef,
+                reset,
+                downExcel,
+                openAssignRoles,
+                doAssignRoles,
+                getUserList,
+                del,
+                openAddDialog,
+                addUser,
+                updateUser,
+                searchUser,
+                edit,
+                handleSizeChange,
+                handleCurrentChange,
+                closeDialog,
+                editClose,
+                changUserStatus,
+                getDepartmets,
+                showSex
+            }
         }
     };
 </script>

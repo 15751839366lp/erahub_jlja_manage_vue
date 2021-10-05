@@ -1,28 +1,138 @@
 <template>
-    <div>
-        <template v-for="item in this.menuList">
-            <el-submenu :disabled="item.disabled" :index="item.id+''" v-if="item.children.length>0" :key="item.id+''">
-                <template slot="title" style="padding-left:10px">
+    <el-menu
+            class="el-menu-vertical-demo"
+            :collapse="isOpen"
+            :router="true"
+            active-text-color="#20a0ff"
+            :default-active="activePath"
+            background-color="#001529"
+            :collapse-transition="true"
+            text-color="rgba(255,255,255,0.7)"
+            unique-opened
+    >
+        <div>
+            <template v-for="item in menuList">
+                <el-submenu :disabled="item.disabled" :index="item.id+''" v-if="item.children.length>0" :key="item.id+''">
+                    <template #title style="padding-left:10px">
+                        <i :class="item.icon"></i>
+                        <span>{{ item.menuName}}</span>
+                    </template>
+                    <template v-for="subItem in item.children">
+                        <el-submenu :disabled="subItem.disabled" :index="subItem.id+''" v-if="subItem.children.length>0" :key="subItem.id+''">
+                            <template #title style="padding-left:10px">
+                                <i :class="subItem.icon"></i>
+                                <span>{{ subItem.menuName}}</span>
+                            </template>
+                            <template v-for="threeItem in subItem.children">
+                                <el-submenu :disabled="threeItem.disabled" :index="threeItem.id+''" v-if="threeItem.children.length>0" :key="threeItem.id+''">
+                                    <template #title style="padding-left:10px">
+                                        <i :class="threeItem.icon"></i>
+                                        <span>{{ threeItem.menuName}}</span>
+                                    </template>
+<!--                                    <MenuTree :menuList="item.children"></MenuTree>-->
+                                </el-submenu>
+                                <el-menu-item
+                                        v-else
+                                        :disabled="threeItem.disabled"
+                                        :index="threeItem.url+''"
+                                        :route="threeItem.url"
+                                        @click="savePath(threeItem.url)"
+                                        :key="threeItem.id+''"
+                                        style="padding-left: 50px;"
+                                >
+                                    <i :class="threeItem.icon"></i>
+                                    <span>{{threeItem.menuName}}</span>
+                                </el-menu-item>
+                            </template>
+                        </el-submenu>
+                        <el-menu-item
+                                v-else
+                                :disabled="subItem.disabled"
+                                :index="subItem.url+''"
+                                :route="subItem.url"
+                                @click="savePath(subItem.url)"
+                                :key="subItem.id+''"
+                                style="padding-left: 50px;"
+                        >
+                            <i :class="subItem.icon"></i>
+                            <span>{{subItem.menuName}}</span>
+                        </el-menu-item>
+                    </template>
+                </el-submenu>
+                <el-menu-item
+                        v-else
+                        :disabled="item.disabled"
+                        :index="item.url+''"
+                        :route="item.url"
+                        @click="savePath(item.url)"
+                        :key="item.id+''"
+                        style="padding-left: 50px;"
+                >
                     <i :class="item.icon"></i>
-                    <span slot="title">{{ item.menuName}}</span>
-                </template>
-                <MenuTree :menuList="item.children"></MenuTree>
-            </el-submenu>
-            <el-menu-item
-                    v-else
-                    :disabled="item.disabled"
-                    :index="item.url+''"
-                    :route="item.url"
-                    @click="savePath(item.url)"
-                    :key="item.id+''"
-                    style="padding-left: 50px;"
-            >
-                <i :class="item.icon"></i>
-                <span>{{item.menuName}}</span>
-            </el-menu-item>
-        </template>
-    </div>
+                    <span>{{item.menuName}}</span>
+                </el-menu-item>
+            </template>
+        </div>
+    </el-menu>
 </template>
+
+<script>
+    import {computed, ref} from "vue";
+    import {useRoute} from "vue-router";
+    import {createNamespacedHelpers, useStore} from 'vuex'
+    import {findMenu} from "../api/system/user";
+    import {ElMessage} from "element-plus";
+
+
+    export default {
+        name: "MenuTree", //模板名称
+        setup() {
+            const store = useStore();
+            const route = useRoute();
+
+            let menuList = ref([]);
+
+            const onRoutes = computed(() => {
+                return route.path;
+            });
+            let activePath = computed(() => route.path);
+            let isOpen = computed(() => store.state.component.collapse);
+
+            const savePath = (path) => {
+                window.sessionStorage.setItem("activePath", path);
+                activePath = path;
+            }
+
+            /**
+             加载菜单数据
+             */
+            const getMenuList = () => {
+                findMenu().then((res) => {
+                    if (!res.data.success) {
+                        ElMessage.error("获取菜单失败:" + res.data.data.errorMsg)
+                    }
+                    menuList.value = res.data.data;
+                    store.commit("component/setMenuList", menuList);
+                }).catch((res) => {
+                    ElMessage.error("获取菜单失败:" + res.data.data.errorMsg)
+                });
+
+            }
+            getMenuList();
+
+            return {
+                menuList,
+                onRoutes,
+                activePath,
+                isOpen,
+                getMenuList,
+                savePath,
+
+            };
+        }
+    };
+</script>
+
 <style>
     .el-menu--collapse span,
     .el-menu--collapse i.el-submenu__icon-arrow {
@@ -32,25 +142,8 @@
         visibility: hidden;
         display: inline-block;
     }
+    .el-menu-vertical-demo:not(.el-menu--collapse) {
+        width: 200px;
+        min-height: 400px;
+    }
 </style>
-<script>
-    export default {
-        name: "MenuTree", //模板名称
-        data() {
-            return {};
-        },
-        beforeMount() {
-        },
-        props: ["menuList", "tagList"],
-        methods: {
-            //保存激活路径
-            savePath(path) {
-                window.sessionStorage.setItem("activePath", path);
-                this.activePath = path;
-            },
-        },
-        created() {
-
-        }
-    };
-</script>

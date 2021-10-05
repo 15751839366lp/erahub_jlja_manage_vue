@@ -22,7 +22,7 @@ export function findMenu() {
     });
 }
 
-export function roles(url) {
+export function getRoles(url) {
     return service.request({
         url: url,
         method: 'get'
@@ -68,7 +68,7 @@ export function update(url,data) {
     });
 }
 
-export function edit(url) {
+export function editUser(url) {
     return service.request({
         url: url,
         method: 'get',

@@ -1,6 +1,6 @@
 import axios from 'axios'
-import {Message, MessageBox } from 'element-ui';
-import router from '../router';
+import {ElMessage} from 'element-plus';
+import {getToken} from '../utils/auth'
 
 //创建axios的一个实例
 var service = axios.create({
@@ -12,7 +12,7 @@ var service = axios.create({
 service.interceptors.request.use((config) => {
 
     // 每次发送请求之前判断是否存在token，如果存在，则统一在http请求的header都加上token，不用每次请求都手动添加了
-    config.headers.Authorization = LocalStorage.get(LOCAL_KEY_XINGUAN_ACCESS_TOKEN);
+    config.headers.Authorization = getToken();
     // if (token){
     //     LocalStorage.set(LOCAL_KEY_XINGUAN_ACCESS_TOKEN,)
     // }
@@ -30,8 +30,8 @@ service.interceptors.request.use((config) => {
 service.interceptors.response.use((response) => {
 
     if(response.data.data != null && response.data.data.errorMsg != null && response.data.data.errorMsg != undefined && response.data.data.errorMsg == "用户未认证"){
-        LocalStorage.clearAll();
-        sessionStorage.clear();
+        window.localStorage.clear();
+        window.sessionStorage.clear();
     }
     //响应成功
     return response;
@@ -77,11 +77,7 @@ service.interceptors.response.use((response) => {
                     message = '请求失败'
             }
         }
-        Message({
-            message: message,
-            type: 'error',
-            duration: 5 * 1000
-        })
+        ElMessage.error(message);
         return Promise.reject(error);
     }
     return Promise.reject(error);

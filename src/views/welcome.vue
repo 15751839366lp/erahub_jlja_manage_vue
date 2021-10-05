@@ -9,25 +9,31 @@
             <el-col :span="13">
                 <!-- 用户信息表格 -->
                 <el-card class="box-card">
-                    <div slot="header" class="clearfix">
-                        <span>用户信息</span>
-                        <el-button style="float: right;" size="mini" plain loading type="primary">用户中心</el-button>
-                        <el-button
-                                @click="getPage('')"
-                                type="primary"
-                                plain
-                                style="float: right;margin-right: 10px;"
-                                size="mini"
-                        >获取源码</el-button>
-                    </div>
+                    <template #header>
+                        <div class="clearfix">
+                            <span>用户信息</span>
+                            <el-button style="float: right;" size="mini" plain loading type="primary">用户中心</el-button>
+                            <el-button
+                                    @click="getPage('')"
+                                    type="primary"
+                                    plain
+                                    style="float: right;margin-right: 10px;"
+                                    size="mini"
+                            >获取源码
+                            </el-button>
+                        </div>
+                    </template>
                     <el-tooltip class="item" effect="dark" content="换头像功能还未实现" placement="top-start">
-                        <el-avatar
-                                shape="square"
-                                :size="80"
-                                :src="require('../assets/test03.jpg')"
-                                style="float:left;"
-                                :key="1"
-                        ></el-avatar>
+                        <div class="user-avator">
+                            <img src="../assets/test03.jpg"/>
+                        </div>
+<!--                        <el-avatar-->
+<!--                                shape="square"-->
+<!--                                :size="80"-->
+<!--                                :src="import('../assets/test03.jpg').default"-->
+<!--                                style="float:left;"-->
+<!--                                :key="1"-->
+<!--                        ></el-avatar>-->
                     </el-tooltip>
                     <div class="right" style="float:right;width:520px;">
                         <el-table :data="tableInfo" border height="100">
@@ -111,10 +117,27 @@
 
                         <el-divider>其他项目</el-divider>
                         <el-row :gutter="20">
-                            <el-col :span="6"><div class="grid-content bg-purple"><el-button @click="getPage('http://116.85.25.106/backend/loginPage.do')">通用管理系统</el-button></div></el-col>
-                            <el-col :span="6"><div class="grid-content bg-purple"><el-button @click="getPage('')">社区项目</el-button></div></el-col>
-                            <el-col :span="6"><div class="grid-content bg-purple"><el-button @click="getPage('http://116.85.25.106')">商城项目</el-button></div></el-col>
-                            <el-col :span="6"><div class="grid-content bg-purple"><el-button @click="getPage('')">Githhub</el-button></div></el-col>
+                            <el-col :span="6">
+                                <div class="grid-content bg-purple">
+                                    <el-button @click="getPage('http://116.85.25.106/backend/loginPage.do')">通用管理系统
+                                    </el-button>
+                                </div>
+                            </el-col>
+                            <el-col :span="6">
+                                <div class="grid-content bg-purple">
+                                    <el-button @click="getPage('')">社区项目</el-button>
+                                </div>
+                            </el-col>
+                            <el-col :span="6">
+                                <div class="grid-content bg-purple">
+                                    <el-button @click="getPage('http://116.85.25.106')">商城项目</el-button>
+                                </div>
+                            </el-col>
+                            <el-col :span="6">
+                                <div class="grid-content bg-purple">
+                                    <el-button @click="getPage('')">Githhub</el-button>
+                                </div>
+                            </el-col>
                         </el-row>
                         <el-divider></el-divider>
 
@@ -125,76 +148,81 @@
         </el-row>
 
         <!-- <el-card class="box-card">
-               <el-calendar v-model="value"></el-calendar>
+               <el-calendar v-model="dateValue"></el-calendar>
         </el-card>-->
     </div>
 </template>
 <script>
-    import echarts from "echarts";
+    import {ref, reactive, inject, onMounted} from "vue";
+    import {useStore} from "vuex";
+    import {ElMessage} from "element-plus";
     import {loginReport} from '../api/system/loginLog'
+    import * as echarts from 'echarts'
 
     export default {
         components: {
             //别忘了引入组件
         },
 
-        data() {
-            return {
-                xData: [],
-                yData: [],
-                myData: [],
-                value: new Date(),
-                userInfo: {},
-                tableInfo: [],
-            };
-        },
-        methods: {
+        setup() {
+            let xData = ref([])
+            let yData = ref([])
+            let myData = ref([])
+            let dateValue = ref(new Date())
+            let userInfo = reactive({})
+            let tableInfo = ref([])
+
+            const store = useStore();
+
             /**
              * 点击获取源码
              */
-            getPage(url) {
+            const getPage = (url) => {
                 const w = window.open("about:blank");
                 w.location.href = url;
-            },
+            };
             /**
              * 加载登入报表数据
              */
-            async loginReport(username) {
-                const { data: res } = await loginReport({
+            const getLoginReport = (username) => {
+                loginReport({
                     username: username
-                });
-                if(!res.success){
-                    return this.$message.error("获取登入报表数据失败:" + res.data.errorMsg);
-                } else {
-                    const $this = this;
-                    this.xData = [];
-                    this.yData = [];
-                    this.myData = [];
-                    res.data.all.forEach(e1 => {
-                        $this.xData.push(e1.days);
-                        $this.yData.push(e1.count);
-                    });
+                }).then((res) => {
+                    if (!res.data.success) {
+                        return ElMessage.error("获取登入报表数据失败:" + res.data.data.errorMsg);
+                    } else {
+                        xData.value = [];
+                        yData.value = [];
+                        myData.value = [];
+                        res.data.data.all.forEach(e1 => {
+                            xData.value.push(e1.days);
+                            yData.value.push(e1.count);
+                        });
 
-                    for (let i = 0; i < this.xData.length; i++) {
-                        let count = 0;
-                        for (let j = 0; j < res.data.me.length; j++) {
-                            if ($this.xData[i] === res.data.me[j].days) {
-                                count = res.data.me[j].count;
-                                break;
-                            } else {
-                                count = 0;
+                        for (let i = 0; i < xData.value.length; i++) {
+                            let count = 0;
+                            for (let j = 0; j < res.data.data.me.length; j++) {
+                                if (xData.value[i] === res.data.data.me[j].days) {
+                                    count = res.data.data.me[j].count;
+                                    break;
+                                } else {
+                                    count = 0;
+                                }
                             }
+                            myData.value.push(count);
                         }
-                        $this.myData.push(count);
                     }
-                }
-                this.draw();
-            },
+                    draw();
+                }).catch((res) => {
+                    return ElMessage.error("获取登入报表数据失败:" + res.data.data.errorMsg);
+                });
+
+            };
 
             /**
              * 绘制登入报表
              */
-            draw() {
+            const draw = () => {
                 const myChart = echarts.init(document.getElementById("loginReport"));
                 // 指定图表的配置项和数据
                 const option = {
@@ -227,7 +255,7 @@
                         data: ["全部", "我"]
                     },
                     xAxis: {
-                        data: this.xData
+                        data: xData.value
                     },
                     yAxis: {
                         type: "value"
@@ -235,7 +263,7 @@
                     series: [
                         {
                             name: "全部",
-                            data: this.yData,
+                            data: yData.value,
                             type: "bar",
                             showBackground: true,
                             animationDuration: 1500,
@@ -248,7 +276,7 @@
                         },
                         {
                             name: "我",
-                            data: this.myData,
+                            data: myData.value,
                             type: "bar",
                             showBackground: true,
                             animationDuration: 2000,
@@ -259,29 +287,39 @@
                 // 使用刚指定的配置项和数据显示图表。
                 myChart.setOption(option);
             }
-        },
 
-        created() {
-            this.userInfo = this.$store.state.userInfo;
+            userInfo = store.state.login.userInfo;
             let rolesShow = null;
-            if(this.userInfo.isAdmin){
-                rolesShow = this.userInfo.isAdmin ? "超级管理员" : this.userInfo.roles;
-            }else{
-                rolesShow = this.userInfo.roles != null && this.userInfo.roles.length > 1  ? this.userInfo.roles[0] + "  ..." : this.userInfo.roles;
+            if (userInfo.isAdmin) {
+                rolesShow = userInfo.isAdmin ? "超级管理员" : userInfo.roles;
+            } else {
+                rolesShow = userInfo.roles != null && userInfo.roles.length > 1 ? userInfo.roles[0] + "  ..." : userInfo.roles;
             }
 
-            this.tableInfo.push({
-                username: this.userInfo.username,
-                nickname: this.userInfo.nickname,
-                department: this.userInfo.department,
+            tableInfo.value.push({
+                username: userInfo.username,
+                nickname: userInfo.nickname,
+                department: userInfo.department,
                 roles: rolesShow
             });
-        },
-        mounted: function() {
-            this.loginReport(this.userInfo.username);
-            this.draw();
-        },
 
+            onMounted(() => {
+                getLoginReport(userInfo.username);
+                draw();
+            })
+
+            return {
+                xData,
+                yData,
+                myData,
+                dateValue,
+                userInfo,
+                tableInfo,
+                getPage,
+                getLoginReport,
+                draw
+            };
+        }
     };
 </script>
 
@@ -304,5 +342,16 @@
         background-color: #d3dce6;
         /*background-image: url("http://myforum.oss-cn-beijing.aliyuncs.com/postImages/15828676585536f809b01-a5c3-4229-8ce6-ed29a7bdaaa22.png?Expires=1677475658&OSSAccessKeyId=LTAI4FsV5R1tnt8W8kqFqBYh&Signature=k2fJfFzwKwp7f2c%2BRD7rdH%2FAj%2Bs%3D");*/
         background-size: 100% 100%;
+    }
+
+    .user-avator {
+        float: left;
+    }
+
+    .user-avator img {
+        display: block;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
     }
 </style>

@@ -1,8 +1,9 @@
 <template>
     <div id="login">
-        <particles></particles>
+        <Particles></Particles>
         <div class="ms-login">
-            <h1 class="ms-title" style="position: absolute;color: #fff;left: 50%;transform: translateX(-50%); top: -110px;">后台管理系统</h1>
+            <h1 class="ms-title"
+                style="position: absolute;color: #fff;left: 50%;transform: translateX(-50%); top: -110px;">后台管理系统</h1>
             <el-form
                     :model="userLoginForm"
                     :rules="loginRules"
@@ -62,102 +63,120 @@
 </template>
 
 <script>
-    import Vcode from "vue-puzzle-vcode"
+    import {ref, reactive} from "vue";
+    import {useStore} from "vuex";
+    import {useRouter} from "vue-router";
+    import Vcode from "vue3-puzzle-vcode"
     import Particles from '../components/particles/index.vue'
-    import { Loading } from 'element-ui';
-    import {login,info} from '../api/system/user'
+    import {ElMessage, ElLoading} from "element-plus";
+    import {login, info} from '../api/system/user'
 
     export default {
-
-        data() {
-            return {
-                isShow: false,
-                dialogVisible: false,
-                imgCode: undefined,
-                //表单用户登入数据
-                userLoginForm: {
-                    username: "",
-                    password: ""
-                },
-                checked: true,
-
-                //验证规则
-                loginRules: {
-                    username: [
-                        {required: true, message: "请输入用户名", trigger: "blur"},
-                        {min: 3, max: 12, message: "长度在 3 到 12 个字符", trigger: "blur"}
-                    ],
-                    password: [
-                        {required: true, message: "请输入用户密码", trigger: "blur"},
-                        {min: 6, max: 15, message: "长度在 6 到 15 个字符", trigger: "blur"}
-                    ]
-                },
-            };
-        },
         components: {
             Vcode,
-            "particles": Particles
+            Particles
         },
+        setup() {
+            const store = useStore();
+            const router = useRouter();
 
-        methods: {
+            let isShow = ref(false)
+            let dialogVisible = false
+            let imgCode = undefined
+            //表单用户登入数据
+            let userLoginForm = reactive({
+                username: "",
+                password: ""
+            })
+            let checked = ref(true)
+            //验证规则
+            const loginRules = {
+                username: [
+                    {required: true, message: "请输入用户名", trigger: "blur"},
+                    {min: 3, max: 12, message: "长度在 3 到 12 个字符", trigger: "blur"}
+                ],
+                password: [
+                    {required: true, message: "请输入用户密码", trigger: "blur"},
+                    {min: 6, max: 15, message: "长度在 6 到 15 个字符", trigger: "blur"}
+                ]
+            }
+
+            const userLoginFormRef = ref(null);
             //登入提交
-            handleSubmit: function () {
-                this.$refs.userLoginFormRef.validate(valid => {
+            const handleSubmit = () => {
+                userLoginFormRef.value.validate((valid) => {
                     if (!valid) {
                         return;
                     } else {
-                        this.isShow = true;
+                        isShow.value = true;
                     }
                 });
-            },
+            }
             //重置表单
-            resetForm: function () {
-                this.$refs.userLoginFormRef.resetFields();
-            },
+            const resetForm = () => {
+                userLoginFormRef.value.resetFields();
+            }
             //验证成功
-            async success() {
-                let loading = Loading.service({ fullscreen: true });
+            const success = () => {
+                let loading = ElLoading.service({
+                    text: 'Loading',
+                });
                 //发起登入请求
-                const {data: res} = await login(this.userLoginForm);
-                if (res.success) {
-                    this.$message({
-                        title: "登入成功",
-                        message: "欢迎你进入系统",
-                        type: "success"
-                    });
-                    LocalStorage.set(LOCAL_KEY_XINGUAN_ACCESS_TOKEN, res.data);
-                    await this.getUserInfo();
-                } else {
-                    this.isShow = false;
-                    this.$message.error({
-                        title: "登入失败",
-                        message: res.data.errorMsg,
-                        type: "error"
-                    });
-                }
-                loading.close();
-            },
+                login(userLoginForm).then((res) => {
+                    if (res.data.success) {
+                        ElMessage.success("欢迎你进入系统");
+                        window.localStorage.setItem("token", res.data.data);
+                        getUserInfo();
+                    } else {
+                        isShow.value = false;
+                        ElMessage.error(res.data.data.errorMsg);
+                    }
+                    loading.close();
+                }).catch((res) => {
+                    ElMessage.error(res.data.data.errorMsg);
+                });
+
+            }
 
             /**
              获取用户信息
              */
-            async getUserInfo() {
-                const {data: res} = await info();
-                if (!res.success) {
-                    return this.$message.error("获取用户信息失败:" + res.data.errorMsg);
-                } else {
-                    this.userInfo = res.data;
-                    this.$store.commit("setUserInfo", res.data);
-                    await this.$router.push("/home");
-                }
-            },
+            const getUserInfo = () => {
+                info().then((res) => {
+                    if (!res.data.success) {
+                        return ElMessage.error("获取用户信息失败:" + res.data.data.errorMsg);
+                    } else {
+                        // userInfo = res.data.data;
+                        store.commit("login/setUserInfo", res.data.data);
+                        router.push("/home");
+                    }
+                }).catch((res) => {
+                    ElMessage.error(res.data.data.errorMsg);
+                });
 
-            close() {
-                this.isShow = false;
+            }
+
+            const close = () => {
+                isShow.value = false;
+            }
+
+            return {
+                router,
+                isShow,
+                dialogVisible,
+                imgCode,
+                userLoginForm,
+                userLoginFormRef,
+                checked,
+                loginRules,
+                handleSubmit,
+                resetForm,
+                success,
+                getUserInfo,
+                close,
+
             }
         },
-        created() {
-        }
     };
 </script>
 
@@ -172,7 +191,7 @@
         position: relative;
     }
 
-    .ms-title{
+    .ms-title {
         z-index: 999;
     }
 

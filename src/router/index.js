@@ -1,10 +1,10 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import {createRouter, createWebHashHistory} from "vue-router";
+import store from '../store'//引入store
+import {getToken} from '../utils/auth'
 import system from './modules/system'
-import monitor from './modules/monitor'
-import business from './modules/business'
+// import monitor from './modules/monitor'
+// import business from './modules/business'
 
-Vue.use(VueRouter)
 
 const routes = [
     {
@@ -23,18 +23,18 @@ const routes = [
         redirect: '/system/welcome',
         children: []
             .concat(system)
-            .concat(monitor)
-            .concat(business)
+            // .concat(monitor)
+            // .concat(business)
     },
 ]
 
-const router = new VueRouter({
+const router = createRouter({
+    history: createWebHashHistory(),
     mode: 'hash',
+    // base: process.env.BASE_URL,
     base: process.env.BASE_URL,
     routes
 })
-
-import store from '../store'//引入store
 
 //白名单页面
 const whiteList=[
@@ -45,7 +45,7 @@ const whiteList=[
 //路由导航守卫
 router.beforeEach((to, from, next) => {
 
-    const token = LocalStorage.get(LOCAL_KEY_XINGUAN_ACCESS_TOKEN);
+    const token = getToken();
     if (to.path === '/login') {
         if (!token) {
             return next();
@@ -62,9 +62,9 @@ router.beforeEach((to, from, next) => {
         return next('/login');
     } else {
         //判断是否有访问该路径的权限
-        const urls = store.state.userInfo.url;
+        const urls = store.state.login.userInfo.url;
         //如果是管理员
-        if (store.state.userInfo.isAdmin) {
+        if (store.state.login.userInfo.isAdmin) {
             return next();
         } else {
             if (urls.indexOf(to.path) > -1|| whiteList.indexOf(to.path)>-1) {

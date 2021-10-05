@@ -26,93 +26,87 @@
 </template>
 
 <script>
-
+    import { computed } from "vue";
+    import {createNamespacedHelpers, useStore} from 'vuex'
+    import { onBeforeRouteUpdate, useRoute, useRouter } from "vue-router";
     export default {
-        name: "Tags", //模板名称
-        data() {
-            return {
-                // tagsList: [],
+        setup() {
+            const route = useRoute();
+            const router = useRouter();
+            const isActive = (path) => {
+                return path === route.fullPath;
             };
-        },
-        computed: {
-            showTags(){
-                return this.tagsList.length > 0;
-            },
-            tagsList(){
-                return this.$store.state.component.tagsList;
-            }
-        },
-        methods: {
-            isActive(path) {
-                return path === this.$route.fullPath;
-            },
+
+            const store = useStore();
+            const tagsList = computed(() => store.state.component.tagsList);
+            const showTags = computed(() => tagsList.value.length > 0);
+
             // 关闭单个标签
-            closeTags(index) {
-                const delItem = this.tagsList[index];
-                this.$store.commit("component/delTagsItem", {index});
-                const item = this.tagsList[index]
-                    ? this.tagsList[index]
-                    : this.tagsList[index - 1];
+            const closeTags = (index) => {
+                const delItem = tagsList.value[index];
+                store.commit("component/delTagsItem", { index });
+                const item = tagsList.value[index]
+                    ? tagsList.value[index]
+                    : tagsList.value[index - 1];
                 if (item) {
-                    delItem.path === this.$route.fullPath && this.$router.push(item.path);
+                    delItem.path === route.fullPath && router.push(item.path);
                 } else {
-                    this.$router.push("/");
+                    router.push("/");
                 }
-            },
+            };
 
             // 设置标签
-            setTags(route) {
-                const isExist = this.tagsList.some((item) => {
+            const setTags = (route) => {
+                const isExist = tagsList.value.some((item) => {
                     return item.path === route.fullPath;
                 });
                 if (!isExist) {
-                    if (this.tagsList.length >= 8) {
-                        this.$store.commit("component/delTagsItem", {index: 0});
+                    if (tagsList.value.length >= 8) {
+                        store.commit("component/delTagsItem", { index: 0 });
                     }
-                    this.$store.commit("component/setTagsItem", {
+                    store.commit("component/setTagsItem", {
                         name: route.name,
                         title: route.meta.title,
                         path: route.fullPath,
                     });
                 }
-            },
+            };
+            setTags(route);
+            onBeforeRouteUpdate((to) => {
+                setTags(to);
+            });
+
             // 关闭全部标签
-            closeAll() {
-                this.$store.commit("component/clearTags");
-                this.$router.push("/");
-            },
+            const closeAll = () => {
+                store.commit("component/clearTags");
+                router.push("/");
+            };
             // 关闭其他标签
-            closeOther() {
-                const curItem = this.tagsList.filter((item) => {
-                    return item.path === this.$route.fullPath;
+            const closeOther = () => {
+                const curItem = tagsList.value.filter((item) => {
+                    return item.path === route.fullPath;
                 });
-                this.$store.commit("component/closeTagsOther", curItem);
-            },
-            handleTags(command) {
-                command === "other" ? this.closeOther() : this.closeAll();
-            },
+                store.commit("component/closeTagsOther", curItem);
+            };
+            const handleTags = (command) => {
+                command === "other" ? closeOther() : closeAll();
+            };
 
             // 关闭当前页面的标签页
-            // this.$store.commit("component/closeCurrentTag", {
+            // store.commit("component/closeCurrentTag", {
             //     $router: router,
             //     $route: route
-            // })
-        },
-        mounted() {
+            // });
 
+            return {
+                isActive,
+                tagsList,
+                showTags,
+                closeTags,
+                handleTags,
+            };
         },
-        created() {
-            this.setTags(this.$route);
-        },
-        watch: {
-            $route(to, from) {
-                this.setTags(to);
-            }
-        },
-        // beforeRouteUpdate(to, from, next) {
-        //     this.setTags(to);
-        // },
-    }
+    };
 </script>
 
 

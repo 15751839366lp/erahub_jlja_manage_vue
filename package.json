@@ -12,29 +12,45 @@
     "axios": "^0.21.4",
     "core-js": "^3.6.4",
     "echarts": "^4.7.0",
-    "element-ui": "^2.13.0",
+    "element-plus": "^1.0.2-beta.36",
     "jsonp": "^0.2.1",
+    "less": "^4.1.1",
+    "less-loader": "^8.0.0",
     "nprogress": "^0.2.0",
-    "vue": "^2.6.11",
-    "vue-puzzle-vcode": "^1.1.2",
-    "vue-router": "^3.1.5",
+    "portfinder": "^1.0.20",
+    "vue": "^3.1.2",
+    "vue-cropperjs": "^5.0.0",
+    "vue-i18n": "^9.1.6",
+    "vue-router": "^4.0.10",
+    "vue-schart": "^2.0.0",
     "vue-table-with-tree-grid": "^0.2.4",
-    "vuex": "^3.1.2"
+    "vue3-puzzle-vcode": "^1.0.0",
+    "vuex": "^4.0.2",
+    "wangeditor": "^4.7.4"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.2.0",
-    "@vue/cli-plugin-router": "^4.2.0",
-    "@vue/cli-plugin-vuex": "^4.2.0",
-    "@vue/cli-service": "^4.2.0",
-    "stylus": "^0.54.7",
-    "stylus-loader": "^3.0.2",
-    "vue-cli-plugin-axios": "0.0.4",
+    "@vue/babel-helper-vue-jsx-merge-props": "^1.2.1",
+    "@vue/babel-preset-app": "^4.5.13",
+    "@vue/babel-preset-jsx": "^1.2.4",
+    "@vue/cli-plugin-babel": "^4.5.13",
+    "@vue/cli-plugin-router": "^4.5.13",
+    "@vue/cli-plugin-vuex": "^4.5.13",
+    "@vue/cli-service": "^4.5.13",
+    "babel-helper-vue-jsx-merge-props": "^2.0.3",
+    "babel-plugin-syntax-jsx": "^6.18.0",
+    "babel-plugin-transform-vue-jsx": "^3.7.0",
+    "stylus": "^0.55.0",
+    "stylus-loader": "^6.1.0",
+    "vue-cli-plugin-axios": "^0.0.4",
     "vue-cli-plugin-element": "^1.0.1",
-    "vue-template-compiler": "^2.6.11",
+    "vue-template-compiler": "^2.6.14",
     "webpack": "^4.0.0"
   },
   "browserslist": [
     "> 1%",
     "last 2 versions"
-  ]
+  ],
+  "resolutions": {
+    "@vue/cli-service/portfinder": "1.0.21"
+  }
 }

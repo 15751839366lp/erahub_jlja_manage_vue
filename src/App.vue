@@ -4,9 +4,16 @@
   </div>
 </template>
 <script>
+  import echarts from 'echarts'
+  import { provide } from 'vue'
+  import {useStore} from "vuex";
+  import {useRouter,useRoute} from "vue-router";
+
   export default {
     name: 'app',
-    created () {
+    setup(){
+      const store = useStore();
+
       // // 在页面加载时读取sessionStorage
       // if (sessionStorage.getItem('store')) {
       //     this.$store.replaceState(Object.assign({}, this.$store.state, JSON.parse(sessionStorage.getItem('store'))))
@@ -17,11 +24,11 @@
       // })
 
       //在页面加载时读取localStorage里的状态信息
-      localStorage.getItem("store") && this.$store.replaceState(Object.assign(this.$store.state,JSON.parse(localStorage.getItem("store"))));
+      window.localStorage.getItem("store") && store.replaceState(Object.assign(store.state,JSON.parse(window.localStorage.getItem("store"))));
 
       //在页面刷新时将vuex里的信息保存到localStorage里
       window.addEventListener("beforeunload",()=>{
-        localStorage.setItem("store",JSON.stringify(this.$store.state))
+        window.localStorage.setItem("store",JSON.stringify(store.state))
       })
     }
   };

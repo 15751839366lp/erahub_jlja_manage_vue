@@ -1,5 +1,12 @@
 module.exports = {
   presets: [
-    '@vue/cli-plugin-babel/preset'
-  ]
+    '@vue/app', '@vue/babel-preset-jsx'
+  ],
+// 'plugins': [
+//   ['import', {
+//     'libraryName': 'iview',
+//     'libraryDirectory': 'src/components'
+//   }]
+// ]
+
 }

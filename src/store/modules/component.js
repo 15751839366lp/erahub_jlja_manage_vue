@@ -2,9 +2,13 @@ export default ({
     namespaced:true,
     state: {
         tagsList: [],
-        collapse: false
+        collapse: false,
+        menuList: []
     },
     mutations: {
+        setMenuList(state, data) {
+            state.menuList = data;
+        },
         delTagsItem(state, data) {
             state
                 .tagsList

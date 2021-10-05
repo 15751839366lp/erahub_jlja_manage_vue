@@ -39,9 +39,11 @@
                                 style="width:200px;height:170px"
                                 :src="'https://www.zykhome.club/'+image.path"
                         >
-                            <div slot="error" class="image-slot">
+                            <template #error>
+                            <div class="image-slot">
                                 <i class="el-icon-picture-outline"></i>
                             </div>
+                            </template>
                         </el-image>
                         <div>
                             <el-tag
@@ -52,15 +54,16 @@
                             >{{image.width}}px X {{image.height}}px
                             </el-tag>
                             <el-popconfirm title="这是一段内容确定删除吗？" @onConfirm="del(image.id)">
+                                <template #reference>
                                 <el-button
                                         v-hasPermission="'image:delete'"
                                         style="margin-left:30px;"
                                         icon="el-icon-delete"
                                         size="mini"
                                         type="text"
-                                        slot="reference"
                                 >删除
                                 </el-button>
+                                </template>
                             </el-popconfirm>
                         </div>
                     </div>
@@ -80,13 +83,13 @@
                     :total="total"
             ></el-pagination>
             <!-- 上传弹出框 -->
-            <el-dialog title="上传图片附件" @close="closeUpload" :visible.sync="centerDialogVisible" width="38%" center>
+            <el-dialog title="上传图片附件" @close="closeUpload" v-model="centerDialogVisible" width="38%" center>
         <span>
           <el-upload
                   accept="image/*"
                   :auto-upload="false"
                   :multiple="true"
-                  ref="upload"
+                  ref="uploadRef"
                   :limit="10"
                   :on-exceed="exceed"
                   class="upload-demo"
@@ -100,13 +103,17 @@
               将文件拖到此处，或
               <em>点击上传</em>
             </div>
-            <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb,最多支持10张图片一起上传</div>
+              <template #tip>
+            <div class="el-upload__tip" >只能上传jpg/png文件，且不超过500kb,最多支持10张图片一起上传</div>
+                  </template>
           </el-upload>
         </span>
-                <span slot="footer" class="dialog-footer">
+                <template #footer>
+                <span class="dialog-footer">
           <el-button @click="closeUpload" size="small">取消返回</el-button>
           <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
         </span>
+                </template>
             </el-dialog>
         </el-card>
     </div>
@@ -114,111 +121,141 @@
 
 
 <script>
+    import {ref, reactive, computed, watch} from "vue";
+    import {ElMessage, ElLoading, ElNotification, ElMessageBox} from "element-plus";
+    import {getToken} from "../../utils/auth";
     import {deleteImage, findImageList} from '../../api/system/upload'
 
     export default {
-        data() {
-            return {
-                //todo
-                uploadUrl: "/api/system/upload/image",
-                centerDialogVisible: false,
-                loading: true,
-                total: 0,
-                fits: "contain",
-                queryMap: {},
-                list: [],
-                srcList: [],
-                headerObject: {
-                    Authorization: LocalStorage.get(LOCAL_KEY_XINGUAN_ACCESS_TOKEN)
-                }, //图片上传请求头
-            };
-        },
-        methods: {
+        setup() {
+            //todo
+            const uploadUrl = ref("/api/system/upload/image")
+            const centerDialogVisible = ref(false)
+            const loading = ref(true)
+            const total = ref(0)
+            const fits = ref("contain")
+            const queryMap = ref({})
+            const list = ref([])
+            const srcList = ref([])
+            const headerObject = reactive({
+                Authorization: getToken
+            }) //图片上传请求头
+
+            const uploadRef = ref(null)
+
             /**
              * 取消上传
              */
-            closeUpload() {
-                this.centerDialogVisible = false;
-                this.$refs.upload.clearFiles();
-            },
+            const closeUpload = () => {
+                centerDialogVisible.value = false;
+                uploadRef.value.clearFiles();
+            }
             /**
              * 上传之后的回调
              */
-            handleUploadSuccess: function (response, file, fileList) {
+            const handleUploadSuccess = (response, file, fileList) => {
                 console.log(response)
                 if (!response.success) {
-                    this.$refs.upload.clearFiles();
-                    return this.$message.error("上传失败:" + response.data.errorMsg);
+                    uploadRef.value.clearFiles();
+                    return ElMessage.error("上传失败:" + response.data.errorMsg);
                 } else {
-                    this.ageImageList();
+                    ageImageList();
                 }
-            },
+            }
+
             /**
              *
              * 点击上传到服务器
              */
-            submitUpload() {
-                this.$refs.upload.submit();
-            },
+            const submitUpload = () => {
+                uploadRef.value.submit();
+            }
             /**
              * 删除图片
              */
-            del: async function (id) {
-                const {data: res} = await deleteImage("system/upload/delete/" + id);
-                if (res.success) {
-                    this.$message.success("删除图片成功");
-                    await this.ageImageList();
-                } else {
-                    this.$message.error(res.data.errorMsg);
-                }
-            },
+            const del = (id) => {
+                deleteImage("system/upload/delete/" + id).then((res) => {
+                    if (res.data.success) {
+                        ElMessage.success("删除图片成功");
+                        ageImageList();
+                    } else {
+                        ElMessage.error(res.data.data.errorMsg);
+                    }
+                }).catch((res) => {
+                    ElMessage.error(res);
+                })
+            }
             /**
              * 加载附件列表
              */
-            async ageImageList() {
-                const {data: res} = await findImageList(this.queryMap);
-                if (!res.success) {
-                    return this.$message.error("获取附件列表失败:" + res.data.errorMsg);
-                } else {
-                    const $this = this;
-                    this.total = res.data.total;
-                    this.list = res.data.records;
-                    this.srcList = [];
-                    this.list.forEach(function (item) {
-                        $this.srcList.push('' + item.path);
-                    });
-                }
-            },
+            const ageImageList = () => {
+                findImageList(queryMap.value).then((res) => {
+                    if (!res.data.success) {
+                        return ElMessage.error("获取附件列表失败:" + res.data.data.errorMsg);
+                    } else {
+                        total.value = res.data.data.total;
+                        list.value = res.data.data.records;
+                        srcList.value = [];
+                        list.value.forEach(function (item) {
+                            srcList.value.push('' + item.path);
+                        });
+                    }
+                }).catch((res) => {
+                    ElMessage.error(res);
+                })
+            }
             //改变页码
-            handleSizeChange(newSize) {
-                this.queryMap.pageSize = newSize;
-                this.ageImageList();
-            },
+            const handleSizeChange = (newSize) => {
+                queryMap.value.pageSize = newSize;
+                ageImageList();
+            }
             //翻页
-            handleCurrentChange(current) {
-                this.queryMap.pageNum = current;
-                this.ageImageList();
-            },
+            const handleCurrentChange = (current) => {
+                queryMap.value.pageNum = current;
+                ageImageList();
+            }
             /**
              * 搜索
              */
-            search() {
-                this.queryMap.pageNum = 1;
-                this.ageImageList();
-            },
+            const search = () => {
+                queryMap.value.pageNum = 1;
+                ageImageList();
+            }
             /**
              * 超出允许上传的时候
              */
-            exceed() {
-                this.$message.warning("超出允许上传图片的数量");
+            const exceed = () => {
+                ElMessage.warning("超出允许上传图片的数量");
             }
-        },
-        created() {
-            this.ageImageList();
+
+            ageImageList();
             setTimeout(() => {
-                this.loading = false;
+                loading.value = false;
             }, 300);
-        }
+
+            return {
+
+                uploadUrl,
+                centerDialogVisible,
+                loading,
+                total,
+                fits,
+                queryMap,
+                list,
+                srcList,
+                headerObject,
+                uploadRef,
+                closeUpload,
+                handleUploadSuccess,
+                submitUpload,
+                del,
+                ageImageList,
+                handleSizeChange,
+                handleCurrentChange,
+                exceed,
+                search
+            };
+        },
     };
 </script>
 
