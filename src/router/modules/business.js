@@ -1,4 +1,4 @@
-// const business = [
+const business = [
 //     {
 //         path: '/business/product/list',
 //         name: 'ProductList',
@@ -71,22 +71,22 @@
 //         },
 //         component: () => import( '../../views/business/product/publish'),   //物资发放
 //     },
-//     {
-//         path: '/covid19/map',
-//         name: 'Covid19Map',
-//         meta:{
-//             title: "全国疫情"
-//         },
-//         component: () => import( '../../views/business/covid19/map'), //全国疫情
-//     },
-//     {
-//         path: '/covid19/health',
-//         name: 'Health',
-//         meta:{
-//             title: "健康打卡"
-//         },
-//         component: () => import( '../../views/business/covid19/health'), //健康打卡
-//     }
-// ]
-//
-// export default business
+    {
+        path: '/covid19/map',
+        name: 'Covid19Map',
+        meta:{
+            title: "全国疫情"
+        },
+        component: () => import( '../../views/business/covid19/map.vue'), //全国疫情
+    },
+    {
+        path: '/covid19/health',
+        name: 'Health',
+        meta:{
+            title: "健康打卡"
+        },
+        component: () => import( '../../views/business/covid19/health.vue'), //健康打卡
+    }
+]
+
+export default business

@@ -3,7 +3,7 @@ import store from '../store'//引入store
 import {getToken} from '../utils/auth'
 import system from './modules/system'
 import monitor from './modules/monitor'
-// import business from './modules/business'
+import business from './modules/business'
 
 
 const routes = [
@@ -24,7 +24,7 @@ const routes = [
         children: []
             .concat(system)
             .concat(monitor)
-            // .concat(business)
+            .concat(business)
     },
 ]
 

@@ -170,7 +170,7 @@
             let dateValue = ref(new Date())
             let userInfo = reactive({})
             let tableInfo = ref([])
-            let myChart = ref(null)
+            let myChart = {}
 
             const store = useStore();
 
@@ -214,7 +214,7 @@
                     }
                     draw();
                 }).catch((res) => {
-                    return ElMessage.error("获取登入报表数据失败:" + res.data.data.errorMsg);
+                    return ElMessage.error("获取登入报表数据失败:" + res);
                 });
 
             };
@@ -223,7 +223,7 @@
              * 绘制登入报表
              */
             const draw = () => {
-                myChart.value = echarts.init(document.getElementById("loginReport"));
+                myChart = echarts.init(document.getElementById("loginReport"));
                 // 指定图表的配置项和数据
                 const option = {
                     title: {
@@ -285,7 +285,7 @@
                     ]
                 };
                 // 使用刚指定的配置项和数据显示图表。
-                myChart.value.setOption(option);
+                myChart.setOption(option);
             }
 
             userInfo = store.state.login.userInfo;
@@ -309,7 +309,7 @@
             })
 
             onBeforeUnmount(()=> {
-                myChart.value.dispose(); //销毁
+                myChart.dispose(); //销毁
             })
 
             return {
