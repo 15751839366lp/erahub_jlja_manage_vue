@@ -153,17 +153,16 @@
     </div>
 </template>
 <script>
-    import {ref, reactive, inject, onMounted} from "vue";
+    import {ref, reactive, inject, onMounted,onBeforeUnmount} from "vue";
     import {useStore} from "vuex";
     import {ElMessage} from "element-plus";
     import {loginReport} from '../api/system/loginLog'
-    import * as echarts from 'echarts'
+    import echarts from 'echarts'
 
     export default {
         components: {
             //别忘了引入组件
         },
-
         setup() {
             let xData = ref([])
             let yData = ref([])
@@ -171,6 +170,7 @@
             let dateValue = ref(new Date())
             let userInfo = reactive({})
             let tableInfo = ref([])
+            let myChart = ref(null)
 
             const store = useStore();
 
@@ -223,7 +223,7 @@
              * 绘制登入报表
              */
             const draw = () => {
-                const myChart = echarts.init(document.getElementById("loginReport"));
+                myChart.value = echarts.init(document.getElementById("loginReport"));
                 // 指定图表的配置项和数据
                 const option = {
                     title: {
@@ -285,7 +285,7 @@
                     ]
                 };
                 // 使用刚指定的配置项和数据显示图表。
-                myChart.setOption(option);
+                myChart.value.setOption(option);
             }
 
             userInfo = store.state.login.userInfo;
@@ -308,6 +308,10 @@
                 draw();
             })
 
+            onBeforeUnmount(()=> {
+                myChart.value.dispose(); //销毁
+            })
+
             return {
                 xData,
                 yData,
@@ -315,6 +319,7 @@
                 dateValue,
                 userInfo,
                 tableInfo,
+                myChart,
                 getPage,
                 getLoginReport,
                 draw

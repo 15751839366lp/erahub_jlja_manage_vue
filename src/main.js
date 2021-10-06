@@ -3,8 +3,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import installElementPlus from './plugins/element'
-import NProgress from 'nprogress'
-import 'nprogress/nprogress.css'
+// import NProgress from 'nprogress'
+// import 'nprogress/nprogress.css'
 import ZkTable from 'vue-table-with-tree-grid'
 // import i18n from './utils/language/i18n'
 
@@ -42,6 +42,6 @@ app
     .use(router)
     .mount('#app')
 
-NProgress.configure({ease: 'ease', speed: 500});
-NProgress.configure({minimum: 0.3});
+// NProgress.configure({ease: 'ease', speed: 500});
+// NProgress.configure({minimum: 0.3});
 

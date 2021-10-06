@@ -9,7 +9,7 @@
 
     export default {
         setup() {
-            const druidSrc = ref(import.meta.env.DEV ? '/api/druid/login.html' : '/druid/login.html')
+            const druidSrc = ref(import.meta.env.DEV ? '/api/druid/login.html' : import.meta.env.VITE_APP_BASE_API + '/druid/login.html')
 
             return {
                 druidSrc,

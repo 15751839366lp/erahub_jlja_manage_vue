@@ -10,7 +10,7 @@
 
     export default {
         setup() {
-            const swaggerSrc = ref(import.meta.env.DEV ? '/api/swagger-ui.html' : '/swagger-ui.html')
+            const swaggerSrc = ref(import.meta.env.DEV ? '/api/swagger-ui.html' : import.meta.env.VITE_APP_BASE_API + '/swagger-ui.html')
 
             return {
                 swaggerSrc,

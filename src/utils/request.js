@@ -4,13 +4,12 @@ import {getToken} from '../utils/auth'
 
 //创建axios的一个实例
 var service = axios.create({
-    baseURL: import.meta.env.NODE_ENV==='production' ? import.meta.env.VUE_APP_API_URL : "/api",//接口统一域名
+    baseURL: import.meta.env.PROD ? import.meta.env.VITE_APP_BASE_API : "/api",//接口统一域名
     timeout: 6000, //设置超时
 })
 
 //请求拦截器
 service.interceptors.request.use((config) => {
-
     // 每次发送请求之前判断是否存在token，如果存在，则统一在http请求的header都加上token，不用每次请求都手动添加了
     config.headers.Authorization = getToken();
     // if (token){
