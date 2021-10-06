@@ -212,6 +212,18 @@
         text-align: left;
     }
 
+    .el-notification__icon.el-icon-success{
+        color: #67c23a;
+    }
+    .el-notification__icon.el-icon-warning{
+        color: #e6a23c;
+    }
+    .el-notification__icon.el-icon-info{
+        color: #909399;
+    }
+    .el-notification__icon.el-icon-error{
+        color: #f56c6c;
+    }
 </style>
 
 

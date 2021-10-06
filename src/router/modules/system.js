@@ -47,21 +47,21 @@ const system = [
         },
         component: () => import( '../../views/system/menu.vue'), //菜单管理
     },
-    //{
-    //     path: '/system/departments',
-    //     name: 'Departments',
-    //     meta:{
-    //         title: "部门管理"
-    //     },
-    //     component: () => import( '../../views/system/dept.vue'), // 部门管理
-    // },
+    {
+        path: '/system/departments',
+        name: 'Departments',
+        meta:{
+            title: "部门管理"
+        },
+        component: () => import( '../../views/system/dept.vue'), // 部门管理
+    },
     {
         path: '/system/files',
         name: 'Files',
         meta:{
             title: "文件管理"
         },
-        component: () => import('../../views/system/file'),   //文件管理
+        component: () => import('../../views/system/file.vue'),   //文件管理
     },
     {
         path: '/system/icon',
@@ -69,7 +69,7 @@ const system = [
         meta:{
             title: "系统图标"
         },
-        component: () => import('../../views/system/icon'),  //系统图标
+        component: () => import('../../views/system/icon.vue'),  //系统图标
     },
 
 ]

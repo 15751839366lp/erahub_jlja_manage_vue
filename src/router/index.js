@@ -2,7 +2,7 @@ import {createRouter, createWebHashHistory} from "vue-router";
 import store from '../store'//引入store
 import {getToken} from '../utils/auth'
 import system from './modules/system'
-// import monitor from './modules/monitor'
+import monitor from './modules/monitor'
 // import business from './modules/business'
 
 
@@ -23,7 +23,7 @@ const routes = [
         redirect: '/system/welcome',
         children: []
             .concat(system)
-            // .concat(monitor)
+            .concat(monitor)
             // .concat(business)
     },
 ]
@@ -32,7 +32,7 @@ const router = createRouter({
     history: createWebHashHistory(),
     mode: 'hash',
     // base: process.env.BASE_URL,
-    base: process.env.BASE_URL,
+    base: import.meta.env.VITE_APP_BASE_API,
     routes
 })
 

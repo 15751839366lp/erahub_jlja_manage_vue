@@ -768,7 +768,7 @@
                     } else {
                         const message = row.status ? '用户状态已禁用' : '用户状态已启用';
                         ElNotification({
-                            type: "success",
+                            type: 'success',
                             title: '操作成功',
                             message: message,
                         });
@@ -845,3 +845,18 @@
         }
     };
 </script>
+
+<style>
+    .el-notification__icon.el-icon-success{
+        color: #67c23a;
+    }
+    .el-notification__icon.el-icon-warning{
+        color: #e6a23c;
+    }
+    .el-notification__icon.el-icon-info{
+        color: #909399;
+    }
+    .el-notification__icon.el-icon-error{
+        color: #f56c6c;
+    }
+</style>

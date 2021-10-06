@@ -4,7 +4,7 @@ import {getToken} from '../utils/auth'
 
 //创建axios的一个实例
 var service = axios.create({
-    baseURL: process.env.NODE_ENV==='production' ? process.env.VUE_APP_API_URL : "/api",//接口统一域名
+    baseURL: import.meta.env.NODE_ENV==='production' ? import.meta.env.VUE_APP_API_URL : "/api",//接口统一域名
     timeout: 6000, //设置超时
 })
 

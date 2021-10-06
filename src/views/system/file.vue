@@ -129,7 +129,7 @@
     export default {
         setup() {
             //todo
-            const uploadUrl = ref("/api/system/upload/image")
+            const uploadUrl = ref(import.meta.env.DEV ? '/api/system/upload/image' : '/system/upload/image')
             const centerDialogVisible = ref(false)
             const loading = ref(true)
             const total = ref(0)
@@ -263,5 +263,18 @@
     .el-upload-dragger {
         width: 530px !important;
 
+    }
+
+    .el-notification__icon.el-icon-success{
+        color: #67c23a;
+    }
+    .el-notification__icon.el-icon-warning{
+        color: #e6a23c;
+    }
+    .el-notification__icon.el-icon-info{
+        color: #909399;
+    }
+    .el-notification__icon.el-icon-error{
+        color: #f56c6c;
     }
 </style>
