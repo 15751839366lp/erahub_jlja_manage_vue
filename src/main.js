@@ -5,11 +5,12 @@ import store from './store'
 import installElementPlus from './plugins/element'
 // import NProgress from 'nprogress'
 // import 'nprogress/nprogress.css'
-import ZkTable from 'vue-table-with-tree-grid'
+// import TreeTable from 'vue-table-with-tree-grid'
 // import i18n from './utils/language/i18n'
 
 const app = createApp(App)
 installElementPlus(app)
+
 
 app.directive('hasPermission', (el, binding) => {
     let flag = false;//默认不显示
@@ -36,7 +37,7 @@ app.directive('hasPermission', (el, binding) => {
 })
 
 app
-    .use(ZkTable)
+    // .component("tree-table",TreeTable)
     .use(store)
     // .use(i18n)
     .use(router)

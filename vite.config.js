@@ -8,12 +8,15 @@ import vue from '@vitejs/plugin-vue'
 export default {
     base: process.env.NODE_ENV === "production" ? "/" : process.env.VITE_APP_BASE_API,
     // base: "/",
+    // publicDir: "./",
     plugins: [
         vue(),
     ],
     outDir: process.env.VITE_OUTPUT_DIR,
     optimizeDeps: {
-        include: ['schart.js']
+        include: [
+            'schart.js'
+        ]
     },
 
     assetsDir: "assets",
