@@ -1,12 +1,12 @@
 const business = [
-//     {
-//         path: '/business/product/list',
-//         name: 'ProductList',
-//         meta:{
-//             title: "物资资料"
-//         },
-//         component: () => import( '../../views/business/product/list.vue'), //物资资料
-//     },
+    {
+        path: '/business/product/list',
+        name: 'ProductList',
+        meta:{
+            title: "物资资料"
+        },
+        component: () => import( '../../views/business/product/list.vue'), //物资资料
+    },
     {
         path: '/business/product/in-stocks',
         name: 'ProductInStocks',

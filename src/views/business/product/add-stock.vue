@@ -220,7 +220,6 @@
                         <el-form :inline="true" :model="queryMap" class="demo-form-inline">
                             <el-form-item label="分类">
                                 <el-cascader
-                                        :change-on-select="true"
                                         @change="selectChange"
                                         v-model="categorykeys"
                                         :props="selectProps"
