@@ -43,6 +43,7 @@
                                 type="primary"
                                 class="el-icon-mobile-phone"
                                 @click="handleSubmit"
+                                :loading="loadingFull"
                         >登录
                         </el-button>
                         <el-button class="el-icon-refresh" @click="resetForm">重置</el-button>
@@ -79,6 +80,7 @@
         setup() {
             const store = useStore();
             const router = useRouter();
+            const loadingFull = ref(false)
 
             let isShow = ref(false)
             let dialogVisible = false
@@ -108,6 +110,7 @@
                     if (!valid) {
                         return;
                     } else {
+                        loadingFull.value = true
                         isShow.value = true;
                     }
                 });
@@ -128,12 +131,14 @@
                         window.localStorage.setItem("token", res.data.data);
                         getUserInfo();
                     } else {
+                        loadingFull.value = false
                         isShow.value = false;
                         ElMessage.error(res.data.data.errorMsg);
                     }
                     loading.close();
                 }).catch((res) => {
-                    ElMessage.error(res.data.data.errorMsg);
+                    loadingFull.value = false
+                    ElMessage.error(res);
                 });
 
             }
@@ -169,6 +174,7 @@
                 userLoginFormRef,
                 checked,
                 loginRules,
+                loadingFull,
                 handleSubmit,
                 resetForm,
                 success,

@@ -298,13 +298,19 @@
             }
             //加载用户列表
             const getRoleList = () => {
+                loading.value = true;
                 findRoleList(queryMap).then((res) => {
                     if (res.data.success) {
                         roleData.value = res.data.data.rows;
                         total.value = res.data.data.total;
+                        loading.value = false;
+                    }else {
+                        loading.value = false;
+                        ElMessage.error("加载用户列表权失败:" + res.data.data.errorMsg);
                     }
                 }).catch((res) => {
-                    ElMessage.error("角色授权失败:" + res);
+                    loading.value = false;
+                    ElMessage.error("加载用户列表权失败:" + res);
                 });
 
             }
@@ -461,9 +467,6 @@
 
 
             getRoleList();
-            setTimeout(() => {
-                loading.value = false;
-            }, 500);
 
 
             return {

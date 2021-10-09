@@ -307,6 +307,7 @@
             }
             //加载菜单树
             const getMenuTree = () => {
+                loading.value = true;
                 tree().then((res) => {
                     if (res.data.success) {
                         data.value = res.data.data.tree;
@@ -314,7 +315,9 @@
                     } else {
                         ElMessage.error("加载菜单树失败:" + res.data.data.errorMsg);
                     }
+                    loading.value = false;
                 }).catch((res) => {
+                    loading.value = false;
                     ElMessage.error("加载菜单树失败:" + res);
                 });
             }
@@ -480,9 +483,6 @@
             };
 
             getMenuTree();
-            setTimeout(() => {
-                loading.value = false;
-            }, 300);
 
             return {
                 data,

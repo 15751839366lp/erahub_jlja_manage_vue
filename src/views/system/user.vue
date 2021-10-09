@@ -89,14 +89,14 @@
             </el-form>
 
             <!-- 表格区域 -->
-            <el-table v-loading="loading" size="small" :data="userList" border style="width: 100%;" height="550">
+            <el-table v-loading="loading" size="small" :data="userList" border style="width: 100%;height: 100%" >
                 <!-- <el-table-column type="selection" width="40"></el-table-column> -->
                 <el-table-column label="#" prop="id" width="50"></el-table-column>
                 <el-table-column prop="username" label="用户名" width="110"></el-table-column>
                 <el-table-column prop="sex" :formatter="showSex" label="性别" width="100">
                     <template #default="scope">
-                        <el-tag size="small" type="success" v-if="scope.row.sex===1">帅哥</el-tag>
-                        <el-tag size="small" type="warning" v-else>美女</el-tag>
+                        <el-tag size="small" type="success" v-if="scope.row.sex===1">男</el-tag>
+                        <el-tag size="small" type="warning" v-else>女</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column prop="departmentName" label="所属部门" width="180" sortable></el-table-column>
@@ -191,8 +191,8 @@
                         <div class="grid-content bg-purple-light">
                           <el-form-item label="性别" prop="sex">
                             <el-radio-group v-model="addForm.sex">
-                              <el-radio :label="1">帅哥</el-radio>
-                              <el-radio :label="0">美女</el-radio>
+                              <el-radio :label="1">男</el-radio>
+                              <el-radio :label="0">女</el-radio>
                             </el-radio-group>
                           </el-form-item>
                         </div>
@@ -284,8 +284,8 @@
                             <div class="grid-content bg-purple-light">
                               <el-form-item label="性别" prop="sex">
                                 <el-radio-group v-model="editForm.sex">
-                                  <el-radio :label="1">帅哥</el-radio>
-                                  <el-radio :label="0">美女</el-radio>
+                                  <el-radio :label="1">男</el-radio>
+                                  <el-radio :label="0">女</el-radio>
                                 </el-radio-group>
                               </el-form-item>
                             </div>
@@ -569,13 +569,17 @@
              * 加载用户列表
              */
             const getUserList = () => {
+                loading.value = true;
                 findUserList(queryMap).then((res) => {
                     if (!res.data.success) {
+                        loading.value = false;
                         return ElMessage.error("获取用户列表失败:" + res.data.data.errorMsg);
                     }
                     total.value = res.data.data.total;
                     userList.value = res.data.data.rows;
+                    loading.value = false;
                 }).catch((res) => {
+                    loading.value = false;
                     ElMessage.error("加载用户列表 失败:" + res);
                 });
             }
@@ -794,14 +798,11 @@
              * 显示用户性别
              */
             const showSex = (row, column) => {
-                return row.sex === 1 ? "帅哥" : "美女";
+                return row.sex === 1 ? "男" : "女";
             }
 
             getUserList();
             getDepartmets();
-            setTimeout(() => {
-                loading.value = false;
-            }, 500);
 
             return {
                 btnLoading,

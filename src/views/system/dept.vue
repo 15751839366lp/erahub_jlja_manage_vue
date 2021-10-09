@@ -372,14 +372,17 @@
             }
             //加载部门别列表
             const getDepartmentList = () => {
+                loading.value = true;
                 findDepartmentList(queryMap).then((res) => {
                     if (!res.data.success) {
-                        return ElMessage.error("获取用户列表失败:" + res.data.data.errorMsg);
+                        ElMessage.error("获取用户列表失败:" + res.data.data.errorMsg);
                     } else {
                         total.value = res.data.data.total;
                         departmentData.value = res.data.data.rows;
                     }
+                    loading.value = false;
                 }).catch((res) => {
+                    loading.value = false;
                     ElMessage.error("获取用户列表失败:" + res);
                 });
 
@@ -406,9 +409,6 @@
             }
 
             getDepartmentList();
-            setTimeout(() => {
-                loading.value = false;
-            }, 300);
 
             return {
                 btnLoading,

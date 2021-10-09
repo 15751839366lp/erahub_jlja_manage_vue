@@ -189,9 +189,10 @@
              * 加载附件列表
              */
             const ageImageList = () => {
+                loading.value = true;
                 findImageList(queryMap.value).then((res) => {
                     if (!res.data.success) {
-                        return ElMessage.error("获取附件列表失败:" + res.data.data.errorMsg);
+                        ElMessage.error("获取附件列表失败:" + res.data.data.errorMsg);
                     } else {
                         total.value = res.data.data.total;
                         list.value = res.data.data.records;
@@ -200,7 +201,9 @@
                             srcList.value.push('' + item.path);
                         });
                     }
+                    loading.value = false;
                 }).catch((res) => {
+                    loading.value = false;
                     ElMessage.error(res);
                 })
             }
@@ -229,9 +232,6 @@
             }
 
             ageImageList();
-            setTimeout(() => {
-                loading.value = false;
-            }, 300);
 
             return {
 
