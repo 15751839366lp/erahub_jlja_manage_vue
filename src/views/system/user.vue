@@ -89,7 +89,7 @@
             </el-form>
 
             <!-- 表格区域 -->
-            <el-table v-loading="loading" size="small" :data="userList" border style="width: 100%;height: 100%" >
+            <el-table v-loading="loading" size="small" :data="userList" border style="width: 100%;" height="550" >
                 <!-- <el-table-column type="selection" width="40"></el-table-column> -->
                 <el-table-column label="#" prop="id" width="50"></el-table-column>
                 <el-table-column prop="username" label="用户名" width="110"></el-table-column>
