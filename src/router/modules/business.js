@@ -15,14 +15,14 @@ const business = [
         },
         component: () => import( '../../views/business/product/in-stock.vue'), //入库记录
     },
-//     {
-//         path: '/business/product/out-stocks',
-//         name: 'ProductOutStocks',
-//         meta:{
-//             title: "发放记录"
-//         },
-//         component: () => import( '../../views/business/product/out-stock.vue'), //发放记录
-//     },
+    {
+        path: '/business/product/out-stocks',
+        name: 'ProductOutStocks',
+        meta:{
+            title: "发放记录"
+        },
+        component: () => import( '../../views/business/product/out-stock.vue'), //发放记录
+    },
     {
         path: '/business/product/categories',
         name: 'ProductCategories',
@@ -63,14 +63,14 @@ const business = [
         },
         component: () => import( '../../views/business/product/add-stock.vue'), //物资入库
     },
-//     {
-//         path: '/business/product/publish',
-//         name: 'ProductPublish',
-//         meta:{
-//             title: "物资发放"
-//         },
-//         component: () => import( '../../views/business/product/publish.vue'),   //物资发放
-//     },
+    {
+        path: '/business/product/publish',
+        name: 'ProductPublish',
+        meta:{
+            title: "物资发放"
+        },
+        component: () => import( '../../views/business/product/publish.vue'),   //物资发放
+    },
     {
         path: '/covid19/map',
         name: 'Covid19Map',

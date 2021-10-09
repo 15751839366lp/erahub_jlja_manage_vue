@@ -53,7 +53,7 @@
                     stripe
                     :data="departmentData"
                     style="width: 100%;margin-top:20px;"
-                    height="550"
+                    height="450"
             >
                 <el-table-column prop="id" type="index" label="ID" width="50"></el-table-column>
                 <el-table-column prop="phone" label="办公电话" width="180"></el-table-column>

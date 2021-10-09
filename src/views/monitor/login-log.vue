@@ -35,7 +35,7 @@
                     size="mini"
                     :data="LoginLogData"
                     style="width: 100%;"
-                    height="550"
+                    height="450"
                     @selection-change="selsChange"
             >
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
