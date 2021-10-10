@@ -115,9 +115,9 @@
                     background
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
-                    :current-page="this.queryMap.pageNum"
+                    :current-page="queryMap.pageNum"
                     :page-sizes="[ 10, 15, 20]"
-                    :page-size="this.queryMap.pageSize"
+                    :page-size="queryMap.pageSize"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="total"
             ></el-pagination>
