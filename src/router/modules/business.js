@@ -31,22 +31,22 @@ const business = [
         },
         component: () => import( '../../views/business/product/category.vue'), //物资类别
     },
-//     {
-//         path: '/business/product/stocks',
-//         name: 'ProductStocks',
-//         meta:{
-//             title: "物资库存"
-//         },
-//         component: () => import( '../../views/business/product/stock.vue'),  //物资库存
-//     },
-//     {
-//         path: '/business/product/suppliers',
-//         name: 'ProductSuppliers',
-//         meta:{
-//             title: "物资来源"
-//         },
-//         component: () => import( '../../views/business/product/supplier.vue'), //物资来源
-//     },
+    {
+        path: '/business/product/stocks',
+        name: 'ProductStocks',
+        meta:{
+            title: "物资库存"
+        },
+        component: () => import( '../../views/business/product/stock.vue'),  //物资库存
+    },
+    {
+        path: '/business/product/suppliers',
+        name: 'ProductSuppliers',
+        meta:{
+            title: "物资来源"
+        },
+        component: () => import( '../../views/business/product/supplier.vue'), //物资来源
+    },
     {
         path: '/business/product/consumers',
         name: 'ProductConsumers',
