@@ -1,35 +1,38 @@
 <template>
-    <el-menu
-            class="el-menu-vertical-demo"
-            :collapse="isOpen"
-            :router="true"
-            active-text-color="#20a0ff"
-            :default-active="activePath"
-            background-color="#001529"
-            :collapse-transition="true"
-            text-color="rgba(255,255,255,0.7)"
-            unique-opened
-    >
-        <div>
+    <div class="sidebar">
+        <el-menu
+                class="el-menu-vertical-demo"
+                :collapse="isOpen"
+                :router="true"
+                active-text-color="#20a0ff"
+                :default-active="activePath"
+                background-color="#001529"
+                :collapse-transition="true"
+                text-color="rgba(255,255,255,0.7)"
+                unique-opened
+        >
             <template v-for="item in menuList">
-                <el-submenu :disabled="item.disabled" :index="item.id+''" v-if="item.children.length>0" :key="item.id+''">
+                <el-submenu :disabled="item.disabled" :index="item.id+''" v-if="item.children.length>0"
+                            :key="item.id+''">
                     <template #title style="padding-left:10px">
                         <i :class="item.icon"></i>
                         <span>{{ item.menuName}}</span>
                     </template>
                     <template v-for="subItem in item.children">
-                        <el-submenu :disabled="subItem.disabled" :index="subItem.id+''" v-if="subItem.children.length>0" :key="subItem.id+''">
+                        <el-submenu :disabled="subItem.disabled" :index="subItem.id+''" v-if="subItem.children.length>0"
+                                    :key="subItem.id+''">
                             <template #title style="padding-left:10px">
                                 <i :class="subItem.icon"></i>
                                 <span>{{ subItem.menuName}}</span>
                             </template>
                             <template v-for="threeItem in subItem.children">
-                                <el-submenu :disabled="threeItem.disabled" :index="threeItem.id+''" v-if="threeItem.children.length>0" :key="threeItem.id+''">
+                                <el-submenu :disabled="threeItem.disabled" :index="threeItem.id+''"
+                                            v-if="threeItem.children.length>0" :key="threeItem.id+''">
                                     <template #title style="padding-left:10px">
                                         <i :class="threeItem.icon"></i>
                                         <span>{{ threeItem.menuName}}</span>
                                     </template>
-<!--                                    <MenuTree :menuList="item.children"></MenuTree>-->
+                                    <!--                                    <MenuTree :menuList="item.children"></MenuTree>-->
                                 </el-submenu>
                                 <el-menu-item
                                         v-else
@@ -72,8 +75,8 @@
                     <span>{{item.menuName}}</span>
                 </el-menu-item>
             </template>
-        </div>
-    </el-menu>
+        </el-menu>
+    </div>
 </template>
 
 <script>
@@ -85,7 +88,6 @@
 
 
     export default {
-        name: "MenuTree", //模板名称
         setup() {
             const store = useStore();
             const route = useRoute();
@@ -134,6 +136,27 @@
 </script>
 
 <style>
+    .sidebar {
+        display: block;
+        position: absolute;
+        left: 0;
+        top: 70px;
+        bottom: 0;
+        overflow-y: scroll;
+    }
+
+    .sidebar::-webkit-scrollbar {
+        width: 0;
+    }
+
+    .sidebar-el-menu:not(.el-menu--collapse) {
+        width: 250px;
+    }
+
+    .sidebar > ul {
+        height: 100%;
+    }
+
     .el-menu--collapse span,
     .el-menu--collapse i.el-submenu__icon-arrow {
         height: 0;
@@ -142,6 +165,7 @@
         visibility: hidden;
         display: inline-block;
     }
+
     .el-menu-vertical-demo:not(.el-menu--collapse) {
         width: 200px;
         min-height: 400px;

@@ -13,7 +13,7 @@
                     label-width="0px"
                     class="demo-ruleForm login-page"
             >
-                <h3 class="title">系统登录</h3>
+                <h3 class="title" style="padding: 30px;font-size: 20px">系统登录</h3>
                 <el-form-item prop="username">
                     <el-input
                             type="text"

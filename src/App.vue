@@ -32,6 +32,9 @@
     });
 </script>
 <style>
+    @import "./assets/css/main.css";
+    @import "./assets/css/color-dark.css";
+
     html, body {
         margin: 0px;
         padding: 0px;

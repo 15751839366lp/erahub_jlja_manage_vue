@@ -53,8 +53,7 @@
                                     <img
                                             src="../assets/1.svg"
                                             alt
-                                            width="60.8px;"
-                                            style="margin:0px auto; cursor: pointer;margin-left:20px;"
+                                            style="margin:0px auto; cursor: pointer;margin-left:20px;width: 60.8px;"
                                     />
                                 </router-link>
                                 <div style="font-size:12px;margin-top:5px;margin-left:25px;">物资资料</div>
@@ -66,8 +65,7 @@
                                     <img
                                             src="../assets/2.svg"
                                             alt
-                                            width="60.8px;"
-                                            style="cursor: pointer;margin-left:20px;"
+                                            style="cursor: pointer;margin-left:20px;width: 60.8px;"
                                     />
                                 </router-link>
                                 <div style="font-size:12px;margin-top:5px;margin-left:25px;">物资库存</div>
@@ -80,8 +78,7 @@
                                     <img
                                             src="../assets/3.svg"
                                             alt
-                                            width="60.8px;"
-                                            style="cursor: pointer;margin-left:20px;"
+                                            style="cursor: pointer;margin-left:20px;width: 60.8px;"
                                     />
                                 </router-link>
 
@@ -94,8 +91,7 @@
                                 <img
                                         src="../assets/4.svg"
                                         alt
-                                        width="60.8px;"
-                                        style="cursor: pointer;margin-left:20px;"
+                                        style="cursor: pointer;margin-left:20px;width: 60.8px;"
                                 />
                             </router-link>
                             <div style="font-size:12px;margin-top:5px;margin-left:25px;">物资发放</div>

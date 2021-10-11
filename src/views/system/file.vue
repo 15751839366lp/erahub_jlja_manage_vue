@@ -138,7 +138,7 @@
             const list = ref([])
             const srcList = ref([])
             const headerObject = reactive({
-                Authorization: getToken
+                Authorization: window.localStorage.getItem("token")
             }) //图片上传请求头
 
             const uploadRef = ref(null)
