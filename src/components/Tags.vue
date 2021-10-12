@@ -138,7 +138,8 @@
         line-height: 23px;
         border: 1px solid #e9eaec;
         background: #fff;
-        padding: 0 5px 0 12px;
+        padding: 0 0 0 0;
+        width: 84px;
         vertical-align: middle;
         color: #666;
         -webkit-transition: all 0.3s ease-in;
@@ -161,8 +162,9 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
-        margin-right: 5px;
+        width: 65px;
         color: #666;
+        text-align: center;
         text-decoration:none;
     }
 
