@@ -23,7 +23,7 @@ export default {
     hostname: process.env.VITE_HOST,
     port: process.env.VITE_PORT,
     open: false,
-    https: false,
+    https: true,
     ssr: false,
     filenameHashing: false,
 
