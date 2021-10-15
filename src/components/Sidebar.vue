@@ -12,14 +12,16 @@
                 unique-opened
         >
             <template v-for="item in menuList">
-                <el-submenu :disabled="item.disabled" :index="item.id+''" v-if="item.children.length>0"
+                <el-submenu :disabled="item.disabled" :index="item.id+''"
+                            v-if="item.children != null && item.children != undefined && item.children.length>0"
                             :key="item.id+''">
                     <template #title style="padding-left:10px">
                         <i :class="item.icon"></i>
                         <span>{{ item.menuName}}</span>
                     </template>
                     <template v-for="subItem in item.children">
-                        <el-submenu :disabled="subItem.disabled" :index="subItem.id+''" v-if="subItem.children.length>0"
+                        <el-submenu :disabled="subItem.disabled" :index="subItem.id+''"
+                                    v-if="subItem.children != null && subItem.children != undefined && subItem.children.length>0"
                                     :key="subItem.id+''">
                             <template #title style="padding-left:10px">
                                 <i :class="subItem.icon"></i>
@@ -27,7 +29,7 @@
                             </template>
                             <template v-for="threeItem in subItem.children">
                                 <el-submenu :disabled="threeItem.disabled" :index="threeItem.id+''"
-                                            v-if="threeItem.children.length>0" :key="threeItem.id+''">
+                                            v-if="threeItem.children != null && threeItem.children != undefined && threeItem.children.length>0" :key="threeItem.id+''">
                                     <template #title style="padding-left:10px">
                                         <i :class="threeItem.icon"></i>
                                         <span>{{ threeItem.menuName}}</span>

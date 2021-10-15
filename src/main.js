@@ -21,7 +21,7 @@ app.directive('hasPermission', (el, binding) => {
     if (userInfo.isAdmin) {
         //如果是超级管理员
         flag = true;
-    } else if (userInfo.perms.indexOf(value) != -1) {
+    } else if (userInfo.perms != null && userInfo.perms != undefined && userInfo.perms.indexOf(value) != -1) {
         //如果有该权限按钮显示
         flag = true;
     }

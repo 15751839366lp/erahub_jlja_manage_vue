@@ -162,6 +162,7 @@
             }
 
             const close = () => {
+                loadingFull.value = false
                 isShow.value = false;
             }
 
