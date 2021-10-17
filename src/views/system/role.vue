@@ -57,12 +57,12 @@
                 <el-table-column prop="id" label="ID" width="180"></el-table-column>
                 <el-table-column prop="roleName" label="角色名" width="180"></el-table-column>
                 <el-table-column prop="createTime" label="创建时间" width="150"></el-table-column>
+                <el-table-column prop="remark" label="备注"></el-table-column>
                 <el-table-column prop="isban" label="是否禁用" width="100">
                     <template #default="scope">
                         <el-switch v-model="scope.row.status" @change="changRoleStatus(scope.row)"></el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column prop="remark" label="备注"></el-table-column>
                 <el-table-column fixed="right" label="操作" width="200">
                     <template #default="scope">
                         <el-button
@@ -346,6 +346,8 @@
                                 addForm.value = {};
                                 getRoleList();
                             } else {
+                                btnDisabled.value = false;
+                                btnLoading.value = false;
                                 return ElMessage.error("角色添加失败:" + res.data.data.errorMsg);
                             }
                         }).catch((res) => {

@@ -357,11 +357,12 @@
                                 getDepartmentList();
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
+                                addDialogVisible.value = false;
                             } else {
-                                return ElMessage.error("部门添加失败:" + res.data.data.errorMsg);
+                                btnLoading.value = false;
+                                btnDisabled.value = false;
+                                ElMessage.error("部门添加失败:" + res.data.data.errorMsg);
                             }
-                            addDialogVisible.value = false;
-                            (btnLoading.value = false), (btnDisabled.value = false);
                         }).catch((res) => {
                             addDialogVisible.value = false;
                             (btnLoading.value = false), (btnDisabled.value = false);

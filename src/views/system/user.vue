@@ -100,9 +100,10 @@
                     </template>
                 </el-table-column>
                 <el-table-column prop="departmentName" label="所属部门" width="180" sortable></el-table-column>
-                <el-table-column prop="birth" label="生日" width="180" sortable></el-table-column>
+                <el-table-column prop="createTime" label="创建时间" width="150"></el-table-column>
                 <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
                 <el-table-column prop="phoneNumber" label="电话" width="150"></el-table-column>
+                <el-table-column prop="birth" label="生日" width="180" sortable></el-table-column>
                 <el-table-column prop="isban" label="是否禁用" width="100">
                     <template #default="scope">
                         <el-switch v-model="scope.row.status" @change="changUserStatus(scope.row)"></el-switch>
@@ -648,12 +649,12 @@
                                 getDepartmets();
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
+                                addDialogVisible.value = false;
                             } else {
+                                btnDisabled.value = false;
+                                btnLoading.value = false;
                                 return ElMessage.error("用户添加失败:" + res.data.data.errorMsg);
                             }
-                            addDialogVisible.value = false;
-                            btnDisabled.value = false;
-                            btnLoading.value = false;
                         }).catch((res) => {
                             ElMessage.error("用户添加失败:" + res);
                             addFormRef.value.resetFields();

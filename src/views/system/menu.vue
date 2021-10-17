@@ -39,7 +39,10 @@
 
                 </el-row>
 
-                <p>菜单权限树</p>
+                <p>
+                    菜单权限树
+                </p>
+
                 <el-tree
                         :data="data"
                         accordion
