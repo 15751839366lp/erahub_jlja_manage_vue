@@ -54,8 +54,8 @@
                     height="450"
                     size="small"
             >
-                <el-table-column prop="id" label="ID" width="180"></el-table-column>
-                <el-table-column prop="roleName" label="角色名" width="180"></el-table-column>
+                <el-table-column prop="id" label="ID" width="180" fixed></el-table-column>
+                <el-table-column prop="roleName" label="角色名" width="180" fixed></el-table-column>
                 <el-table-column prop="createTime" label="创建时间" width="150"></el-table-column>
                 <el-table-column prop="remark" label="备注"></el-table-column>
                 <el-table-column prop="isban" label="是否禁用" width="100">

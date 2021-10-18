@@ -91,8 +91,8 @@
             <!-- 表格区域 -->
             <el-table v-loading="loading" size="small" :data="userList" border style="width: 100%;" height="450" >
                 <!-- <el-table-column type="selection" width="40"></el-table-column> -->
-                <el-table-column label="#" prop="id" width="50"></el-table-column>
-                <el-table-column prop="username" label="用户名" width="110"></el-table-column>
+                <el-table-column label="#" prop="id" width="50" fixed></el-table-column>
+                <el-table-column prop="username" label="用户名" width="110" fixed></el-table-column>
                 <el-table-column prop="sex" :formatter="showSex" label="性别" width="100">
                     <template #default="scope">
                         <el-tag size="small" type="success" v-if="scope.row.sex===1">男</el-tag>
@@ -109,7 +109,7 @@
                         <el-switch v-model="scope.row.status" @change="changUserStatus(scope.row)"></el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作">
+                <el-table-column label="操作" fixed="right" width="200">
                     <template #default="scope">
                         <el-button v-hasPermission="'user:edit'" size="small" type="primary" icon="el-icon-edit-outline"
                                    @click="edit(scope.row.id)"></el-button>
