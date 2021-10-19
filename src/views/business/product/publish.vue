@@ -453,6 +453,8 @@
             }) //添加验证
 
             const addRuleFormRef = ref(null)
+            const addDialogVisible = ref(null)
+
             const dataTable = ref(null)
 
             /**
@@ -715,7 +717,7 @@
                                 addOutStock(addRuleForm.value).then((res) => {
                                     if (res.data.success) {
                                         ElMessage.warning("物资发放进入审核状态");
-                                        router.push("/outStocks");
+                                        router.push("/business/product/out-stocks");
                                     } else {
                                         return ElMessage.error("商品发放失败:" + res.data.data.errorMsg);
                                     }
@@ -764,6 +766,7 @@
                 addRuleForm,
                 addRules,
                 addRuleFormRef,
+                addDialogVisible,
                 dataTable,
                 selectChange,
                 getCatetorys,

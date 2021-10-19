@@ -279,7 +279,7 @@
             const dialogVisible = ref(false)
             const pageNum = ref(1)
             const total = ref(0)
-            const queryMap = ref({pageNum: 1, pageSize: 10, status: 0,})
+            const queryMap = ref({pageNum: 1, pageSize: 10, status: 2,})
             const tableData = ref([])
             const pStatus = ref('')  //步骤flag
             const detailId = ref(0)  //步骤flag
