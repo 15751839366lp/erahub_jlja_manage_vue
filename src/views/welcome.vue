@@ -49,7 +49,7 @@
                     <el-card style="height:125px;">
                         <el-col :span="6">
                             <div class="grid-content bg-purple">
-                                <router-link to="/business/product/list">
+                                <router-link to="/business/material/product/list">
                                     <img
                                             src="../assets/1.svg"
                                             alt
@@ -61,7 +61,7 @@
                         </el-col>
                         <el-col :span="6">
                             <div class="grid-content bg-purple-light">
-                                <router-link to="/business/product/stocks">
+                                <router-link to="/business/material/product/stocks">
                                     <img
                                             src="../assets/2.svg"
                                             alt
@@ -74,7 +74,7 @@
 
                         <el-col :span="6">
                             <div class="grid-content bg-purple-light">
-                                <router-link to="/business/product/add-stocks">
+                                <router-link to="/business/material/product/add-stocks">
                                     <img
                                             src="../assets/3.svg"
                                             alt
@@ -87,7 +87,7 @@
                         </el-col>
                         <el-col :span="6">
                             <div class="grid-content bg-purple"></div>
-                            <router-link to="/business/product/publish">
+                            <router-link to="/business/material/product/publish">
                                 <img
                                         src="../assets/4.svg"
                                         alt
