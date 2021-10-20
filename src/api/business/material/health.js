@@ -1,8 +1,8 @@
-import service from "../../utils/request";
+import service from "../../../utils/request";
 
 export function history(params) {
     return service.request({
-        url: '/business/health/history',
+        url: '/business/material/health/history',
         method: 'get',
         params: params
     });
@@ -10,14 +10,14 @@ export function history(params) {
 
 export function isReport() {
     return service.request({
-        url: '/business/health/isReport',
+        url: '/business/material/health/isReport',
         method: 'get'
     });
 }
 
 export function report(data) {
     return service.request({
-        url: '/business/health/report',
+        url: '/business/material/health/report',
         method: 'post',
         data
     });

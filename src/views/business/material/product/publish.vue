@@ -3,7 +3,7 @@
         <!-- 面包导航 -->
         <el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:12px;">
             <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-            <el-breadcrumb-item :to="{ path: '/business/product/out-stocks' }">出库记录</el-breadcrumb-item>
+            <el-breadcrumb-item :to="{ path: '/business/material/product/out-stocks' }">出库记录</el-breadcrumb-item>
             <el-breadcrumb-item>发放物资</el-breadcrumb-item>
         </el-breadcrumb>
         <!-- 卡片区域 -->
@@ -353,11 +353,11 @@
     import {ref, reactive, getCurrentInstance} from "vue";
     import {ElMessage, ElLoading, ElNotification, ElMessageBox} from "element-plus";
     import {useRouter, useRoute} from "vue-router";
-    import {getProvinces} from '../../../api/business/businessUtils'
-    import {categoryTree} from '../../../api/business/productCategory'
-    import {findProductStocks} from '../../../api/business/product'
-    import {addOutStock} from '../../../api/business/outStock'
-    import {findAll} from '../../../api/business/consumer'
+    import {getProvinces} from '../../../../api/business/material/businessUtils'
+    import {categoryTree} from '../../../../api/business/material/productCategory'
+    import {findProductStocks} from '../../../../api/business/material/product'
+    import {addOutStock} from '../../../../api/business/material/outStock'
+    import {findAll} from '../../../../api/business/material/consumer'
 
     export default {
 
@@ -644,7 +644,7 @@
 
             //加载去向数据
             const getConsumers = () => {
-                findAll("consumer/findAll").then((res) => {
+                findAll().then((res) => {
                     if (!res.data.success) {
                         return ElMessage.error("获取去向数据失败:"+res.data.data.errorMsg);
                     } else {
@@ -717,7 +717,7 @@
                                 addOutStock(addRuleForm.value).then((res) => {
                                     if (res.data.success) {
                                         ElMessage.warning("物资发放进入审核状态");
-                                        router.push("/business/product/out-stocks");
+                                        router.push("/business/material/product/out-stocks");
                                     } else {
                                         return ElMessage.error("商品发放失败:" + res.data.data.errorMsg);
                                     }

@@ -352,11 +352,11 @@
     import {ElMessage, ElLoading, ElNotification, ElMessageBox} from "element-plus";
     import {useStore} from "vuex";
     import {useRouter, useRoute} from "vue-router";
-    import {findAll} from '../../../api/business/supplier'
-    import {addIntoStock} from '../../../api/business/inStock'
-    import {findProducts} from '../../../api/business/product'
-    import {categoryTree} from '../../../api/business/productCategory'
-    import {getProvinces} from '../../../api/business/businessUtils'
+    import {findAll} from '../../../../api/business/material/supplier'
+    import {addIntoStock} from '../../../../api/business/material/inStock'
+    import {findProducts} from '../../../../api/business/material/product'
+    import {categoryTree} from '../../../../api/business/material/productCategory'
+    import {getProvinces} from '../../../../api/business/material/businessUtils'
 
     export default {
 
@@ -548,7 +548,7 @@
                                     addIntoStock(addRuleForm.value).then((res) => {
                                         if (res.data.success) {
                                             ElMessage.warning("物资入库进入审核状态");
-                                            router.push("/business/product/in-stocks");
+                                            router.push("/business/material/product/in-stocks");
                                         } else {
                                             return ElMessage.error("商品入库失败:" + res.data.data.errorMsg);
                                         }

@@ -1,4 +1,4 @@
-import service from "../../utils/request";
+import service from "../../../utils/request";
 
 export function deleteConsumer(url) {
     return service.request({
@@ -24,7 +24,7 @@ export function edit(url) {
 
 export function add(data) {
     return service.request({
-        url: '/business/consumer/add',
+        url: '/business/material/consumer/add',
         method: 'post',
         data
     });
@@ -32,7 +32,7 @@ export function add(data) {
 
 export function findConsumerList(params) {
     return service.request({
-        url: '/business/consumer/findConsumerList',
+        url: '/business/material/consumer/findConsumerList',
         method: 'get',
         params: params
     });
@@ -40,7 +40,7 @@ export function findConsumerList(params) {
 
 export function findAll() {
     return service.request({
-        url: '/business/consumer/findAll',
+        url: '/business/material/consumer/findAll',
         method: 'get'
     });
 }

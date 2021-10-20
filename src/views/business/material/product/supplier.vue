@@ -267,8 +267,8 @@
 <script>
     import {ref, reactive, getCurrentInstance} from "vue";
     import {ElMessage, ElLoading, ElNotification, ElMessageBox} from "element-plus";
-    import {getProvinces} from '../../../api/business/businessUtils'
-    import {deleteSupplier, update, edit, add, findSupplierList} from '../../../api/business/supplier'
+    import {getProvinces} from '../../../../api/business/material/businessUtils'
+    import {deleteSupplier, update, edit, add, findSupplierList} from '../../../../api/business/material/supplier'
 
     export default {
 
@@ -376,7 +376,7 @@
                     }
                 ).then((res) => {
                     if (res === "confirm") {
-                        deleteSupplier("business/supplier/delete/" + id).then((res) => {
+                        deleteSupplier("/business/material/supplier/delete/" + id).then((res) => {
                             if (res.data.success) {
                                 ElMessage.success("来源删除成功");
                                 getSupplierList();
@@ -401,7 +401,7 @@
                         return;
                     } else {
                         update(
-                            "business/supplier/update/" + editRuleForm.value.id,
+                            "business/material/supplier/update/" + editRuleForm.value.id,
                             editRuleForm.value
                         ).then((res) => {
                             if (res.data.success) {
@@ -426,7 +426,7 @@
             }
             //编辑
             const editSupplier = (id) => {
-                edit("business/supplier/edit/" + id).then((res) => {
+                edit("business/material/supplier/edit/" + id).then((res) => {
                     if (res.data.success) {
                         editRuleForm.value = res.data.data;
                     } else {

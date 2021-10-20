@@ -96,8 +96,8 @@
     import {ref, reactive, getCurrentInstance, onMounted} from "vue";
     import {ElMessage, ElLoading, ElNotification, ElMessageBox} from "element-plus";
     import echarts from "echarts";
-    import {findProductStocks, findAllStocks} from '../../../api/business/product';
-    import {categoryTree} from '../../../api/business/productCategory'
+    import {findProductStocks, findAllStocks} from '../../../../api/business/material/product';
+    import {categoryTree} from '../../../../api/business/material/productCategory'
 
     export default {
 

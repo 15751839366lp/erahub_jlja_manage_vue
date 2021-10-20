@@ -1,8 +1,8 @@
-import service from "../../utils/request";
+import service from "../../../utils/request";
 
 // export function categoryTree() {
 //     return service.request({
-//         url: '/business/productCategory/categoryTree',
+//         url: '/business/material/productCategory/categoryTree',
 //         method: 'get',
 //     });
 // }
@@ -31,7 +31,7 @@ export function deleteProductCategory(url) {
 
 export function categoryTree(params) {
     return service.request({
-        url: '/business/productCategory/categoryTree',
+        url: '/business/material/productCategory/categoryTree',
         method: 'get',
         params: params
     });
@@ -39,14 +39,14 @@ export function categoryTree(params) {
 
 export function getParentCategoryTree() {
     return service.request({
-        url: '/business/productCategory/getParentCategoryTree',
+        url: '/business/material/productCategory/getParentCategoryTree',
         method: 'get'
     });
 }
 
 export function add(data) {
     return service.request({
-        url: '/business/productCategory/add',
+        url: '/business/material/productCategory/add',
         method: 'post',
         data
     });

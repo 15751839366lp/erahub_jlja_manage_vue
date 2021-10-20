@@ -247,8 +247,8 @@
 <script>
     import {ref, reactive, getCurrentInstance} from "vue";
     import {ElMessage, ElLoading, ElNotification, ElMessageBox} from "element-plus";
-    import {deleteConsumer, update, edit, add, findConsumerList} from '../../../api/business/consumer'
-    import {getProvinces} from '../../../api/business/businessUtils'
+    import {deleteConsumer, update, edit, add, findConsumerList} from '../../../../api/business/material/consumer'
+    import {getProvinces} from '../../../../api/business/material/businessUtils'
 
     export default {
 
@@ -344,7 +344,7 @@
                     }
                 ).then((res) => {
                     if (res === "confirm") {
-                        deleteConsumer("/business/consumer/delete/" + id).then((res) => {
+                        deleteConsumer("/business/material/consumer/delete/" + id).then((res) => {
                             if (res.data.success) {
                                 ElMessage.success("物资去处删除成功");
                                 getConsumerList();
@@ -369,7 +369,7 @@
                         return;
                     } else {
                         update(
-                            "/business/consumer/update/" + editRuleForm.value.id,
+                            "/business/material/consumer/update/" + editRuleForm.value.id,
                             editRuleForm.value
                         ).then((res) => {
                             if (res.data.success) {
@@ -396,7 +396,7 @@
              */
             const editData = (id) => {
                 getJsonData();
-                edit("/business/consumer/edit/" + id).then((res) => {
+                edit("/business/material/consumer/edit/" + id).then((res) => {
                     if (res.data.success) {
                         editRuleForm.value = res.data.data;
                     } else {

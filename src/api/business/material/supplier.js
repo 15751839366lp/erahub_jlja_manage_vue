@@ -1,8 +1,8 @@
-import service from "../../utils/request";
+import service from "../../../utils/request";
 
 export function findAll() {
     return service.request({
-        url: '/business/supplier/findAll',
+        url: '/business/material/supplier/findAll',
         method: 'get'
     });
 }
@@ -31,7 +31,7 @@ export function edit(url) {
 
 export function add(data) {
     return service.request({
-        url: '/business/supplier/add',
+        url: '/business/material/supplier/add',
         method: 'post',
         data
     });
@@ -39,7 +39,7 @@ export function add(data) {
 
 export function findSupplierList(params) {
     return service.request({
-        url: '/business/supplier/findSupplierList',
+        url: '/business/material/supplier/findSupplierList',
         method: 'get',
         params: params
     });

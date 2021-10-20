@@ -132,7 +132,7 @@
         categoryTree,
         getParentCategoryTree,
         add
-    } from '../../../api/business/productCategory'
+    } from '../../../../api/business/material/productCategory'
 
     export default {
 
@@ -213,7 +213,7 @@
                         btnLoading.value = true;
                         btnDisabled.value = true;
                         update(
-                            "/business/productCategory/update/" + editRuleForm.value.id,
+                            "/business/material/productCategory/update/" + editRuleForm.value.id,
                             editRuleForm.value
                         ).then((res) => {
                             if (res.data.success) {
@@ -242,7 +242,7 @@
             }
             //修改
             const editCategory = (id) => {
-                edit("/business/productCategory/edit/" + id).then((res) => {
+                edit("/business/material/productCategory/edit/" + id).then((res) => {
                     if (res.data.success) {
                         editRuleForm.value = res.data.data;
                     } else {
@@ -267,7 +267,7 @@
                 ).then((res) => {
                     if (res === "confirm") {
                         deleteProductCategory(
-                            "/business/productCategory/delete/" + id
+                            "/business/material/productCategory/delete/" + id
                         ).then((res) => {
                             if (res.data.success) {
                                 ElMessage.success("分类删除成功");

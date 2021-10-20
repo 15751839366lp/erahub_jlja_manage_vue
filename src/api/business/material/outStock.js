@@ -1,4 +1,4 @@
-import service from "../../utils/request";
+import service from "../../../utils/request";
 
 export function publish(url) {
     return service.request({
@@ -37,7 +37,7 @@ export function back(url) {
 
 export function findOutStockList(params) {
     return service.request({
-        url: "/business/outStock/findOutStockList",
+        url: "/business/material/outStock/findOutStockList",
         method: 'get',
         params: params
     });
@@ -45,7 +45,7 @@ export function findOutStockList(params) {
 
 export function addOutStock(data) {
     return service.request({
-        url: "/business/outStock/addOutStock",
+        url: "/business/material/outStock/addOutStock",
         method: 'post',
         data
     });

@@ -366,7 +366,7 @@
 <script>
     import {ref, reactive, getCurrentInstance} from "vue";
     import {ElMessage, ElLoading, ElNotification, ElMessageBox} from "element-plus";
-    import {getToken} from '../../../utils/auth'
+    import {getToken} from '../../../../utils/auth'
     import {
         publish,
         deleteProduct,
@@ -376,8 +376,8 @@
         remove,
         back,
         findProductList
-    } from '../../../api/business/product'
-    import {categoryTree} from '../../../api/business/productCategory'
+    } from '../../../../api/business/material/product'
+    import {categoryTree} from '../../../../api/business/material/productCategory'
 
     export default {
 
@@ -489,7 +489,7 @@
              * 物资添加审核
              */
             const publishStock = (id) => {
-                publish("/business/product/publish/" + id).then((res) => {
+                publish("/business/material/product/publish/" + id).then((res) => {
                     if (!res.data.success) {
                         return ElMessage.error("审核失败:" + res.data.data.errorMsg);
                     } else {
@@ -514,7 +514,7 @@
                     }
                 ).then((res) => {
                     if (res === "confirm") {
-                        deleteProduct("/business/product/delete/" + id).then((res) => {
+                        deleteProduct("/business/material/product/delete/" + id).then((res) => {
                             if (res.data.success) {
                                 ElMessage.success("物资删除成功");
                                 getproductList();
@@ -543,7 +543,7 @@
                         btnDisabled.value = true;
                         btnLoading.value = true;
                         update(
-                            "/business/product/update/" + editRuleForm.value.id,
+                            "/business/material/product/update/" + editRuleForm.value.id,
                             editRuleForm.value
                         ).then((res) => {
                             if (res.data.success) {
@@ -573,7 +573,7 @@
              * 编辑物资
              */
             const editStock = (id) => {
-                edit("/business/product/edit/" + id).then((res) => {
+                edit("/business/material/product/edit/" + id).then((res) => {
                     if (res.data.success) {
                         editRuleForm.value = res.data.data;
                         const item = res.data.data;
@@ -630,7 +630,7 @@
              * 移除回收站
              */
             const removeStock = (id) => {
-                remove("/business/product/remove/" + id).then((res) => {
+                remove("/business/material/product/remove/" + id).then((res) => {
                     if (!res.data.success) {
                         return ElMessage.error("移入回收站失败:" + res.data.data.errorMsg);
                     } else {
@@ -645,7 +645,7 @@
              * 从回收站恢复
              */
             const backStock = (id) => {
-                back("/business/product/back/" + id).then((res) => {
+                back("/business/material/product/back/" + id).then((res) => {
                     if (!res.data.success) {
                         return ElMessage.error("从回收站恢复失败:" + res.data.data.errorMsg);
                     } else {

@@ -15,7 +15,7 @@
                 <el-submenu :disabled="item.disabled" :index="item.id+''"
                             v-if="item.children != null && item.children != undefined && item.children.length>0"
                             :key="item.id+''">
-                    <template #title style="padding-left:10px">
+                    <template #title>
                         <i :class="item.icon"></i>
                         <span>{{ item.menuName}}</span>
                     </template>
@@ -23,16 +23,36 @@
                         <el-submenu :disabled="subItem.disabled" :index="subItem.id+''"
                                     v-if="subItem.children != null && subItem.children != undefined && subItem.children.length>0"
                                     :key="subItem.id+''">
-                            <template #title style="padding-left:10px">
+                            <template #title>
                                 <i :class="subItem.icon"></i>
                                 <span>{{ subItem.menuName}}</span>
                             </template>
                             <template v-for="threeItem in subItem.children">
                                 <el-submenu :disabled="threeItem.disabled" :index="threeItem.id+''"
                                             v-if="threeItem.children != null && threeItem.children != undefined && threeItem.children.length>0" :key="threeItem.id+''">
-                                    <template #title style="padding-left:10px">
+                                    <template #title>
                                         <i :class="threeItem.icon"></i>
                                         <span>{{ threeItem.menuName}}</span>
+                                    </template>
+                                    <template v-for="fourItem in threeItem.children">
+                                        <el-submenu :disabled="fourItem.disabled" :index="fourItem.id+''"
+                                                    v-if="fourItem.children != null && fourItem.children != undefined && fourItem.children.length>0" :key="fourItem.id+''">
+                                            <template #title>
+                                                <i :class="fourItem.icon"></i>
+                                                <span>{{ fourItem.menuName}}</span>
+                                            </template>
+                                        </el-submenu>
+                                        <el-menu-item
+                                                v-else
+                                                :disabled="fourItem.disabled"
+                                                :index="fourItem.url+''"
+                                                :route="fourItem.url"
+                                                @click="savePath(fourItem.url)"
+                                                :key="fourItem.id+''"
+                                        >
+                                            <i :class="fourItem.icon"></i>
+                                            <span>{{fourItem.menuName}}</span>
+                                        </el-menu-item>
                                     </template>
                                     <!--                                    <MenuTree :menuList="item.children"></MenuTree>-->
                                 </el-submenu>
@@ -43,7 +63,6 @@
                                         :route="threeItem.url"
                                         @click="savePath(threeItem.url)"
                                         :key="threeItem.id+''"
-                                        style="padding-left: 50px;"
                                 >
                                     <i :class="threeItem.icon"></i>
                                     <span>{{threeItem.menuName}}</span>
@@ -57,7 +76,6 @@
                                 :route="subItem.url"
                                 @click="savePath(subItem.url)"
                                 :key="subItem.id+''"
-                                style="padding-left: 50px;"
                         >
                             <i :class="subItem.icon"></i>
                             <span>{{subItem.menuName}}</span>
@@ -71,7 +89,6 @@
                         :route="item.url"
                         @click="savePath(item.url)"
                         :key="item.id+''"
-                        style="padding-left: 50px;"
                 >
                     <i :class="item.icon"></i>
                     <span>{{item.menuName}}</span>

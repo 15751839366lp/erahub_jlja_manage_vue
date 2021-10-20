@@ -1,8 +1,8 @@
-import service from "../../utils/request";
+import service from "../../../utils/request";
 
 export function findProducts(params) {
     return service.request({
-        url: '/business/product/findProducts',
+        url: '/business/material/product/findProducts',
         method: 'get',
         params: params
     });
@@ -39,7 +39,7 @@ export function edit(url) {
 
 export function add(data) {
     return service.request({
-        url: "/business/product/add",
+        url: "/business/material/product/add",
         method: 'post',
         data
     });
@@ -61,7 +61,7 @@ export function back(url) {
 
 export function findProductList(params) {
     return service.request({
-        url: "/business/product/findProductList",
+        url: "/business/material/product/findProductList",
         method: 'get',
         params: params
     });
@@ -69,7 +69,7 @@ export function findProductList(params) {
 
 export function findProductStocks(params) {
     return service.request({
-        url: "/business/product/findProductStocks",
+        url: "/business/material/product/findProductStocks",
         method: 'get',
         params: params
     });
@@ -77,7 +77,7 @@ export function findProductStocks(params) {
 
 export function findAllStocks(params) {
     return service.request({
-        url: "/business/product/findAllStocks",
+        url: "/business/material/product/findAllStocks",
         method: 'get',
         params: params
     });

@@ -1,9 +1,9 @@
 import {createRouter, createWebHashHistory} from "vue-router";
 import store from '../store'//引入store
 import {getToken} from '../utils/auth'
-import system from './modules/system'
-import monitor from './modules/monitor'
-import business from './modules/business'
+import system from './modules/system/system'
+import monitor from './modules/system/monitor'
+import material from './modules/business/material'
 
 
 const routes = [
@@ -24,7 +24,7 @@ const routes = [
         children: []
             .concat(system)
             .concat(monitor)
-            .concat(business)
+            .concat(material)
     },
 ]
 

@@ -235,8 +235,8 @@
     import {ref, reactive, onMounted, onBeforeUnmount, getCurrentInstance} from "vue";
     import {ElMessage, ElNotification} from "element-plus";
     import {useStore} from "vuex";
-    import {history, isReport, report} from '../../../api/business/health'
-    import {getProvinces} from '../../../api/business/businessUtils'
+    import {history, isReport, report} from '../../../../api/business/material/health'
+    import {getProvinces} from '../../../../api/business/material/businessUtils'
 
     export default {
 

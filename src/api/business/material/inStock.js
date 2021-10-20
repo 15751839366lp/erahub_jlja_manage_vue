@@ -1,8 +1,8 @@
-import service from "../../utils/request";
+import service from "../../../utils/request";
 
 export function addIntoStock(data) {
     return service.request({
-        url: '/business/inStock/addIntoStock',
+        url: '/business/material/inStock/addIntoStock',
         method: 'post',
         data
     });
@@ -45,7 +45,7 @@ export function detail(url) {
 
 export function findInStockList(params) {
     return service.request({
-        url: "/business/inStock/findInStockList",
+        url: "/business/material/inStock/findInStockList",
         method: 'get',
         params: params
     });
