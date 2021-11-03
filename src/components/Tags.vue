@@ -41,6 +41,8 @@
             const tagsList = computed(() => store.state.component.tagsList);
             const showTags = computed(() => tagsList.value.length > 0);
 
+            store.commit("component/clearTags");
+
             // 关闭单个标签
             const closeTags = (index) => {
                 const delItem = tagsList.value[index];
