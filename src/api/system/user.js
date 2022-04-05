@@ -60,6 +60,14 @@ export function add(data) {
     });
 }
 
+export function changeUserPassword(data) {
+    return service.request({
+        url: 'system/user/changeUserPassword',
+        method: 'post',
+        data: data
+    });
+}
+
 export function update(url,data) {
     return service.request({
         url: url,

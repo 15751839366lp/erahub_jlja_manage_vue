@@ -99,7 +99,7 @@
                         <el-tag size="small" type="warning" v-else>女</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="departmentName" label="所属部门" width="180" sortable></el-table-column>
+                <el-table-column prop="departmentName" label="所属部门" width="150" sortable></el-table-column>
                 <el-table-column prop="createTime" label="创建时间" width="150"></el-table-column>
                 <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
                 <el-table-column prop="phoneNumber" label="电话" width="150"></el-table-column>
@@ -109,18 +109,51 @@
                         <el-switch v-model="scope.row.status" @change="changUserStatus(scope.row)"></el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" fixed="right" width="200">
+                <el-table-column label="操作" fixed="right" width="230">
                     <template #default="scope">
+                        <el-tooltip
+                                class="item"
+                                effect="dark"
+                                content="修改密码"
+                                placement="top"
+                                :enterable="false"
+
+                        >
+                            <el-button v-hasPermission="'user:edit'" size="small" type="primary" icon="el-icon-edit"
+                                       @click="openChangeUserPasswordDialog(scope.row.id)"></el-button>
+                        </el-tooltip>
+
+                        <el-tooltip
+                                class="item"
+                                effect="dark"
+                                content="修改信息"
+                                placement="top"
+                                :enterable="false"
+
+                        >
                         <el-button v-hasPermission="'user:edit'" size="small" type="primary" icon="el-icon-edit-outline"
                                    @click="edit(scope.row.id)"></el-button>
+                        </el-tooltip>
+
+                        <el-tooltip
+                                class="item"
+                                effect="dark"
+                                content="删除角色"
+                                placement="top"
+                                :enterable="false"
+
+                        >
                         <el-button v-hasPermission="'user:delete'" type="danger" size="small" icon="el-icon-delete"
                                    @click="del(scope.row.id)"></el-button>
+                        </el-tooltip>
+
                         <el-tooltip
                                 class="item"
                                 effect="dark"
                                 content="分配角色"
                                 placement="top"
                                 :enterable="false"
+
                         >
                             <el-button
                                     type="warning"
@@ -233,6 +266,65 @@
                     </span>
                 </template>
             </el-dialog>
+
+            <!-- 修改密码对话框 -->
+            <el-dialog title="修改密码" v-model="changeUserPasswordDialogVisible" @close="changeUserPasswordClose">
+                    <span>
+                      <el-form
+                              :model="changeUserPasswordForm"
+                              :label-position="labelPosition"
+                              :rules="addFormRules"
+                              ref="changeUserPasswordFormRef"
+                              label-width="80px"
+                      >
+                        <el-row>
+                          <el-col :span="10">
+                            <div class="grid-content bg-purple">
+                              <el-form-item label="用户名" prop="username">
+                                <el-input v-model="changeUserPasswordForm.username" :disabled="true"></el-input>
+                                <el-input
+                                        type="hidden"
+                                        v-model="changeUserPasswordForm.id"
+                                        :disabled="true"
+                                        style="display:none;"
+                                ></el-input>
+                              </el-form-item>
+                            </div>
+                          </el-col>
+                        </el-row>
+                        <el-row>
+                          <el-col :span="10">
+                            <div class="grid-content bg-purple">
+                              <el-form-item label="密码" prop="password">
+                                <el-input v-model="changeUserPasswordForm.password"></el-input>
+                              </el-form-item>
+                            </div>
+                          </el-col>
+                        </el-row>
+                        <el-row>
+                          <el-col :span="10">
+                            <div class="grid-content bg-purple">
+                              <el-form-item label="确认密码" prop="rePassword">
+                                <el-input v-model="changeUserPasswordForm.rePassword"></el-input>
+                              </el-form-item>
+                            </div>
+                          </el-col>
+                        </el-row>
+                      </el-form>
+                    </span>
+                <template #footer>
+                            <span class="dialog-footer">
+                      <el-button @click="changeUserPasswordDialogVisible = false">取 消</el-button>
+                      <el-button
+                              type="primary"
+                              @click="changePassword"
+                              :loading="btnLoading"
+                              :disabled="btnDisabled"
+                      >确 定</el-button>
+                    </span>
+                </template>
+            </el-dialog>
+
             <!-- 修改对话框 -->
             <el-dialog title="修改用户" v-model="editDialogVisible" @close="editClose">
                     <span>
@@ -363,6 +455,7 @@
         findUserList,
         deleteUser,
         add,
+        changeUserPassword,
         update,
         editUser,
         updateStatus,
@@ -377,7 +470,8 @@
             let departments = ref([])
             let loading = ref(true)
             let total = ref(0)
-            let addDialogVisible = ref(false) //添加对话框,
+            let addDialogVisible = ref(false) //添加对话框
+            let changeUserPasswordDialogVisible = ref(false) //修改密码对话框
             let editDialogVisible = ref(false) //修改对话框
             let assignDialogVisible = ref(false) //分配角色对话框
             let labelPosition = ref("right") //lable对齐方式
@@ -400,6 +494,14 @@
                 sex: "",
                 birth: ""
             }) //添加表单
+
+            let changeUserPasswordForm = ref({
+                id: "",
+                username: "",
+                password: "",
+                rePassword: "",
+            }) //修改密码表单
+
             let editForm = ref({
                 id: "",
                 departmentId: "",
@@ -418,6 +520,22 @@
                 ],
                 password: [
                     {required: true, message: "请输入用户密码", trigger: "blur"},
+                    {min: 6, max: 15, message: "长度在 6 到 15 个字符", trigger: "blur"}
+                ],
+                rePassword: [
+                    {
+                        required: true,
+                        validator: (rule, value, callback) => {
+                            if (value == "" || value == null) {
+                                callback(new Error("请确认用户密码"));
+                            }else if(value != changeUserPasswordForm.value.password){
+                                callback(new Error("输入密码不一致密码"));
+                            }else{
+                                callback();
+                            }
+                        },
+                        trigger: "blur"
+                    },
                     {min: 6, max: 15, message: "长度在 6 到 15 个字符", trigger: "blur"}
                 ],
                 departmentId: [
@@ -473,6 +591,7 @@
             let uid = ref("")
 
             const addFormRef = ref(null);
+            const changeUserPasswordFormRef = ref(null);
             const editFormRef = ref(null);
 
             /**
@@ -663,7 +782,53 @@
                             btnDisabled.value = false;
                             btnLoading.value = false;
                         });
-                        ;
+                    }
+                });
+            }
+            /**
+             * 修改密码
+             * todo
+             */
+            const changePassword = () => {
+                changeUserPasswordFormRef.value.validate(valid => {
+                    if (!valid) {
+                        return;
+                    } else {
+                        btnLoading.value = true;
+                        btnDisabled.value = true;
+
+
+                        ElMessageBox.confirm('确定修改用户密码吗？').then(() => {
+                            changeUserPassword(changeUserPasswordForm.value).then((res) => {
+                                if (res.data.success) {
+                                    ElNotification({
+                                        type: "success",
+                                        title: '操作成功',
+                                        message: '修改密码成功',
+                                    });
+                                    changeUserPasswordFormRef.value.resetFields();
+                                    // Object.keys(addForm).forEach(key => delete addForm[key])
+                                    getUserList();
+                                    getDepartmets();
+                                    btnLoading.value = false;
+                                    btnDisabled.value = false;
+                                    changeUserPasswordDialogVisible.value = false;
+                                } else {
+                                    btnDisabled.value = false;
+                                    btnLoading.value = false;
+                                    return ElMessage.error("修改密码失败:" + res.data.data.errorMsg);
+                                }
+                            }).catch((res) => {
+                                ElMessage.error("修改密码失败:" + res);
+                                changeUserPasswordFormRef.value.resetFields();
+                                // Object.keys(addForm).forEach(key => delete addForm[key])
+                                changeUserPasswordDialogVisible.value = false;
+                                btnDisabled.value = false;
+                                btnLoading.value = false;
+                            });
+                        }).catch(() => {
+
+                        })
                     }
                 });
             }
@@ -677,35 +842,39 @@
                     } else {
                         btnLoading.value = true;
                         btnDisabled.value = true;
-                        update(
-                            "system/user/update/" + editForm.value.id,
-                            editForm.value
-                        ).then((res) => {
-                            if (res.data.success) {
-                                ElNotification({
-                                    title: "操作成功",
-                                    message: "用户基本信息已更新",
-                                    type: "success"
-                                });
-                                getUserList();
-                                getDepartmets();
+
+                        ElMessageBox.confirm('确定修改用户信息吗？').then(() => {
+                            update(
+                                "system/user/update/" + editForm.value.id,
+                                editForm.value
+                            ).then((res) => {
+                                if (res.data.success) {
+                                    ElNotification({
+                                        title: "操作成功",
+                                        message: "用户基本信息已更新",
+                                        type: "success"
+                                    });
+                                    getUserList();
+                                    getDepartmets();
+                                    btnLoading.value = false;
+                                    btnDisabled.value = false;
+                                } else {
+                                    ElMessage.error("用户信息更新失败:" + res.data.data.errorMsg);
+                                }
+                                editFormRef.value.resetFields();
+                                editDialogVisible.value = false;
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
-                            } else {
-                                ElMessage.error("用户信息更新失败:" + res.data.data.errorMsg);
-                            }
-                            editFormRef.value.resetFields();
-                            editDialogVisible.value = false;
-                            btnLoading.value = false;
-                            btnDisabled.value = false;
-                        }).catch((res) => {
-                            ElMessage.error("用户信息更新失败:" + res);
-                            editFormRef.value.resetFields();
-                            editDialogVisible.value = false;
-                            btnLoading.value = false;
-                            btnDisabled.value = false;
-                        });
+                            }).catch((res) => {
+                                ElMessage.error("用户信息更新失败:" + res);
+                                editFormRef.value.resetFields();
+                                editDialogVisible.value = false;
+                                btnLoading.value = false;
+                                btnDisabled.value = false;
+                            });
+                        }).catch(() => {
 
+                        })
                     }
                 });
             }
@@ -716,6 +885,24 @@
                 queryMap.pageNum = 1;
                 getUserList();
             }
+
+            /**
+             * 修改密码
+             */
+            const openChangeUserPasswordDialog = (id) => {
+                editUser("system/user/edit/" + id).then((res) => {
+                    if (res.data.success) {
+                        changeUserPasswordForm.value.id = res.data.data.id;
+                        changeUserPasswordForm.value.username = res.data.data.username;
+                        changeUserPasswordDialogVisible.value = true;
+                    } else {
+                        return ElMessage.error("用户密码修改失败:" + res.data.data.errorMsg);
+                    }
+                }).catch((res) => {
+                    ElMessage.error("用户密码修改失败:" + res);
+                });
+            }
+
             /**
              * 修改用户信息
              */
@@ -759,6 +946,13 @@
             const editClose = () => {
                 editFormRef.value.clearValidate();
                 editForm.value = {};
+            }
+            /**
+             * 关闭编辑弹出框
+             */
+            const changeUserPasswordClose = () => {
+                changeUserPasswordFormRef.value.clearValidate();
+                changeUserPasswordForm.value = {};
             }
             /**
              * 禁用启用用户
@@ -812,18 +1006,21 @@
                 loading,
                 total,
                 addDialogVisible,
+                changeUserPasswordDialogVisible,
                 editDialogVisible,
                 assignDialogVisible,
                 labelPosition,
                 queryMap,
                 userList,
                 addForm,
+                changeUserPasswordForm,
                 editForm,
                 addFormRules,
                 roles,
                 value,
                 uid,
                 addFormRef,
+                changeUserPasswordFormRef,
                 editFormRef,
                 reset,
                 downExcel,
@@ -833,12 +1030,15 @@
                 del,
                 openAddDialog,
                 addUser,
+                changePassword,
                 updateUser,
                 searchUser,
+                openChangeUserPasswordDialog,
                 edit,
                 handleSizeChange,
                 handleCurrentChange,
                 closeDialog,
+                changeUserPasswordClose,
                 editClose,
                 changUserStatus,
                 getDepartmets,
