@@ -4,7 +4,7 @@ import {getToken} from '../utils/auth'
 import system from './modules/system/system'
 import monitor from './modules/system/monitor'
 import material from './modules/business/material'
-import fixedAsset from './modules/fixedasset/fixedAsset'
+import fixedAssetCategory from './modules/fixedasset/metadata'
 
 
 const routes = [
@@ -26,7 +26,7 @@ const routes = [
             .concat(system)
             .concat(monitor)
             .concat(material)
-            .concat(fixedAsset)
+            .concat(fixedAssetCategory)
     },
 ]
 
