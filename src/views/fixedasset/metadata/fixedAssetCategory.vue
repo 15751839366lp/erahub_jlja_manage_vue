@@ -171,8 +171,8 @@
                 <!--                    </template>-->
                 <!--                </el-table-column>-->
                 <el-table-column prop="depreciationMethodId" label="折旧方法" width="120px" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="measureUnit" label="计量单位"></el-table-column>
-                <el-table-column prop="capacityUnit" label="能力单位"></el-table-column>
+                <el-table-column prop="measureUnit" label="计量单位" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="capacityUnit" label="能力单位" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="depreciationPeriod" label="折旧年限"></el-table-column>
                 <el-table-column prop="estimatedTotalWorkload" label="预计总工作量"></el-table-column>
                 <el-table-column prop="netResidualValue" label="净残值率"></el-table-column>
@@ -259,7 +259,7 @@
                 <template #footer>
                 <span class="dialog-footer">
           <el-button @click="editDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="updateCategory" :disabled="btnDisabled"
+          <el-button type="primary" @click="" :disabled="btnDisabled"
                      :loading="btnLoading">确 定</el-button>
         </span>
                 </template>
@@ -282,6 +282,8 @@
     import {
         findFixedAssetCateguryListApi
     } from '../../../api/fixedasset/metadata/fixedAssetCategory'
+
+    import utils from '../../../api/common/utils'
 
     export default {
 
@@ -443,8 +445,22 @@
             }
             //加载分类数据
             const getFixedAssetCategoryList = () => {
+                if(!utils.isEmpty(queryMap.categoryId) && !utils.isIneger(queryMap.categoryId)){
+                    ElMessage.error("请输入数值类型ID");
+                    return;
+                }else if(!utils.isEmpty(queryMap.depreciationPeriod) && !utils.isNumberTwoScale(queryMap.depreciationPeriod,2)){
+                    ElMessage.error("请输入数值类型折旧年限");
+                    return;
+                }else if(!utils.isEmpty(queryMap.estimatedTotalWorkload) && !utils.isNumberTwoScale(queryMap.estimatedTotalWorkload,2)){
+                    ElMessage.error("请输入数值类型工作量");
+                    return;
+                }else if(!utils.isEmpty(queryMap.netResidualValue) && !utils.isNumberTwoScale(queryMap.netResidualValue,2)){
+                    ElMessage.error("请输入数值类型净残值率");
+                    return;
+                }
                 loading.value = true;
                 fixedAssetCategorys.value = [];
+
                 findFixedAssetCateguryListApi(queryMap).then((res) => {
                     if (!res.data.success) return ElMessage.error("分类列表失败");
                     fixedAssetCategorys.value = res.data.data.rows;

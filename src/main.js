@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import installElementPlus from './plugins/element'
+// import utils from './api/common/utils'
 // import NProgress from 'nprogress'
 // import 'nprogress/nprogress.css'
 // import TreeTable from 'vue-table-with-tree-grid'
@@ -36,12 +37,16 @@ app.directive('hasPermission', (el, binding) => {
     }
 })
 
-app
-    // .component("tree-table",TreeTable)
-    .use(store)
-    // .use(i18n)
-    .use(router)
-    .mount('#app')
+// app.config.globalProperties.$utils = utils
+
+    // app.component("tree-table",TreeTable)
+    // app.use(i18n)
+app.use(store)
+app.use(router)
+
+app.mount('#app')
+
+
 
 // NProgress.configure({ease: 'ease', speed: 500});
 // NProgress.configure({minimum: 0.3});
