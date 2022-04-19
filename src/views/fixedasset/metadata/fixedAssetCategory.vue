@@ -182,7 +182,6 @@
                 <el-table-column prop="status" label="状态" width="100" fixed="right">
                     <template #default="scope">
                         <el-switch v-model="scope.row.status"
-                                   active-value="1"
                                    @change="changeFixedAssetCategoryStatus(scope.row)">
                         </el-switch>
                     </template>
@@ -394,15 +393,12 @@
                 // if(utils.isEmpty(row.id) || utils.isEmpty(row.status)){
                 //     return
                 // }
-                changeFixedAssetCategoryStatusApi({
-                    categoryId: row.id,
-                    status: row.status
-                }).then((res) => {
+                changeFixedAssetCategoryStatusApi( row.categoryId,row.status).then((res) => {
                     if (!res.data.success) {
                         ElMessage.error("更新资产类别状态失败:" + res.data.data.errorMsg);
                         row.status = !row.status;
                     } else {
-                        const message = row.status ? '资产类别状态已禁用' : '资产类别状态已启用';
+                        const message = row.status ? '资产类别状态已启用' : '资产类别状态已禁用';
                         ElNotification({
                             type: 'success',
                             title: '操作成功',

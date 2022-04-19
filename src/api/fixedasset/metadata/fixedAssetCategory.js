@@ -8,10 +8,9 @@ export function findFixedAssetCateguryListApi(data) {
     });
 }
 
-export function changeFixedAssetCategoryStatusApi(data) {
+export function changeFixedAssetCategoryStatusApi(categoryId,status) {
     return service.request({
-        url: '/fixedasset/metadata/fixedassetcategory/changeFixedAssetCategoryStatus',
-        method: 'post',
-        data
+        url: '/fixedasset/metadata/fixedassetcategory/changeFixedAssetCategoryStatus/' + categoryId + "/" + status,
+        method: 'put',
     });
 }
