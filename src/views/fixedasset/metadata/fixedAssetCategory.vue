@@ -101,7 +101,7 @@
                     </el-input>
                 </el-form-item>
                 <div style="display: inline-block">
-                    <el-form-item label="状态" >
+                    <el-form-item label="状态">
                         <el-radio v-model="queryMap.status" label="1">可用</el-radio>
                         <el-radio v-model="queryMap.status" label="0">禁用</el-radio>
                         <el-radio v-model="queryMap.status" label>全部</el-radio>
@@ -153,7 +153,8 @@
                     :data="fixedAssetCategorys"
             >
                 <el-table-column prop="categoryId" label="ID" width="100px" fixed="left"></el-table-column>
-                <el-table-column prop="categoryName" label="类别名称" width="180px" fixed="left" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="categoryName" label="类别名称" width="150px" fixed="left"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="categoryLevel" label="级数" width="100px">
                     <template #default="scope">
                         <el-tag v-if="scope.row.categoryLevel===1">一级分类</el-tag>
@@ -170,16 +171,20 @@
                 <!--                        <el-tag size="small" type="warning" v-else>女</el-tag>-->
                 <!--                    </template>-->
                 <!--                </el-table-column>-->
-                <el-table-column prop="depreciationMethodId" label="折旧方法" width="120px" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="depreciationMethodId" label="折旧方法" width="120px"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="measureUnit" label="计量单位" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="capacityUnit" label="能力单位" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="depreciationPeriod" label="折旧年限"></el-table-column>
-                <el-table-column prop="estimatedTotalWorkload" label="预计总工作量"></el-table-column>
+                <el-table-column prop="estimatedTotalWorkload" label="总工作量"></el-table-column>
                 <el-table-column prop="netResidualValue" label="净残值率"></el-table-column>
                 <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true" width="150"></el-table-column>
                 <el-table-column prop="status" label="状态" width="100" fixed="right">
                     <template #default="scope">
-                        <el-switch v-model="scope.row.status" @change=""></el-switch>
+                        <el-switch v-model="scope.row.status"
+                                   active-value="1"
+                                   @change="changeFixedAssetCategoryStatus(scope.row)">
+                        </el-switch>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" fixed="right" width="150px">
@@ -280,7 +285,8 @@
         add
     } from '../../../api/business/material/productCategory'
     import {
-        findFixedAssetCateguryListApi
+        findFixedAssetCateguryListApi,
+        changeFixedAssetCategoryStatusApi
     } from '../../../api/fixedasset/metadata/fixedAssetCategory'
 
     import utils from '../../../api/common/utils'
@@ -349,8 +355,86 @@
                 queryMap.estimatedTotalWorkload = null;
                 queryMap.netResidualValue = null;
                 queryMap.isAccurate = "1";
-               getFixedAssetCategoryList()
+                getFixedAssetCategoryList()
             }
+
+            //加载分类数据
+            const getFixedAssetCategoryList = () => {
+                if (!utils.isEmpty(queryMap.categoryId) && !utils.isIneger(queryMap.categoryId)) {
+                    ElMessage.error("请输入数值类型ID");
+                    return;
+                } else if (!utils.isEmpty(queryMap.depreciationPeriod) && !utils.isNumberTwoScale(queryMap.depreciationPeriod, 2)) {
+                    ElMessage.error("请输入数值类型折旧年限");
+                    return;
+                } else if (!utils.isEmpty(queryMap.estimatedTotalWorkload) && !utils.isNumberTwoScale(queryMap.estimatedTotalWorkload, 2)) {
+                    ElMessage.error("请输入数值类型工作量");
+                    return;
+                } else if (!utils.isEmpty(queryMap.netResidualValue) && !utils.isNumberTwoScale(queryMap.netResidualValue, 2)) {
+                    ElMessage.error("请输入数值类型净残值率");
+                    return;
+                }
+                loading.value = true;
+                fixedAssetCategorys.value = [];
+
+                findFixedAssetCateguryListApi(queryMap).then((res) => {
+                    if (!res.data.success) return ElMessage.error("分类列表失败");
+                    fixedAssetCategorys.value = res.data.data.rows;
+                    total.value = res.data.data.total;
+                    loading.value = false;
+                }).catch((res) => {
+                    loading.value = false;
+                    ElMessage.error("分类列表失败");
+                });
+            }
+
+            /**
+             * 禁用启用类别
+             */
+            const changeFixedAssetCategoryStatus = (row) => {
+                // if(utils.isEmpty(row.id) || utils.isEmpty(row.status)){
+                //     return
+                // }
+                changeFixedAssetCategoryStatusApi({
+                    categoryId: row.id,
+                    status: row.status
+                }).then((res) => {
+                    if (!res.data.success) {
+                        ElMessage.error("更新资产类别状态失败:" + res.data.data.errorMsg);
+                        row.status = !row.status;
+                    } else {
+                        const message = row.status ? '资产类别状态已禁用' : '资产类别状态已启用';
+                        ElNotification({
+                            type: 'success',
+                            title: '操作成功',
+                            message: message,
+                        });
+                    }
+                }).catch((res) => {
+                    ElMessage.error("更新资产类别状态失败:" + res);
+                });
+            }
+
+            //改变页码
+            const handleSizeChange = (newSize) => {
+                queryMap.pageSize = newSize;
+                queryMap.pageNum = 1;
+                getFixedAssetCategoryList();
+            }
+            //翻页
+            const handleCurrentChange = (current) => {
+                queryMap.pageNum = current;
+                getFixedAssetCategoryList();
+            }
+
+            /**
+             * 搜索类别
+             */
+            const searchFixedAssetCategory = () => {
+                queryMap.pageNum = 1;
+                getFixedAssetCategoryList();
+            }
+
+            getFixedAssetCategoryList();
 
             const updateFixedAssetCategory = () => {
                 // editRuleFormRef.value.validate( valid => {
@@ -443,34 +527,7 @@
                 //     addRuleForm.value.pid = 0;
                 // }
             }
-            //加载分类数据
-            const getFixedAssetCategoryList = () => {
-                if(!utils.isEmpty(queryMap.categoryId) && !utils.isIneger(queryMap.categoryId)){
-                    ElMessage.error("请输入数值类型ID");
-                    return;
-                }else if(!utils.isEmpty(queryMap.depreciationPeriod) && !utils.isNumberTwoScale(queryMap.depreciationPeriod,2)){
-                    ElMessage.error("请输入数值类型折旧年限");
-                    return;
-                }else if(!utils.isEmpty(queryMap.estimatedTotalWorkload) && !utils.isNumberTwoScale(queryMap.estimatedTotalWorkload,2)){
-                    ElMessage.error("请输入数值类型工作量");
-                    return;
-                }else if(!utils.isEmpty(queryMap.netResidualValue) && !utils.isNumberTwoScale(queryMap.netResidualValue,2)){
-                    ElMessage.error("请输入数值类型净残值率");
-                    return;
-                }
-                loading.value = true;
-                fixedAssetCategorys.value = [];
 
-                findFixedAssetCateguryListApi(queryMap).then((res) => {
-                    if (!res.data.success) return ElMessage.error("分类列表失败");
-                    fixedAssetCategorys.value = res.data.data.rows;
-                    total.value = res.data.data.total;
-                    loading.value = false;
-                }).catch((res) => {
-                    loading.value = false;
-                    ElMessage.error("分类列表失败");
-                });
-            }
             //加载父级分类数据
             const getParentCategoryList = () => {
                 // getParentCategoryTree().then((res) => {
@@ -512,17 +569,7 @@
                 //     }
                 // });
             }
-            //改变页码
-            const handleSizeChange = (newSize) => {
-                queryMap.pageSize = newSize;
-                queryMap.pageNum = 1;
-                getFixedAssetCategoryList();
-            }
-            //翻页
-            const handleCurrentChange = (current) => {
-                queryMap.pageNum = current;
-                getFixedAssetCategoryList();
-            }
+
             //打开添加
             const openAdd = () => {
                 addDialogVisible.value = true;
@@ -539,17 +586,6 @@
                 editRuleForm.value = {};
 
             }
-
-
-            /**
-             * 搜索类别
-             */
-            const searchFixedAssetCategory = () => {
-                queryMap.pageNum = 1;
-                getFixedAssetCategoryList();
-            }
-
-            getFixedAssetCategoryList();
 
             return {
                 btnLoading,
@@ -569,19 +605,21 @@
                 addRuleFormRef,
                 editRuleFormRef,
                 reset,
+                getFixedAssetCategoryList,
+                changeFixedAssetCategoryStatus,
+                handleSizeChange,
+                handleCurrentChange,
+                searchFixedAssetCategory,
+
                 updateFixedAssetCategory,
                 editFixedAssetCategory,
                 deleteFixedAssetCategory,
                 selectParentChange,
-                getFixedAssetCategoryList,
                 getParentCategoryList,
                 addCategory,
-                handleSizeChange,
-                handleCurrentChange,
                 openAdd,
                 addCloseDialog,
                 editCloseDialog,
-                searchFixedAssetCategory
             };
         },
     };

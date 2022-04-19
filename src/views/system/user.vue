@@ -104,7 +104,7 @@
                 <el-table-column prop="email" label="邮箱" width="180"></el-table-column>
                 <el-table-column prop="phoneNumber" label="电话" width="150"></el-table-column>
                 <el-table-column prop="birth" label="生日" width="180" sortable></el-table-column>
-                <el-table-column prop="isban" label="是否禁用" width="100">
+                <el-table-column prop="isban" label="是否禁用" width="100" fixed="right">
                     <template #default="scope">
                         <el-switch v-model="scope.row.status" @change="changUserStatus(scope.row)"></el-switch>
                     </template>

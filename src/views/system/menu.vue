@@ -268,12 +268,12 @@
                             } else {
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
-                                return ElMessage.error("更新菜单失败" + res.data.data.errorMsg);
+                                return ElMessage.error("更新菜单失败:" + res.data.data.errorMsg);
                             }
                         }).catch((res) => {
                             btnLoading.value = false;
                             btnDisabled.value = false;
-                            return ElMessage.error("更新菜单失败" + res.data.data.errorMsg);
+                            return ElMessage.error("更新菜单失败:" + res.data.data.errorMsg);
                         });
 
                     }

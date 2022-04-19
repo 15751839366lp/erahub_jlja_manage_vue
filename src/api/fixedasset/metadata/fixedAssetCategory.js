@@ -7,3 +7,11 @@ export function findFixedAssetCateguryListApi(data) {
         data
     });
 }
+
+export function changeFixedAssetCategoryStatusApi(data) {
+    return service.request({
+        url: '/fixedasset/metadata/fixedassetcategory/changeFixedAssetCategoryStatus',
+        method: 'post',
+        data
+    });
+}
