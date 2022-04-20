@@ -38,7 +38,7 @@
                     <div class="right" style="float:right;width:520px;">
                         <el-table :data="tableInfo" border height="100">
                             <el-table-column prop="username" label="用户账号"></el-table-column>
-                            <el-table-column prop="nickname" label="用户昵称"></el-table-column>
+                            <el-table-column prop="realname" label="用户真实姓名"></el-table-column>
                             <el-table-column prop="department" label="所属部门"></el-table-column>
                             <el-table-column fixed="right" prop="roles" label="用户角色" width="150"></el-table-column>
                         </el-table>
@@ -294,7 +294,7 @@
 
             tableInfo.value.push({
                 username: userInfo.username,
-                nickname: userInfo.nickname,
+                realname: userInfo.realname,
                 department: userInfo.department,
                 roles: rolesShow
             });

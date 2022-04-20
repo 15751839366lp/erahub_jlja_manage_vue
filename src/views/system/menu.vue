@@ -45,7 +45,6 @@
 
                 <el-tree
                         :data="data"
-                        accordion
                         :auto-expand-parent="false"
                         node-key="id"
                         show-checkbox
@@ -436,6 +435,7 @@
                                 h("span",{class: "el-tag el-tag--warning el-tag--mini el-tag--plain",style: "margin-left: 20px;"},"权限  " + node.data.perms)
                         ),
                     ),
+                    node.data.menuName == "其他" ? "" :
                     h(
                         'span',
                         null,

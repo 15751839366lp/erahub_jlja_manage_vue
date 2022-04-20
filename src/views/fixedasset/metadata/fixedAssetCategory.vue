@@ -366,6 +366,7 @@
                 queryMap.estimatedTotalWorkload = null;
                 queryMap.netResidualValue = null;
                 queryMap.isAccurate = "1";
+                queryMap.pageNum = 1;
                 getFixedAssetCategoryList()
             }
 

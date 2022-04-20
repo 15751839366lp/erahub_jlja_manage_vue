@@ -57,9 +57,9 @@
                     <el-radio v-model="queryMap.sex" label>全部</el-radio>
                 </el-form-item>
 
-                <el-form-item label="昵称">
-                    <el-input clearable @clear="searchUser" v-model="queryMap.nickname"
-                              placeholder="请输入昵称查询"></el-input>
+                <el-form-item label="真实姓名">
+                    <el-input clearable @clear="searchUser" v-model="queryMap.realname"
+                              placeholder="请输入真实姓名查询"></el-input>
                 </el-form-item>
                 <!--                <el-form-item label="状态">-->
                 <!--                  <el-select-->
@@ -216,8 +216,8 @@
                     <el-row>
                       <el-col :span="10">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="昵称" prop="nickname">
-                            <el-input v-model="addForm.nickname"></el-input>
+                          <el-form-item label="真实姓名" prop="realname">
+                            <el-input v-model="addForm.realname"></el-input>
                           </el-form-item>
                         </div>
                       </el-col>
@@ -368,8 +368,8 @@
                         <el-row>
                           <el-col :span="10">
                             <div class="grid-content bg-purple">
-                              <el-form-item label="昵称" prop="nickname">
-                                <el-input v-model="editForm.nickname"></el-input>
+                              <el-form-item label="真实姓名" prop="realname">
+                                <el-input v-model="editForm.realname"></el-input>
                               </el-form-item>
                             </div>
                           </el-col>
@@ -481,13 +481,13 @@
                 pageSize: 10,
                 username: "",
                 sex: "",
-                nickname: ""
+                realname: ""
             })
             let userList = ref([])
 
             let addForm = ref({
                 username: "",
-                nickname: "",
+                realname: "",
                 password: "",
                 email: "",
                 phoneNumber: "",
@@ -506,7 +506,7 @@
                 id: "",
                 departmentId: "",
                 username: "",
-                nickname: "",
+                realname: "",
                 password: "",
                 email: "",
                 phoneNumber: "",
@@ -581,8 +581,8 @@
                 //         trigger: "blur"
                 //     }
                 // ],
-                nickname: [
-                    {required: false, message: "请输入昵称", trigger: "blur"},
+                realname: [
+                    {required: false, message: "请输入真实姓名", trigger: "blur"},
                     {min: 5, max: 10, message: "长度在 5 到 10 个字符", trigger: "blur"}
                 ]
             } //添加表单验证规则
@@ -602,7 +602,7 @@
                 queryMap.pageSize = 10
                 queryMap.username = ""
                 queryMap.sex = ""
-                queryMap.nickname = ""
+                queryMap.realname = ""
                 queryMap.email = ""
                 queryMap.departmentId = null
                 getUserList();
