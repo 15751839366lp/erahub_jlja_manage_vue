@@ -102,26 +102,27 @@
                 </el-form-item>
                 <div style="display: inline-block">
                     <el-form-item label="状态">
-                        <el-radio v-model="queryMap.status" label="1">可用</el-radio>
-                        <el-radio v-model="queryMap.status" label="0">禁用</el-radio>
+                        <el-radio v-model="queryMap.status" label="true">可用</el-radio>
+                        <el-radio v-model="queryMap.status" label="false">禁用</el-radio>
                         <el-radio v-model="queryMap.status" label>全部</el-radio>
                     </el-form-item>
-                    <el-form-item label="查询类型" style="margin-left:100px;">
+                    <el-form-item label="查询类型" style="margin-left:70px;">
                         <el-radio v-model="queryMap.isAccurate" label="1">模糊查询</el-radio>
                         <el-radio v-model="queryMap.isAccurate" label="0">精确查询</el-radio>
                     </el-form-item>
 
-                    <el-form-item style="margin-left:200px;">
+                    <el-form-item style="margin-left:100px;">
                         <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
                         <el-button type="primary" @click="searchFixedAssetCategory" icon="el-icon-search">查询</el-button>
-                        <!--                    <el-button-->
-                        <!--                            type="success"-->
-                        <!--                            icon="el-icon-plus"-->
-                        <!--                            @click="openAddDialog"-->
-                        <!--                            v-hasPermission="'user:add'"-->
-                        <!--                    >添加-->
-                        <!--                    </el-button>-->
-                        <!--                    <el-button @click="downExcel" v-hasPermission="'user:export'" icon="el-icon-download">导出</el-button>-->
+                        <el-button
+                                type="success"
+                                icon="el-icon-plus"
+                                @click="openAddDialog"
+                                v-hasPermission="'user:add'"
+                        >添加
+                        </el-button>
+                        <el-button @click="downExcel" v-hasPermission="'user:export'" icon="el-icon-upload">导入</el-button>
+                        <el-button @click="downExcel" v-hasPermission="'user:export'" icon="el-icon-download">导出</el-button>
                     </el-form-item>
                 </div>
 
@@ -144,16 +145,18 @@
             <el-table
                     ref="table"
                     v-loading="loading"
-                    element-loading-text="拼命加载中"
-                    element-loading-spinner="el-icon-loading"
-                    style="width: 100%; margin-top:10px;"
-                    row-key="id"
+                    row-key="categoryId"
+                    style="width: 100%;"
+                    height="450"
                     size="mini"
                     border
+                    element-loading-text="拼命加载中"
+                    element-loading-spinner="el-icon-loading"
                     :data="fixedAssetCategorys"
+                    :row-style="{height: '30px'}"
             >
-                <el-table-column prop="categoryId" label="ID" width="100px" fixed="left"></el-table-column>
-                <el-table-column prop="categoryName" label="类别名称" width="150px" fixed="left"
+                <el-table-column prop="categoryId" label="ID" width="100px" fixed></el-table-column>
+                <el-table-column prop="categoryName" label="类别名称" width="150px" fixed
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="categoryLevel" label="级数" width="100px">
                     <template #default="scope">
@@ -186,13 +189,22 @@
                         </el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" fixed="right" width="150px">
+                <el-table-column label="操作" fixed="right" width="150px" >
                     <template #default="scope">
-                        <el-button v-hasPermission="'productCategory:edit'" type="primary" size="mini"
+                        <el-button v-hasPermission="'productCategory:edit'"
+                                   type="primary"
                                    icon="el-icon-edit"
-                                   @click="editCategory(scope.row.id)"></el-button>
-                        <el-button v-hasPermission="'productCategory:delete'" type="danger" size="mini"
-                                   icon="el-icon-delete" @click="del(scope.row.id)"></el-button>
+                                   @click="editCategory(scope.row.id)"
+                                   size="mini"
+                        >
+                        </el-button>
+                        <el-button v-hasPermission="'productCategory:delete'"
+                                   type="danger"
+                                   icon="el-icon-delete"
+                                   @click="del(scope.row.id)"
+                                   size="mini"
+                        >
+                        </el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -205,7 +217,7 @@
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                     :current-page="queryMap.pageNum"
-                    :page-sizes="[10,30, 50, 100, 200, 500]"
+                    :page-sizes="[10,20, 30, 50, 100, 200]"
                     :page-size="queryMap.pageSize"
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="total"
@@ -325,7 +337,7 @@
                 netResidualValue: null,
                 isAccurate: "1",
                 pageNum: 1,
-                pageSize: 30
+                pageSize: 10
             })
             const fixedAssetCategorys = ref([])
             const parentCategorys = ref([])
@@ -390,9 +402,6 @@
              * 禁用启用类别
              */
             const changeFixedAssetCategoryStatus = (row) => {
-                // if(utils.isEmpty(row.id) || utils.isEmpty(row.status)){
-                //     return
-                // }
                 changeFixedAssetCategoryStatusApi( row.categoryId,row.status).then((res) => {
                     if (!res.data.success) {
                         ElMessage.error("更新资产类别状态失败:" + res.data.data.errorMsg);
