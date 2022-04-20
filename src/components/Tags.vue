@@ -1,7 +1,7 @@
 <template>
     <div class="tags" v-if="showTags">
         <ul>
-            <li class="tags-li" v-for="(item,index) in tagsList" :class="{'active': isActive(item.path)}" :key="index">
+            <li class="tags-li" v-for="(item,index) in tagsList" :class="{'active': item.active}" :key="index">
                 <router-link :to="item.path" class="tags-li-title">{{item.title}}</router-link>
                 <span class="tags-li-icon" @click="closeTags(index)">
                     <i class="el-icon-close"></i>
@@ -59,18 +59,28 @@
 
             // 设置标签
             const setTags = (route) => {
-                const isExist = tagsList.value.some((item) => {
-                    return item.path === route.fullPath;
-                });
-                if (!isExist) {
-                    if (tagsList.value.length >= 8) {
-                        store.commit("component/delTagsItem", { index: 0 });
+                let isExist = false;
+
+                tagsList.value.forEach((item,index,array) => {
+                    if(item.path === route.fullPath){
+                        isExist = true
+                        item.active = true
+                    }else{
+                        item.active = false
                     }
+                });
+
+                if (!isExist) {
                     store.commit("component/setTagsItem", {
                         name: route.name,
                         title: route.meta.title,
                         path: route.fullPath,
+                        active: true
                     });
+
+                    if (tagsList.value.length >= 8) {
+                        store.commit("component/delTagsItem", { index: 0 });
+                    }
                 }
             };
             setTags(route);
