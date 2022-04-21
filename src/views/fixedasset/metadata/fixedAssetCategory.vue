@@ -147,7 +147,7 @@
                     v-loading="loading"
                     row-key="categoryId"
                     style="width: 100%;"
-                    height="450"
+                    height="490"
                     size="mini"
                     border
                     element-loading-text="拼命加载中"
