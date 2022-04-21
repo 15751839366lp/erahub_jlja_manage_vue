@@ -14,3 +14,11 @@ export function changeFixedAssetCategoryStatusApi(categoryId,status) {
         method: 'put',
     });
 }
+
+export function exportFixedAssetCategoryExcelApi() {
+    return service.request({
+        url: '/fixedasset/metadata/fixedassetcategory/exportFixedAssetCategoryExcel',
+        method: 'post',
+        responseType: "blob"
+    });
+}

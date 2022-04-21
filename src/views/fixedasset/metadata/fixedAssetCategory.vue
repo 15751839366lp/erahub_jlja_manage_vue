@@ -121,8 +121,8 @@
                                 v-hasPermission="'user:add'"
                         >添加
                         </el-button>
-                        <el-button @click="downExcel" v-hasPermission="'user:export'" icon="el-icon-upload">导入</el-button>
-                        <el-button @click="downExcel" v-hasPermission="'user:export'" icon="el-icon-download">导出</el-button>
+                        <el-button @click="" v-hasPermission="'user:export'" icon="el-icon-upload">导入</el-button>
+                        <el-button @click="exportFixedAssetCategory"  icon="el-icon-download">导出</el-button>
                     </el-form-item>
                 </div>
 
@@ -297,7 +297,8 @@
     } from '../../../api/business/material/productCategory'
     import {
         findFixedAssetCateguryListApi,
-        changeFixedAssetCategoryStatusApi
+        changeFixedAssetCategoryStatusApi,
+        exportFixedAssetCategoryExcelApi
     } from '../../../api/fixedasset/metadata/fixedAssetCategory'
 
     import utils from '../../../api/common/utils'
@@ -330,6 +331,7 @@
                 categoryName: null,
                 status: "",
                 depreciationMethodId: null,
+                depreciationMethodName: null,
                 measureUnit: null,
                 capacityUnit: null,
                 depreciationPeriod: null,
@@ -360,6 +362,7 @@
                 queryMap.categoryName = null;
                 queryMap.status = "";
                 queryMap.depreciationMethodId = null;
+                queryMap.depreciationMethodName = null;
                 queryMap.measureUnit = null;
                 queryMap.capacityUnit = null;
                 queryMap.depreciationPeriod = null;
@@ -396,6 +399,29 @@
                 }).catch((res) => {
                     loading.value = false;
                     ElMessage.error("分类列表失败");
+                });
+            }
+
+            /**
+             * 导出
+             */
+            const exportFixedAssetCategory = () => {
+                exportFixedAssetCategoryExcelApi().then((res) => {
+                    if (res.headers["content-type"] === "application/json") {
+                        return ElMessage.error(
+                            "Subject does not have permission [fixedAsset:metadata:fixedAssetCategory:export]"
+                        );
+                    }
+                    const data = res.data;
+                    let url = window.URL.createObjectURL(data); // 将二进制文件转化为可访问的url
+                    const a = document.createElement("a");
+                    document.body.appendChild(a);
+                    a.href = url;
+                    a.download = "资产类别列表.xlsx";
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                }).catch((res) => {
+                    ElMessage.error("导出失败:" + res);
                 });
             }
 
@@ -613,6 +639,7 @@
                 reset,
                 getFixedAssetCategoryList,
                 changeFixedAssetCategoryStatus,
+                exportFixedAssetCategory,
                 handleSizeChange,
                 handleCurrentChange,
                 searchFixedAssetCategory,

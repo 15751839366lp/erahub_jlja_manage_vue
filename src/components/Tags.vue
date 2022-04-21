@@ -33,9 +33,6 @@
         setup() {
             const route = useRoute();
             const router = useRouter();
-            const isActive = (path) => {
-                return path === route.fullPath;
-            };
 
             const store = useStore();
             const tagsList = computed(() => store.state.component.tagsList);
@@ -111,7 +108,6 @@
             // });
 
             return {
-                isActive,
                 tagsList,
                 showTags,
                 closeTags,
