@@ -125,21 +125,6 @@
                         <el-button @click="exportFixedAssetCategory"  icon="el-icon-download">导出</el-button>
                     </el-form-item>
                 </div>
-
-                <!--                <el-form-item label="状态">-->
-                <!--                  <el-select-->
-                <!--                    clearable-->
-                <!--                    v-model="queryMap.isban"-->
-                <!--                    @clear="searchUser"-->
-                <!--                    placeholder="请选择用户状态"-->
-                <!--                  >-->
-                <!--                    <el-option label="全部" value=""></el-option>-->
-                <!--                    <el-option label="禁用" value="1"></el-option>-->
-                <!--                    <el-option label="正常" value="0"></el-option>-->
-                <!--                  </el-select>-->
-                <!--                </el-form-item>-->
-
-
             </el-form>
             <!-- 表格部分 -->
             <el-table
@@ -168,13 +153,8 @@
                         <el-tag type="" v-else>六级分类</el-tag>
                     </template>
                 </el-table-column>
-                <!--                <el-table-column prop="categoryDetailed" :formatter="scope.row.sex === 1 ? '男' : '女'" label="明细">-->
-                <!--                    <template #default="scope">-->
-                <!--                        <el-tag size="small" type="success" v-if="scope.row.sex===1">男</el-tag>-->
-                <!--                        <el-tag size="small" type="warning" v-else>女</el-tag>-->
-                <!--                    </template>-->
-                <!--                </el-table-column>-->
-                <el-table-column prop="depreciationMethodId" label="折旧方法" width="120px"
+<!--                <el-table-column prop="depreciationMethodId" label="折旧方法id"></el-table-column>-->
+                <el-table-column prop="depreciationMethodName" label="折旧方法" width="120px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="measureUnit" label="计量单位" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="capacityUnit" label="能力单位" :show-overflow-tooltip="true"></el-table-column>
