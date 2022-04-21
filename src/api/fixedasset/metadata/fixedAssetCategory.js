@@ -1,8 +1,8 @@
 import service from "../../../utils/request";
 
-export function findFixedAssetCateguryListApi(data) {
+export function getFixedAssetCateguryListApi(data) {
     return service.request({
-        url: '/fixedasset/metadata/fixedassetcategory/findFixedAssetCategoryList',
+        url: '/fixedasset/metadata/fixedassetcategory/getFixedAssetCategoryList',
         method: 'post',
         data
     });
@@ -20,5 +20,12 @@ export function exportFixedAssetCategoryExcelApi() {
         url: '/fixedasset/metadata/fixedassetcategory/exportFixedAssetCategoryExcel',
         method: 'post',
         responseType: "blob"
+    });
+}
+
+export function getAllDepreciationMethodApi() {
+    return service.request({
+        url: '/fixedasset/metadata/depreciationmethod/getAllDepreciationMethod',
+        method: 'get'
     });
 }

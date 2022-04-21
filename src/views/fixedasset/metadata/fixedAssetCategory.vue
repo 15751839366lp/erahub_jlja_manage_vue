@@ -9,29 +9,7 @@
         </el-breadcrumb>
         <el-card class="box-card">
             <el-form :inline="true" ref="form" :model="queryMap" label-width="70px" size="small">
-                <!--                <el-form-item label="部门">-->
-                <!--                    <el-select-->
-                <!--                            clearable-->
-                <!--                            @change="searchUser"-->
-                <!--                            @clear="searchUser"-->
-                <!--                            v-model="queryMap.departmentId"-->
-                <!--                            placeholder="请选择所属部门"-->
-                <!--                    >-->
-                <!--                        <el-option-->
-                <!--                                v-for="department in departments"-->
-                <!--                                :label="department.name"-->
-                <!--                                :key="department.id"-->
-                <!--                                :value="department.id"-->
-                <!--                        >-->
-                <!--                            <span style="float: left">{{ department.name }}</span>-->
-                <!--                            <span style="float: right; color: #8492a6; font-size: 13px">-->
-                <!--                <el-tag size="small" effect="plain" type="success">-->
-                <!--                  {{ department.total }}人-->
-                <!--                </el-tag>-->
-                <!--              </span>-->
-                <!--                        </el-option>-->
-                <!--                    </el-select>-->
-                <!--                </el-form-item>-->
+
                 <el-form-item label="ID">
                     <el-input
                             @keyup.enter.native="searchFixedAssetCategory"
@@ -51,13 +29,26 @@
                     ></el-input>
                 </el-form-item>
                 <el-form-item label="折旧方法">
-                    <el-input
-                            @keyup.enter.native="searchFixedAssetCategory"
-                            @clear="searchFixedAssetCategory"
+                    <el-select
                             clearable
+                            @clear="searchFixedAssetCategory"
                             v-model="queryMap.depreciationMethodId"
-                            placeholder="请输入折旧方法查询"
-                    ></el-input>
+                            placeholder="请选择折旧方法"
+                    >
+                        <el-option
+                                v-for="depreciationMethod in depreciationMethodList"
+                                :label="depreciationMethod.depreciationMethodName"
+                                :key="depreciationMethod.depreciationMethodId"
+                                :value="depreciationMethod.depreciationMethodId"
+                        >
+                            <span style="float: left">{{ depreciationMethod.depreciationMethodName }}</span>
+<!--                            <span style="float: right; color: #8492a6; font-size: 13px">-->
+<!--                                <el-tag size="small" effect="plain" type="success">-->
+<!--                                  {{ department.total }}人-->
+<!--                                </el-tag>-->
+<!--                              </span>-->
+                        </el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="计量单位">
                     <el-input
@@ -268,17 +259,11 @@
     import {ref, reactive, getCurrentInstance} from "vue";
     import {ElMessage, ElLoading, ElNotification, ElMessageBox} from "element-plus";
     import {
-        update,
-        edit,
-        deleteProductCategory,
-        categoryTree,
-        getParentCategoryTree,
-        add
-    } from '../../../api/business/material/productCategory'
-    import {
-        findFixedAssetCateguryListApi,
+        getFixedAssetCateguryListApi,
+        getAllDepreciationMethodApi,
         changeFixedAssetCategoryStatusApi,
-        exportFixedAssetCategoryExcelApi
+        exportFixedAssetCategoryExcelApi,
+
     } from '../../../api/fixedasset/metadata/fixedAssetCategory'
 
     import utils from '../../../api/common/utils'
@@ -291,6 +276,7 @@
             const btnDisabled = ref(false)
             const loading = ref(true)
             const pKeys = ref([])
+            const depreciationMethodList = ref([])
             const addDialogVisible = ref(false)
             const editDialogVisible = ref(false)
             const editRuleForm = ref(null)
@@ -371,7 +357,7 @@
                 loading.value = true;
                 fixedAssetCategorys.value = [];
 
-                findFixedAssetCateguryListApi(queryMap).then((res) => {
+                getFixedAssetCateguryListApi(queryMap).then((res) => {
                     if (!res.data.success) return ElMessage.error("分类列表失败");
                     fixedAssetCategorys.value = res.data.data.rows;
                     total.value = res.data.data.total;
@@ -379,6 +365,20 @@
                 }).catch((res) => {
                     loading.value = false;
                     ElMessage.error("分类列表失败");
+                });
+            }
+
+            /**
+             * 加载所有折旧方法
+             */
+            const getAllDepreciationMethod = () => {
+                getAllDepreciationMethodApi().then((res) => {
+                    if (!res.data.success) {
+                        return ElMessage.error("获取折旧方法列表失败:" + res.data.data.errorMsg);
+                    }
+                    depreciationMethodList.value = res.data.data;
+                }).catch((res) => {
+                    ElMessage.error("获取折旧方法列表失败::" + res);
                 });
             }
 
@@ -446,6 +446,7 @@
                 getFixedAssetCategoryList();
             }
 
+            getAllDepreciationMethod();
             getFixedAssetCategoryList();
 
             const updateFixedAssetCategory = () => {
@@ -603,7 +604,7 @@
                 btnLoading,
                 btnDisabled,
                 loading,
-                pKeys,
+                depreciationMethodList,
                 addDialogVisible,
                 editDialogVisible,
                 editRuleForm,
@@ -618,6 +619,7 @@
                 editRuleFormRef,
                 reset,
                 getFixedAssetCategoryList,
+                getAllDepreciationMethod,
                 changeFixedAssetCategoryStatus,
                 exportFixedAssetCategory,
                 handleSizeChange,
