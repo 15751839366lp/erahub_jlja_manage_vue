@@ -193,53 +193,129 @@
                     layout="total, sizes, prev, pager, next, jumper"
                     :total="total"
             ></el-pagination>
+
             <!-- 添加弹出框 -->
             <el-dialog title="添加分类" v-model="addDialogVisible" @close="addCloseDialog" width="50%">
                 <span>
-                  <el-form :model="addRuleForm" :rules="addRules" ref="addRuleFormRef" label-width="100px">
-                    <el-form-item label="分类名称" prop="name">
-                      <el-input v-model="addRuleForm.name"></el-input>
-                    </el-form-item>
-                    <el-form-item label="父分类" prop="pid">
-                      <el-cascader
-                              @change="selectParentChange"
-                              :options="parentCategorys"
-                              clearable
-                              filterable
-                              style="width:100%"
-                              :props="selectProps"
-                              v-model="pKeys"
-                      ></el-cascader>
-                    </el-form-item>
-                    <el-form-item label="备注" prop="remark">
-                      <el-input type="textarea" v-model="addRuleForm.remark"></el-input>
-                    </el-form-item>
-                    <el-form-item label="排序" prop="sort">
-                      <el-input-number v-model="addRuleForm.sort" :min="1" :max="10" label="排序"></el-input-number>
-                    </el-form-item>
+                  <el-form
+                          :model="addFixedAssetCategoryForm"
+                          :rules="addRules"
+                          ref="addFixedAssetCategoryFormRef"
+                          label-width="100px"
+                  >
+                    <el-row>
+                      <el-col :span="10">
+                        <div class="grid-content bg-purple">
+                          <el-form-item label="资产类别ID" prop="categoryId">
+                            <el-input v-model="addFixedAssetCategoryForm.categoryId"></el-input>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                      <el-col :span="10" style="margin-left: 30px">
+                        <div class="grid-content bg-purple">
+                          <el-form-item label="资产类别名称" prop="categoryName">
+                            <el-input v-model="addFixedAssetCategoryForm.categoryName"></el-input>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                    </el-row>
+                      <el-row>
+                      <el-col :span="10">
+                        <div class="grid-content bg-purple">
+                          <el-form-item label="明细" prop="categoryDetailed">
+                                <el-radio v-model="addFixedAssetCategoryForm.categoryDetailed" label="true">是</el-radio>
+                                <el-radio v-model="addFixedAssetCategoryForm.categoryDetailed" label="false">否</el-radio>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                      <el-col :span="10" style="margin-left: 30px">
+                        <div class="grid-content bg-purple-light">
+                          <el-form-item label="状态" prop="status">
+                                <el-radio v-model="addFixedAssetCategoryForm.status" label="true">可用</el-radio>
+                                <el-radio v-model="addFixedAssetCategoryForm.status" label="false">禁用</el-radio>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                    </el-row>
+                      <el-row>
+                      <el-col :span="10">
+                        <div class="grid-content bg-purple">
+                          <el-form-item label="净残值率" prop="netResidualValue">
+                            <el-input v-model="addFixedAssetCategoryForm.netResidualValue"></el-input>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                      <el-col :span="10" style="margin-left: 30px">
+                        <div class="grid-content bg-purple-light">
+                          <el-form-item label="折旧方法" prop="depreciationMethodId">
+                            <el-select v-model="addFixedAssetCategoryForm.depreciationMethodId" placeholder="请选择折旧方法">
+                              <el-option
+                                      v-for="depreciationMethod in depreciationMethodList"
+                                      :key="depreciationMethod.depreciationMethodId"
+                                      :label="depreciationMethod.depreciationMethodName"
+                                      :value="depreciationMethod.depreciationMethodId"
+                              ></el-option>
+                            </el-select>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                    </el-row>
+                      <el-row>
+                      <el-col :span="10">
+                        <div class="grid-content bg-purple">
+                          <el-form-item label="计量单位" prop="measureUnit">
+                            <el-input v-model="addFixedAssetCategoryForm.measureUnit"></el-input>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                      <el-col :span="10" style="margin-left: 30px">
+                        <div class="grid-content bg-purple-light">
+                          <el-form-item label="能力单位" prop="capacityUnit">
+                             <el-input v-model="addFixedAssetCategoryForm.capacityUnit"></el-input>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                    </el-row>
+                      <el-row>
+                      <el-col :span="10">
+                        <div class="grid-content bg-purple">
+                          <el-form-item label="折旧年限" prop="depreciationPeriod">
+                            <el-input v-model="addFixedAssetCategoryForm.depreciationPeriod"></el-input>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                      <el-col :span="10" style="margin-left: 30px">
+                        <div class="grid-content bg-purple">
+                          <el-form-item label="总工作量" prop="estimatedTotalWorkload">
+                            <el-input v-model="addFixedAssetCategoryForm.estimatedTotalWorkload"></el-input>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                    </el-row>
                   </el-form>
                 </span>
                 <template #footer>
                     <span class="dialog-footer">
                       <el-button @click="addDialogVisible = false">取 消</el-button>
-                      <el-button type="primary" @click="addCategory" :disabled="btnDisabled"
+                      <el-button type="primary" @click="addFixedAssetCategory" :disabled="btnDisabled"
                                  :loading="btnLoading">确 定</el-button>
                     </span>
                 </template>
             </el-dialog>
+
             <!-- 编辑弹出框 -->
             <el-dialog title="编辑分类" v-model="editDialogVisible" @close="editCloseDialog" width="50%">
         <span>
-          <el-form :model="editRuleForm" :rules="addRules" ref="editRuleFormRef" label-width="100px">
+          <el-form :model="editFixedAssetCategoryForm" :rules="addRules" ref="editFixedAssetCategoryFormRef" label-width="100px">
             <el-form-item label="分类名称" prop="name">
-              <el-input v-model="editRuleForm.name"></el-input>
+              <el-input v-model="editFixedAssetCategoryForm.name"></el-input>
             </el-form-item>
 
             <el-form-item label="备注" prop="remark">
-              <el-input type="textarea" v-model="editRuleForm.remark"></el-input>
+              <el-input type="textarea" v-model="editFixedAssetCategoryForm.remark"></el-input>
             </el-form-item>
             <el-form-item label="排序" prop="sort">
-              <el-input-number v-model="editRuleForm.sort" :min="1" :max="10" label="排序"></el-input-number>
+              <el-input-number v-model="editFixedAssetCategoryForm.sort" :min="1" :max="10" label="排序"></el-input-number>
             </el-form-item>
           </el-form>
         </span>
@@ -275,21 +351,31 @@
             const btnLoading = ref(false)
             const btnDisabled = ref(false)
             const loading = ref(true)
-            const pKeys = ref([])
             const depreciationMethodList = ref([])
             const addDialogVisible = ref(false)
             const editDialogVisible = ref(false)
-            const editRuleForm = ref(null)
-            const addRuleForm = ref({pid: "0", name: "", remark: "", sort: 0}) //添加表单
+            const editFixedAssetCategoryForm = ref(null)
+            const addFixedAssetCategoryForm = ref({
+                categoryId: null,
+                categoryName: null,
+                categoryDetailed: null,
+                status: null,
+                depreciationMethodId: null,
+                measureUnit: null,
+                capacityUnit: null,
+                depreciationPeriod: null,
+                estimatedTotalWorkload: null,
+                netResidualValue: null,
+            }) //添加表单
             const addRules = ref({
-                name: [
-                    {required: true, message: "请输入分类名", trigger: "blur"},
-                    {min: 2, max: 10, message: "长度在 2 到 10 个字符", trigger: "blur"}
-                ],
-                remark: [
-                    {required: true, message: "请输入备注信息", trigger: "blur"}
-                ],
-                sort: [{required: true, message: "请输入排序号", trigger: "blur"}]
+                // name: [
+                //     {required: true, message: "请输入分类名", trigger: "blur"},
+                //     {min: 2, max: 10, message: "长度在 2 到 10 个字符", trigger: "blur"}
+                // ],
+                // remark: [
+                //     {required: true, message: "请输入备注信息", trigger: "blur"}
+                // ],
+                // sort: [{required: true, message: "请输入排序号", trigger: "blur"}]
             })
             const total = ref(0)
             const queryMap = reactive({
@@ -308,17 +394,9 @@
                 pageSize: 10
             })
             const fixedAssetCategorys = ref([])
-            const parentCategorys = ref([])
-            const selectProps = reactive({
-                expandTrigger: "hover",
-                value: "id",
-                label: "name",
-                children: "children",
-                checkStrictly: true
-            })
 
-            const addRuleFormRef = ref(null)
-            const editRuleFormRef = ref(null)
+            const addFixedAssetCategoryFormRef = ref(null)
+            const editFixedAssetCategoryFormRef = ref(null)
 
             /**
              * 重置
@@ -426,6 +504,37 @@
                 });
             }
 
+            //添加分类
+            const addFixedAssetCategory = () => {
+                addFixedAssetCategoryFormRef.value.validate( valid => {
+                    if (!valid) {
+                        return;
+                    } else {
+                        btnLoading.value = true;
+                        btnDisabled.value = true;
+
+                        // add(addFixedAssetCategoryForm.value).then((res) => {
+                        //     if (res.data.success) {
+                        //         ElMessage.success("分类添加成功");
+                        //         getCategoryList();
+                        //         btnLoading.value = false;
+                        //         btnDisabled.value = false;
+                        //     } else {
+                        //         return ElMessage.error("分类添加失败:" + res.data.data.errorMsg);
+                        //     }
+                        //     addDialogVisible.value = false;
+                        //     btnLoading.value = false;
+                        //     btnDisabled.value = false;
+                        // }).catch((res) => {
+                        //     addDialogVisible.value = false;
+                        //     btnLoading.value = false;
+                        //     btnDisabled.value = false;
+                        //     ElMessage.error("分类添加失败:" + res);
+                        // });
+                    }
+                });
+            }
+
             //改变页码
             const handleSizeChange = (newSize) => {
                 queryMap.pageSize = newSize;
@@ -450,15 +559,15 @@
             getFixedAssetCategoryList();
 
             const updateFixedAssetCategory = () => {
-                // editRuleFormRef.value.validate( valid => {
+                // editFixedAssetCategoryFormRef.value.validate( valid => {
                 //     if (!valid) {
                 //         return;
                 //     } else {
                 //         btnLoading.value = true;
                 //         btnDisabled.value = true;
                 //         update(
-                //             "/business/material/productCategory/update/" + editRuleForm.value.id,
-                //             editRuleForm.value
+                //             "/business/material/productCategory/update/" + editFixedAssetCategoryForm.value.id,
+                //             editFixedAssetCategoryForm.value
                 //         ).then((res) => {
                 //             if (res.data.success) {
                 //                 ElNotification({
@@ -488,7 +597,7 @@
             const editFixedAssetCategory = (id) => {
                 // edit("/business/material/productCategory/edit/" + id).then((res) => {
                 //     if (res.data.success) {
-                //         editRuleForm.value = res.data.data;
+                //         editFixedAssetCategoryForm.value = res.data.data;
                 //     } else {
                 //         return ElMessage.error("分类信息编辑失败" + res.data.data.errorMsg);
                 //     }
@@ -531,73 +640,20 @@
                 // });
             }
 
-            //父级分类中改变
-            const selectParentChange = () => {
-                // const len = pKeys.value == null ? 0 : pKeys.value.length;
-                // if (len > 0) {
-                //     addRuleForm.value.pid = pKeys.value[len - 1];
-                // } else {
-                //     addRuleForm.value.pid = 0;
-                // }
-            }
 
-            //加载父级分类数据
-            const getParentCategoryList = () => {
-                // getParentCategoryTree().then((res) => {
-                //     if (!res.data.success) return ElMessage.error("父级分类列表失败:" + res.data.data.errorMsg);
-                //     parentCategorys.value = res.data.data;
-                // }).catch((res) => {
-                //     ElMessage.error("父级分类列表失败:" + res);
-                // });
-            }
-            //添加分类
-            const addCategory = () => {
-                // addRuleFormRef.value.validate( valid => {
-                //     if (!valid) {
-                //         return;
-                //     } else {
-                //         btnLoading.value = true;
-                //         btnDisabled.value = true;
-                //         if (addRuleForm.value.pid == null) {
-                //             addRuleForm.value.pid = 0;
-                //         }
-                //         add(addRuleForm.value).then((res) => {
-                //             if (res.data.success) {
-                //                 ElMessage.success("分类添加成功");
-                //                 getCategoryList();
-                //                 btnLoading.value = false;
-                //                 btnDisabled.value = false;
-                //             } else {
-                //                 return ElMessage.error("分类添加失败:" + res.data.data.errorMsg);
-                //             }
-                //             addDialogVisible.value = false;
-                //             btnLoading.value = false;
-                //             btnDisabled.value = false;
-                //         }).catch((res) => {
-                //             addDialogVisible.value = false;
-                //             btnLoading.value = false;
-                //             btnDisabled.value = false;
-                //             ElMessage.error("分类添加失败:" + res);
-                //         });
-                //     }
-                // });
-            }
 
             //打开添加
-            const openAdd = () => {
+            const openAddDialog = () => {
                 addDialogVisible.value = true;
-                getParentCategoryList();
             }
             //关闭弹出框
             const addCloseDialog = () => {
-                addRuleFormRef.value.clearValidate();
-                addRuleForm.value = {};
-                pKeys.value = [];
+                addFixedAssetCategoryFormRef.value.clearValidate();
+                addFixedAssetCategoryForm.value = {};
             }
             const editCloseDialog = () => {
-                editRuleFormRef.value.clearValidate();
-                editRuleForm.value = {};
-
+                editFixedAssetCategoryFormRef.value.clearValidate();
+                editFixedAssetCategoryForm.value = {};
             }
 
             return {
@@ -607,16 +663,14 @@
                 depreciationMethodList,
                 addDialogVisible,
                 editDialogVisible,
-                editRuleForm,
-                addRuleForm,
+                editFixedAssetCategoryForm,
+                addFixedAssetCategoryForm,
                 addRules,
                 total,
                 queryMap,
                 fixedAssetCategorys,
-                parentCategorys,
-                selectProps,
-                addRuleFormRef,
-                editRuleFormRef,
+                addFixedAssetCategoryFormRef,
+                editFixedAssetCategoryFormRef,
                 reset,
                 getFixedAssetCategoryList,
                 getAllDepreciationMethod,
@@ -629,10 +683,9 @@
                 updateFixedAssetCategory,
                 editFixedAssetCategory,
                 deleteFixedAssetCategory,
-                selectParentChange,
-                getParentCategoryList,
-                addCategory,
-                openAdd,
+                addFixedAssetCategory,
+
+                openAddDialog,
                 addCloseDialog,
                 editCloseDialog,
             };
