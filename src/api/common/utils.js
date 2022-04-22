@@ -29,9 +29,14 @@ function isPercentageTwoScale(number) {
     return reg.test(number)
 }
 
+function camelToSnakeCase (str) {
+    return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+}
+
 export default {
     isEmpty,
     isIneger,
     isNumberTwoScale,
-    isPercentageTwoScale
+    isPercentageTwoScale,
+    camelToSnakeCase
 }

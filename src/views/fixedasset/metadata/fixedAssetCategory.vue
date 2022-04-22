@@ -1,5 +1,6 @@
 <template>
     <div id="fixedAssetCategory">
+        <!--  todo 批量删除 增加，批量增加，导入 编辑  -->
         <!-- 面包导航 -->
         <el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:12px;">
             <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
@@ -42,11 +43,11 @@
                                 :value="depreciationMethod.depreciationMethodId"
                         >
                             <span style="float: left">{{ depreciationMethod.depreciationMethodName }}</span>
-<!--                            <span style="float: right; color: #8492a6; font-size: 13px">-->
-<!--                                <el-tag size="small" effect="plain" type="success">-->
-<!--                                  {{ department.total }}人-->
-<!--                                </el-tag>-->
-<!--                              </span>-->
+                            <!--                            <span style="float: right; color: #8492a6; font-size: 13px">-->
+                            <!--                                <el-tag size="small" effect="plain" type="success">-->
+                            <!--                                  {{ department.total }}人-->
+                            <!--                                </el-tag>-->
+                            <!--                              </span>-->
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -92,30 +93,44 @@
                     </el-input>
                 </el-form-item>
                 <div style="display: inline-block">
+
                     <el-form-item label="状态">
                         <el-radio v-model="queryMap.status" label="true">可用</el-radio>
                         <el-radio v-model="queryMap.status" label="false">禁用</el-radio>
                         <el-radio v-model="queryMap.status" label>全部</el-radio>
                     </el-form-item>
-                    <el-form-item label="查询类型" style="margin-left:70px;">
+                    <el-form-item label="查询类型" style="margin-left:50px;">
                         <el-radio v-model="queryMap.isAccurate" label="1">模糊查询</el-radio>
                         <el-radio v-model="queryMap.isAccurate" label="0">精确查询</el-radio>
                     </el-form-item>
-
-                    <el-form-item style="margin-left:100px;">
-                        <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
-                        <el-button type="primary" @click="searchFixedAssetCategory" icon="el-icon-search">查询</el-button>
-                        <el-button
-                                type="success"
-                                icon="el-icon-plus"
-                                @click="openAddDialog"
-                                v-hasPermission="'user:add'"
-                        >添加
-                        </el-button>
-                        <el-button @click="" v-hasPermission="'user:export'" icon="el-icon-upload">导入</el-button>
-                        <el-button @click="exportFixedAssetCategory"  icon="el-icon-download">导出</el-button>
+                    <el-form-item label="创建时间" style="margin-left:50px;">
+                        <el-date-picker
+                                :clearable="false"
+                                v-model="timeRange"
+                                type="datetimerange"
+                                :value-format="'YYYY-MM-DD HH:mm:ss'"
+                                :shortcuts="pickerOptions.shortcuts"
+                                unlink-panels
+                                range-separator="至"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                        >
+                        </el-date-picker>
                     </el-form-item>
                 </div>
+                <el-form-item style="float: right;margin-right: 200px;">
+                    <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
+                    <el-button type="primary" @click="searchFixedAssetCategory" icon="el-icon-search">查询</el-button>
+                    <el-button
+                            type="success"
+                            icon="el-icon-plus"
+                            @click="openAddDialog"
+                            v-hasPermission="'user:add'"
+                    >添加
+                    </el-button>
+                    <el-button @click="" v-hasPermission="'user:export'" icon="el-icon-upload">导入</el-button>
+                    <el-button @click="exportFixedAssetCategory" icon="el-icon-download">导出</el-button>
+                </el-form-item>
             </el-form>
             <!-- 表格部分 -->
             <el-table
@@ -130,8 +145,10 @@
                     element-loading-spinner="el-icon-loading"
                     :data="fixedAssetCategorys"
                     :row-style="{height: '30px'}"
+                    @sort-change="sortChange"
             >
-                <el-table-column prop="categoryId" label="ID" width="100px" fixed></el-table-column>
+                <el-table-column type="selection" width="40"></el-table-column>
+                <el-table-column prop="categoryId" label="ID" width="100px" fixed sortable></el-table-column>
                 <el-table-column prop="categoryName" label="类别名称" width="150px" fixed
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="categoryLevel" label="级数" width="100px">
@@ -144,7 +161,7 @@
                         <el-tag type="" v-else>六级分类</el-tag>
                     </template>
                 </el-table-column>
-<!--                <el-table-column prop="depreciationMethodId" label="折旧方法id"></el-table-column>-->
+                <!--                <el-table-column prop="depreciationMethodId" label="折旧方法id"></el-table-column>-->
                 <el-table-column prop="depreciationMethodName" label="折旧方法" width="120px"
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="measureUnit" label="计量单位" :show-overflow-tooltip="true"></el-table-column>
@@ -152,6 +169,10 @@
                 <el-table-column prop="depreciationPeriod" label="折旧年限"></el-table-column>
                 <el-table-column prop="estimatedTotalWorkload" label="总工作量"></el-table-column>
                 <el-table-column prop="netResidualValue" label="净残值率"></el-table-column>
+                <el-table-column prop="createTime" label="创建时间" :show-overflow-tooltip="true" width="150"
+                                 sortable></el-table-column>
+                <el-table-column prop="modifiedTime" label="修改时间" :show-overflow-tooltip="true"
+                                 width="150"></el-table-column>
                 <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true" width="150"></el-table-column>
                 <el-table-column prop="status" label="状态" width="100" fixed="right">
                     <template #default="scope">
@@ -160,7 +181,7 @@
                         </el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" fixed="right" width="150px" >
+                <el-table-column label="操作" fixed="right" width="150px">
                     <template #default="scope">
                         <el-button v-hasPermission="'productCategory:edit'"
                                    type="primary"
@@ -224,7 +245,8 @@
                         <div class="grid-content bg-purple">
                           <el-form-item label="明细" prop="categoryDetailed">
                                 <el-radio v-model="addFixedAssetCategoryForm.categoryDetailed" label="true">是</el-radio>
-                                <el-radio v-model="addFixedAssetCategoryForm.categoryDetailed" label="false">否</el-radio>
+                                <el-radio v-model="addFixedAssetCategoryForm.categoryDetailed"
+                                          label="false">否</el-radio>
                           </el-form-item>
                         </div>
                       </el-col>
@@ -306,7 +328,8 @@
             <!-- 编辑弹出框 -->
             <el-dialog title="编辑分类" v-model="editDialogVisible" @close="editCloseDialog" width="50%">
         <span>
-          <el-form :model="editFixedAssetCategoryForm" :rules="addRules" ref="editFixedAssetCategoryFormRef" label-width="100px">
+          <el-form :model="editFixedAssetCategoryForm" :rules="addRules" ref="editFixedAssetCategoryFormRef"
+                   label-width="100px">
             <el-form-item label="分类名称" prop="name">
               <el-input v-model="editFixedAssetCategoryForm.name"></el-input>
             </el-form-item>
@@ -315,7 +338,8 @@
               <el-input type="textarea" v-model="editFixedAssetCategoryForm.remark"></el-input>
             </el-form-item>
             <el-form-item label="排序" prop="sort">
-              <el-input-number v-model="editFixedAssetCategoryForm.sort" :min="1" :max="10" label="排序"></el-input-number>
+              <el-input-number v-model="editFixedAssetCategoryForm.sort" :min="1" :max="10"
+                               label="排序"></el-input-number>
             </el-form-item>
           </el-form>
         </span>
@@ -347,7 +371,62 @@
     export default {
 
         setup() {
-
+            const pickerOptions = reactive({
+                shortcuts: [
+                    {
+                        text: '今天(此刻)',
+                        value: () => {
+                            const end = new Date();
+                            const start = new Date(new Date(new Date().toLocaleDateString()).getTime());
+                            return [start, end];
+                        }
+                    },
+                    {
+                        text: '昨天',
+                        value: () => {
+                            const end = new Date(new Date(new Date().toLocaleDateString()).getTime());
+                            const start = new Date(new Date(new Date().toLocaleDateString()).getTime());
+                            start.setTime(start.getTime() - 3600 * 1000 * 24);
+                            return [start, end];
+                        }
+                    },
+                    {
+                        text: '最近一周',
+                        value: () => {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                            return [start, end];
+                        }
+                    },
+                    {
+                        text: '最近一个月',
+                        value: () => {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                            return [start, end];
+                        }
+                    },
+                    {
+                        text: '最近两个月',
+                        value: () => {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 60);
+                            return [start, end];
+                        }
+                    },
+                    {
+                        text: '最近三个月',
+                        value: () => {
+                            const end = new Date();
+                            const start = new Date();
+                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                            return [start, end];
+                        }
+                    }]
+            })
             const btnLoading = ref(false)
             const btnDisabled = ref(false)
             const loading = ref(true)
@@ -390,13 +469,18 @@
                 estimatedTotalWorkload: null,
                 netResidualValue: null,
                 isAccurate: "1",
+                startCreateTime: null,
+                endCreateTime: null,
+                isAsc: null,
+                sortColumn: null,
                 pageNum: 1,
-                pageSize: 10
+                pageSize: 10,
             })
             const fixedAssetCategorys = ref([])
 
             const addFixedAssetCategoryFormRef = ref(null)
             const editFixedAssetCategoryFormRef = ref(null)
+            const timeRange = ref([])
 
             /**
              * 重置
@@ -413,12 +497,27 @@
                 queryMap.estimatedTotalWorkload = null;
                 queryMap.netResidualValue = null;
                 queryMap.isAccurate = "1";
+                queryMap.startCreateTime = null;
+                queryMap.endCreateTime = null;
+                timeRange.value = [];
+                queryMap.isAsc = null;
+                queryMap.sortColumn = null;
                 queryMap.pageNum = 1;
+                queryMap.pageSize = 10;
+
                 getFixedAssetCategoryList()
             }
 
             //加载分类数据
             const getFixedAssetCategoryList = () => {
+
+                if (timeRange.value != null && timeRange.value.length === 1) {
+                    queryMap.startCreateTime = timeRange.value[0];
+                } else if (timeRange.value != null && timeRange.value.length === 2) {
+                    queryMap.startCreateTime = timeRange.value[0];
+                    queryMap.endCreateTime = timeRange.value[1];
+                }
+
                 if (!utils.isEmpty(queryMap.categoryId) && !utils.isIneger(queryMap.categoryId)) {
                     ElMessage.error("请输入数值类型ID");
                     return;
@@ -487,7 +586,7 @@
              * 禁用启用类别
              */
             const changeFixedAssetCategoryStatus = (row) => {
-                changeFixedAssetCategoryStatusApi( row.categoryId,row.status).then((res) => {
+                changeFixedAssetCategoryStatusApi(row.categoryId, row.status).then((res) => {
                     if (!res.data.success) {
                         ElMessage.error("更新资产类别状态失败:" + res.data.data.errorMsg);
                         row.status = !row.status;
@@ -506,7 +605,7 @@
 
             //添加分类
             const addFixedAssetCategory = () => {
-                addFixedAssetCategoryFormRef.value.validate( valid => {
+                addFixedAssetCategoryFormRef.value.validate(valid => {
                     if (!valid) {
                         return;
                     } else {
@@ -640,7 +739,22 @@
                 // });
             }
 
-
+            //改变排序
+            const sortChange = (column) => {
+                if(column.prop == null || column.order == null){
+                    queryMap.isAsc = null;
+                    queryMap.sortColumn = null;
+                    getFixedAssetCategoryList();
+                    return;
+                }
+                if(column.order == 'ascending'){
+                    queryMap.isAsc = true;
+                }else if(column.order == 'descending'){
+                    queryMap.isAsc = false;
+                }
+                queryMap.sortColumn = utils.camelToSnakeCase(column.prop);
+                getFixedAssetCategoryList();
+            }
 
             //打开添加
             const openAddDialog = () => {
@@ -657,6 +771,7 @@
             }
 
             return {
+                pickerOptions,
                 btnLoading,
                 btnDisabled,
                 loading,
@@ -671,6 +786,7 @@
                 fixedAssetCategorys,
                 addFixedAssetCategoryFormRef,
                 editFixedAssetCategoryFormRef,
+                timeRange,
                 reset,
                 getFixedAssetCategoryList,
                 getAllDepreciationMethod,
@@ -684,7 +800,7 @@
                 editFixedAssetCategory,
                 deleteFixedAssetCategory,
                 addFixedAssetCategory,
-
+                sortChange,
                 openAddDialog,
                 addCloseDialog,
                 editCloseDialog,
