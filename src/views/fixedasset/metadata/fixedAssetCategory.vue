@@ -1,6 +1,5 @@
 <template>
     <div id="fixedAssetCategory">
-        <!--  todo 批量删除 增加，批量增加，导入 编辑  -->
         <!-- 面包导航 -->
         <el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:12px;">
             <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
@@ -118,18 +117,25 @@
                         </el-date-picker>
                     </el-form-item>
                 </div>
-                <el-form-item style="float: right;margin-right: 200px;">
+                <el-form-item style="float: right;margin-right: 150px; ">
                     <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
                     <el-button type="primary" @click="searchFixedAssetCategory" icon="el-icon-search">查询</el-button>
-                    <el-button
-                            type="success"
-                            icon="el-icon-plus"
-                            @click="openAddDialog"
-                            v-hasPermission="'user:add'"
+                    <el-button v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:add'"
+                               type="success"
+                               icon="el-icon-plus"
+                               @click="openAddDialog"
                     >添加
                     </el-button>
-                    <el-button @click="" v-hasPermission="'user:export'" icon="el-icon-upload">导入</el-button>
+                    <el-button @click="openUploadDialog"
+                               v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:import'"
+                               icon="el-icon-upload">导入
+                    </el-button>
                     <el-button @click="exportFixedAssetCategory" icon="el-icon-download">导出</el-button>
+                    <el-button @click="deleteFixedAssetCategoryByBatchId(selections)"
+                               icon="el-icon-delete"
+                               v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:delete'"
+                               :disabled="selections.length === 0">批量
+                    </el-button>
                 </el-form-item>
             </el-form>
             <!-- 表格部分 -->
@@ -146,6 +152,7 @@
                     :data="fixedAssetCategorys"
                     :row-style="{height: '30px'}"
                     @sort-change="sortChange"
+                    @selection-change="selectChange"
             >
                 <el-table-column type="selection" width="40"></el-table-column>
                 <el-table-column prop="categoryId" label="ID" width="100px" fixed sortable></el-table-column>
@@ -183,17 +190,17 @@
                 </el-table-column>
                 <el-table-column label="操作" fixed="right" width="150px">
                     <template #default="scope">
-                        <el-button v-hasPermission="'productCategory:edit'"
+                        <el-button v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:edit'"
                                    type="primary"
                                    icon="el-icon-edit"
-                                   @click="editCategory(scope.row.id)"
+                                   @click="openEditDialog(scope.row)"
                                    size="mini"
                         >
                         </el-button>
-                        <el-button v-hasPermission="'productCategory:delete'"
+                        <el-button v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:delete'"
                                    type="danger"
                                    icon="el-icon-delete"
-                                   @click="del(scope.row.id)"
+                                   @click="deleteFixedAssetCategory(scope.row.categoryId)"
                                    size="mini"
                         >
                         </el-button>
@@ -220,21 +227,21 @@
                 <span>
                   <el-form
                           :model="addFixedAssetCategoryForm"
-                          :rules="addRules"
+                          :rules="formRules"
                           ref="addFixedAssetCategoryFormRef"
                           label-width="100px"
                   >
                     <el-row>
                       <el-col :span="10">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="资产类别ID" prop="categoryId">
+                          <el-form-item label="类别ID" prop="categoryId">
                             <el-input v-model="addFixedAssetCategoryForm.categoryId"></el-input>
                           </el-form-item>
                         </div>
                       </el-col>
                       <el-col :span="10" style="margin-left: 30px">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="资产类别名称" prop="categoryName">
+                          <el-form-item label="类别名称" prop="categoryName">
                             <el-input v-model="addFixedAssetCategoryForm.categoryName"></el-input>
                           </el-form-item>
                         </div>
@@ -314,6 +321,14 @@
                         </div>
                       </el-col>
                     </el-row>
+                      <el-row>
+                          <el-col>
+                          <el-form-item label="备注" prop="remark">
+                              <el-input type="textarea" v-model="addFixedAssetCategoryForm.remark"
+                                        style="width: 545px"></el-input>
+                          </el-form-item>
+                          </el-col>
+                      </el-row>
                   </el-form>
                 </span>
                 <template #footer>
@@ -328,28 +343,139 @@
             <!-- 编辑弹出框 -->
             <el-dialog title="编辑分类" v-model="editDialogVisible" @close="editCloseDialog" width="50%">
         <span>
-          <el-form :model="editFixedAssetCategoryForm" :rules="addRules" ref="editFixedAssetCategoryFormRef"
+          <el-form :model="editFixedAssetCategoryForm" :rules="formRules" ref="editFixedAssetCategoryFormRef"
                    label-width="100px">
-            <el-form-item label="分类名称" prop="name">
-              <el-input v-model="editFixedAssetCategoryForm.name"></el-input>
-            </el-form-item>
-
-            <el-form-item label="备注" prop="remark">
-              <el-input type="textarea" v-model="editFixedAssetCategoryForm.remark"></el-input>
-            </el-form-item>
-            <el-form-item label="排序" prop="sort">
-              <el-input-number v-model="editFixedAssetCategoryForm.sort" :min="1" :max="10"
-                               label="排序"></el-input-number>
-            </el-form-item>
+            <el-row>
+                      <el-col :span="10">
+                        <div class="grid-content bg-purple">
+                          <el-form-item label="类别ID" prop="categoryId">
+                            <el-input v-model="editFixedAssetCategoryForm.categoryId" :disabled="true"></el-input>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                      <el-col :span="10" style="margin-left: 30px">
+                        <div class="grid-content bg-purple">
+                          <el-form-item label="类别名称" prop="categoryName">
+                            <el-input v-model="editFixedAssetCategoryForm.categoryName"></el-input>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                    </el-row>
+                      <el-row>
+                      <el-col :span="10">
+                        <div class="grid-content bg-purple">
+                          <el-form-item label="明细" prop="categoryDetailed">
+                                <el-radio v-model="editFixedAssetCategoryForm.categoryDetailed"
+                                          label="true">是</el-radio>
+                                <el-radio v-model="editFixedAssetCategoryForm.categoryDetailed"
+                                          label="false">否</el-radio>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                      <el-col :span="10" style="margin-left: 30px">
+                        <div class="grid-content bg-purple-light">
+                          <el-form-item label="状态" prop="status">
+                                <el-radio v-model="editFixedAssetCategoryForm.status" label="true">可用</el-radio>
+                                <el-radio v-model="editFixedAssetCategoryForm.status" label="false">禁用</el-radio>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                    </el-row>
+                      <el-row>
+                      <el-col :span="10">
+                        <div class="grid-content bg-purple">
+                          <el-form-item label="净残值率" prop="netResidualValue">
+                            <el-input v-model="editFixedAssetCategoryForm.netResidualValue"></el-input>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                      <el-col :span="10" style="margin-left: 30px">
+                        <div class="grid-content bg-purple-light">
+                          <el-form-item label="折旧方法" prop="depreciationMethodId">
+                            <el-select v-model="editFixedAssetCategoryForm.depreciationMethodId" placeholder="请选择折旧方法">
+                              <el-option
+                                      v-for="depreciationMethod in depreciationMethodList"
+                                      :key="depreciationMethod.depreciationMethodId"
+                                      :label="depreciationMethod.depreciationMethodName"
+                                      :value="depreciationMethod.depreciationMethodId"
+                              ></el-option>
+                            </el-select>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                    </el-row>
+                      <el-row>
+                      <el-col :span="10">
+                        <div class="grid-content bg-purple">
+                          <el-form-item label="计量单位" prop="measureUnit">
+                            <el-input v-model="editFixedAssetCategoryForm.measureUnit"></el-input>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                      <el-col :span="10" style="margin-left: 30px">
+                        <div class="grid-content bg-purple-light">
+                          <el-form-item label="能力单位" prop="capacityUnit">
+                             <el-input v-model="editFixedAssetCategoryForm.capacityUnit"></el-input>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                    </el-row>
+                      <el-row>
+                      <el-col :span="10">
+                        <div class="grid-content bg-purple">
+                          <el-form-item label="折旧年限" prop="depreciationPeriod">
+                            <el-input v-model="editFixedAssetCategoryForm.depreciationPeriod"></el-input>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                      <el-col :span="10" style="margin-left: 30px">
+                        <div class="grid-content bg-purple">
+                          <el-form-item label="总工作量" prop="estimatedTotalWorkload">
+                            <el-input v-model="editFixedAssetCategoryForm.estimatedTotalWorkload"></el-input>
+                          </el-form-item>
+                        </div>
+                      </el-col>
+                    </el-row>
+                      <el-row>
+                          <el-col>
+                          <el-form-item label="备注" prop="remark">
+                              <el-input type="textarea" v-model="editFixedAssetCategoryForm.remark"
+                                        style="width: 545px"></el-input>
+                          </el-form-item>
+                          </el-col>
+                      </el-row>
           </el-form>
         </span>
                 <template #footer>
                 <span class="dialog-footer">
           <el-button @click="editDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="" :disabled="btnDisabled"
+          <el-button type="primary" @click="updateFixedAssetCategory" :disabled="btnDisabled"
                      :loading="btnLoading">确 定</el-button>
         </span>
                 </template>
+            </el-dialog>
+            <!-- 上传弹出框 -->
+            <el-dialog title="导入资产类别" v-model="uploadDialogVisible" @close="importCloseDialog" width="30%" center>
+        <span style="display: inline-block;">
+          <el-upload
+                  accept=".xls,.xlsx"
+                  class="upload-demo"
+                  ref="upload"
+                  :action="server + '/fixedasset/metadata/depreciationmethod/importFixedAssetCategory'"
+                  :file-list="fileList"
+                  :on-remove="handleRemove"
+                  :on-change="handleChange"
+                  :before-upload="beforeUpload"
+                  :auto-upload="false"
+          >
+              <template #trigger>
+                 <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+              </template>
+                <el-button style="margin-left: 10px;" size="small" type="success"
+                           @click="importFixedAssetCategory">导入文件</el-button>
+          <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件</div>
+        </el-upload>
+        </span>
             </el-dialog>
         </el-card>
     </div>
@@ -358,19 +484,41 @@
 <script>
     import {ref, reactive, getCurrentInstance} from "vue";
     import {ElMessage, ElLoading, ElNotification, ElMessageBox} from "element-plus";
+    import utils from '../../../api/common/utils';
     import {
         getFixedAssetCateguryListApi,
         getAllDepreciationMethodApi,
         changeFixedAssetCategoryStatusApi,
         exportFixedAssetCategoryExcelApi,
-
+        addFixedAssetCategoryApi,
+        updateFixedAssetCategoryApi,
+        deleteFixedAssetCategoryApi,
+        deleteFixedAssetCategoryByBatchIdApi,
+        importFixedAssetCategoryApi,
     } from '../../../api/fixedasset/metadata/fixedAssetCategory'
-
-    import utils from '../../../api/common/utils'
 
     export default {
 
         setup() {
+            const selections = ref([])   //选中的值显示
+            const btnLoading = ref(false)
+            const btnDisabled = ref(false)
+            const loading = ref(true)
+            const depreciationMethodList = ref([])
+            const addDialogVisible = ref(false)
+            const editDialogVisible = ref(false)
+            const uploadDialogVisible = ref(false)
+            const editFixedAssetCategoryForm = ref(null)
+            const total = ref(0)
+            const fixedAssetCategorys = ref([])
+            const addFixedAssetCategoryFormRef = ref(null)
+            const editFixedAssetCategoryFormRef = ref(null)
+            const timeRange = ref([])
+            const fileList = ref([])
+            const fileDatas = ref([])
+            // todo 批量导入
+            const server = import.meta.env.PROD ? import.meta.env.VITE_APP_BASE_API : "/api"
+
             const pickerOptions = reactive({
                 shortcuts: [
                     {
@@ -427,13 +575,7 @@
                         }
                     }]
             })
-            const btnLoading = ref(false)
-            const btnDisabled = ref(false)
-            const loading = ref(true)
-            const depreciationMethodList = ref([])
-            const addDialogVisible = ref(false)
-            const editDialogVisible = ref(false)
-            const editFixedAssetCategoryForm = ref(null)
+
             const addFixedAssetCategoryForm = ref({
                 categoryId: null,
                 categoryName: null,
@@ -445,18 +587,39 @@
                 depreciationPeriod: null,
                 estimatedTotalWorkload: null,
                 netResidualValue: null,
+                remark: null,
             }) //添加表单
-            const addRules = ref({
-                // name: [
-                //     {required: true, message: "请输入分类名", trigger: "blur"},
-                //     {min: 2, max: 10, message: "长度在 2 到 10 个字符", trigger: "blur"}
-                // ],
-                // remark: [
-                //     {required: true, message: "请输入备注信息", trigger: "blur"}
-                // ],
-                // sort: [{required: true, message: "请输入排序号", trigger: "blur"}]
+            const formRules = ref({
+                categoryId: [
+                    {required: true, message: "请输入分类ID", trigger: "blur"},
+                    {pattern: /^[+]?(0|([1-9]\d*))?$/, message: '请输入正确数字'}
+                ],
+                categoryName: [
+                    {required: true, message: "请输入分类名称", trigger: "blur"}
+                ],
+                categoryDetailed: [
+                    {required: true, message: "请选择是否为明细", trigger: "blur"}
+                ],
+                status: [
+                    {required: true, message: "请选择状态", trigger: "blur"}
+                ],
+                depreciationMethodId: [
+                    {required: true, message: "请选择折旧方法", trigger: "blur"}
+                ],
+                depreciationPeriod: [
+                    {required: true, message: "请输入折旧年限", trigger: "blur"},
+                    {pattern: /^[+-]?(0|([1-9]\d*))(\.\d{1,2})?$/, message: '请输入正确数字'}
+                ],
+                estimatedTotalWorkload: [
+                    {required: true, message: "请输入总工作量", trigger: "blur"},
+                    {pattern: /^[+-]?(0|([1-9]\d*))(\.\d{1,2})?$/, message: '请输入正确数字'}
+                ],
+                netResidualValue: [
+                    {required: true, message: "请输入净残值率", trigger: "blur"},
+                    {pattern: /^(0(\.\d{1,2})?|1(\.0{1,2})?)$/, message: '请输入0-1之间两位小数'}
+                ],
             })
-            const total = ref(0)
+
             const queryMap = reactive({
                 categoryId: null,
                 categoryName: null,
@@ -476,11 +639,6 @@
                 pageNum: 1,
                 pageSize: 10,
             })
-            const fixedAssetCategorys = ref([])
-
-            const addFixedAssetCategoryFormRef = ref(null)
-            const editFixedAssetCategoryFormRef = ref(null)
-            const timeRange = ref([])
 
             /**
              * 重置
@@ -612,25 +770,154 @@
                         btnLoading.value = true;
                         btnDisabled.value = true;
 
-                        // add(addFixedAssetCategoryForm.value).then((res) => {
-                        //     if (res.data.success) {
-                        //         ElMessage.success("分类添加成功");
-                        //         getCategoryList();
-                        //         btnLoading.value = false;
-                        //         btnDisabled.value = false;
-                        //     } else {
-                        //         return ElMessage.error("分类添加失败:" + res.data.data.errorMsg);
-                        //     }
-                        //     addDialogVisible.value = false;
-                        //     btnLoading.value = false;
-                        //     btnDisabled.value = false;
-                        // }).catch((res) => {
-                        //     addDialogVisible.value = false;
-                        //     btnLoading.value = false;
-                        //     btnDisabled.value = false;
-                        //     ElMessage.error("分类添加失败:" + res);
-                        // });
+                        addFixedAssetCategoryApi(addFixedAssetCategoryForm.value).then((res) => {
+                            if (res.data.success) {
+                                ElMessage.success("分类添加成功");
+                                getFixedAssetCategoryList();
+                                btnLoading.value = false;
+                                btnDisabled.value = false;
+                            } else {
+                                btnLoading.value = false;
+                                btnDisabled.value = false;
+                                return ElMessage.error("分类添加失败:" + res.data.data.errorMsg);
+                            }
+                            addDialogVisible.value = false;
+                        }).catch((res) => {
+                            addDialogVisible.value = false;
+                            btnLoading.value = false;
+                            btnDisabled.value = false;
+                            ElMessage.error("分类添加失败:" + res);
+                        });
                     }
+                });
+            }
+
+            //修改分类
+            const updateFixedAssetCategory = () => {
+                editFixedAssetCategoryFormRef.value.validate(valid => {
+                    if (!valid) {
+                        return;
+                    } else {
+                        btnLoading.value = true;
+                        btnDisabled.value = true;
+                        updateFixedAssetCategoryApi(editFixedAssetCategoryForm.value).then((res) => {
+                            if (res.data.success) {
+                                ElNotification({
+                                    title: "成功",
+                                    message: "分类信息更新成功",
+                                    type: "success"
+                                });
+                                getFixedAssetCategoryList();
+                                btnLoading.value = false;
+                                btnDisabled.value = false;
+                            } else {
+                                btnLoading.value = false;
+                                btnDisabled.value = false;
+                                ElMessage.error("分类信息更新失败:" + res.data.data.errorMsg);
+                            }
+                            editDialogVisible.value = false;
+                        }).catch((res) => {
+                            btnLoading.value = false;
+                            btnDisabled.value = false;
+                            editDialogVisible.value = false;
+                            ElMessage.error("分类信息更新失败:" + res);
+                        });
+                    }
+                });
+            }
+
+            //删除分类
+            const deleteFixedAssetCategory = (id) => {
+                ElMessageBox.confirm(
+                    "此操作将永久删除该分类, 是否继续?",
+                    "提示",
+                    {
+                        confirmButtonText: "确定",
+                        cancelButtonText: "取消",
+                        type: "warning"
+                    }
+                ).then((res) => {
+                    if (res === "confirm") {
+                        deleteFixedAssetCategoryApi(id).then((res) => {
+                            if (res.data.success) {
+                                ElMessage.success("分类删除成功");
+                                getFixedAssetCategoryList();
+                            } else {
+                                ElMessage.error(res.data.data.errorMsg);
+                            }
+                        }).catch((res) => {
+                            ElMessage.error(res);
+                        });
+                    }
+                }).catch(() => {
+                    ElMessage({
+                        type: "info",
+                        message: "已取消删除"
+                    });
+                });
+            }
+
+            //批量删除分类
+            const deleteFixedAssetCategoryByBatchId = () => {
+                let categoryIds = selections.value.map(item => item.categoryId);
+                ElMessageBox.confirm(
+                    "此操作将永久批量删除分类, 是否继续?",
+                    "提示",
+                    {
+                        confirmButtonText: "确定",
+                        cancelButtonText: "取消",
+                        type: "warning"
+                    }
+                ).then((res) => {
+                    if (res === "confirm") {
+                        deleteFixedAssetCategoryByBatchIdApi(categoryIds).then((res) => {
+                            if (res.data.success) {
+                                ElMessage.success("分类批量删除成功");
+                                getFixedAssetCategoryList();
+                            } else {
+                                ElMessage.error(res.data.data.errorMsg);
+                            }
+                        }).catch((res) => {
+                            ElMessage.error(res);
+                        });
+                    }
+                }).catch(() => {
+                    ElMessage({
+                        type: "info",
+                        message: "已取消删除"
+                    });
+                });
+            }
+
+            //导入分类
+            const importFixedAssetCategory = () => {
+                if (fileDatas.value == null || fileDatas.value.length == 0) {
+                    ElMessage.error("请选择上传文件");
+                    return
+                }
+                let formData = new FormData();
+                fileDatas.value.forEach((file, index) => {
+                    //所有文件保存在formData中
+                    formData.append(`file${index}`, file)
+                })
+                importFixedAssetCategoryApi(formData).then((res) => {
+                    if (res.data.success) {
+                        ElNotification({
+                            title: "成功",
+                            message: "导入分类成功",
+                            type: "success"
+                        });
+
+                        getFixedAssetCategoryList();
+                        uploadDialogVisible.value = false;
+                        fileList.value = []
+                    } else {
+                        fileList.value = []
+                        ElMessage.error(res.data.data.errorMsg);
+                    }
+                }).catch((res) => {
+                    fileList.value = []
+                    ElMessage.error(res);
                 });
             }
 
@@ -654,102 +941,17 @@
                 getFixedAssetCategoryList();
             }
 
-            getAllDepreciationMethod();
-            getFixedAssetCategoryList();
-
-            const updateFixedAssetCategory = () => {
-                // editFixedAssetCategoryFormRef.value.validate( valid => {
-                //     if (!valid) {
-                //         return;
-                //     } else {
-                //         btnLoading.value = true;
-                //         btnDisabled.value = true;
-                //         update(
-                //             "/business/material/productCategory/update/" + editFixedAssetCategoryForm.value.id,
-                //             editFixedAssetCategoryForm.value
-                //         ).then((res) => {
-                //             if (res.data.success) {
-                //                 ElNotification({
-                //                     title: "成功",
-                //                     message: "分类信息更新",
-                //                     type: "success"
-                //                 });
-                //                 getCategoryList();
-                //                 btnLoading.value = false;
-                //                 btnDisabled.value = false;
-                //             } else {
-                //                 ElMessage.error("分类信息更新失败:" + res.data.data.errorMsg);
-                //             }
-                //             btnLoading.value = false;
-                //             btnDisabled.value = false;
-                //             editDialogVisible.value = false;
-                //         }).catch((res) => {
-                //             btnLoading.value = false;
-                //             btnDisabled.value = false;
-                //             editDialogVisible.value = false;
-                //             ElMessage.error("分类信息更新失败:" + res);
-                //         });
-                //     }
-                // });
-            }
-            //修改
-            const editFixedAssetCategory = (id) => {
-                // edit("/business/material/productCategory/edit/" + id).then((res) => {
-                //     if (res.data.success) {
-                //         editFixedAssetCategoryForm.value = res.data.data;
-                //     } else {
-                //         return ElMessage.error("分类信息编辑失败" + res.data.data.errorMsg);
-                //     }
-                //     editDialogVisible.value = true;
-                // }).catch((res) => {
-                //     editDialogVisible.value = true;
-                //     ElMessage.error("分类信息编辑失败:" + res);
-                // });
-            }
-            //删除分类
-            const deleteFixedAssetCategory = (id) => {
-                // ElMessageBox.confirm(
-                //     "此操作将永久删除该分类, 是否继续?",
-                //     "提示",
-                //     {
-                //         confirmButtonText: "确定",
-                //         cancelButtonText: "取消",
-                //         type: "warning"
-                //     }
-                // ).then((res) => {
-                //     if (res === "confirm") {
-                //         deleteProductCategory(
-                //             "/business/material/productCategory/delete/" + id
-                //         ).then((res) => {
-                //             if (res.data.success) {
-                //                 ElMessage.success("分类删除成功");
-                //                 getCategoryList();
-                //             } else {
-                //                 ElMessage.error(res.data.data.errorMsg);
-                //             }
-                //         }).catch((res) => {
-                //             ElMessage.error(res);
-                //         });
-                //     }
-                // }).catch(() => {
-                //     ElMessage({
-                //         type: "info",
-                //         message: "已取消删除"
-                //     });
-                // });
-            }
-
             //改变排序
             const sortChange = (column) => {
-                if(column.prop == null || column.order == null){
+                if (column.prop == null || column.order == null) {
                     queryMap.isAsc = null;
                     queryMap.sortColumn = null;
                     getFixedAssetCategoryList();
                     return;
                 }
-                if(column.order == 'ascending'){
+                if (column.order == 'ascending') {
                     queryMap.isAsc = true;
-                }else if(column.order == 'descending'){
+                } else if (column.order == 'descending') {
                     queryMap.isAsc = false;
                 }
                 queryMap.sortColumn = utils.camelToSnakeCase(column.prop);
@@ -760,6 +962,19 @@
             const openAddDialog = () => {
                 addDialogVisible.value = true;
             }
+
+            //打开修改
+            const openEditDialog = (row) => {
+                let newObj = {};
+                editFixedAssetCategoryForm.value = utils.cloneObj(row, newObj);
+                editDialogVisible.value = true;
+            }
+
+            //打开导入
+            const openUploadDialog = (row) => {
+                uploadDialogVisible.value = true;
+            }
+
             //关闭弹出框
             const addCloseDialog = () => {
                 addFixedAssetCategoryFormRef.value.clearValidate();
@@ -769,8 +984,63 @@
                 editFixedAssetCategoryFormRef.value.clearValidate();
                 editFixedAssetCategoryForm.value = {};
             }
+            const importCloseDialog = () => {
+                fileList.value = [];
+            }
+
+            const selectChange = (sels) => {
+                selections.value = sels;
+            }
+
+            //上传前校验
+            const beforeUpload = (file) => {
+                // const isLt2M = file.size / 1024 / 1024 < 10
+                // if (!isLt2M) {
+                //     ElMessage.error('上传图片大小不能超过 10MB！')
+                //     return;
+                // }
+                // if(fileList.value.length>1){
+                //     ElMessage.error('只支持上传一个文件')
+                //     return;
+                // }
+
+                //这个设置上传多个文件，可根据自己业务情况决定，本文只是上传一个
+                /*if(fileList.value.length>5){
+                    ElMessage.error('只支持5个文件');
+                    return;
+                }*/
+
+                let fd = new FormData()
+                fd.append('file', file);
+
+                return false;
+            }
+
+            const handleChange = (file, fileList) => {
+                // let reader = new FileReader();
+                // reader.readAsDataURL(file.raw);
+                // reader.onload = (e) => {
+                //     fileList.value.push({name: file.raw.name, url: e.target.result});
+                // }
+                fileDatas.value = [];
+                fileList.forEach(item => {
+                    fileDatas.value.push(item.raw)
+                })
+            }
+
+            //文件移除配置方法
+            const handleRemove = (file, fileList) => {
+                fileDatas.value = [];
+                fileList.forEach(item => {
+                    fileDatas.value.push(item.raw)
+                })
+            }
+
+            getAllDepreciationMethod();
+            getFixedAssetCategoryList();
 
             return {
+                selections,
                 pickerOptions,
                 btnLoading,
                 btnDisabled,
@@ -778,32 +1048,43 @@
                 depreciationMethodList,
                 addDialogVisible,
                 editDialogVisible,
+                uploadDialogVisible,
                 editFixedAssetCategoryForm,
                 addFixedAssetCategoryForm,
-                addRules,
+                formRules,
                 total,
                 queryMap,
                 fixedAssetCategorys,
                 addFixedAssetCategoryFormRef,
                 editFixedAssetCategoryFormRef,
                 timeRange,
+                fileList,
+                fileDatas,
+                server,
                 reset,
                 getFixedAssetCategoryList,
                 getAllDepreciationMethod,
-                changeFixedAssetCategoryStatus,
                 exportFixedAssetCategory,
+                changeFixedAssetCategoryStatus,
+                addFixedAssetCategory,
+                updateFixedAssetCategory,
+                deleteFixedAssetCategory,
+                deleteFixedAssetCategoryByBatchId,
+                importFixedAssetCategory,
                 handleSizeChange,
                 handleCurrentChange,
                 searchFixedAssetCategory,
-
-                updateFixedAssetCategory,
-                editFixedAssetCategory,
-                deleteFixedAssetCategory,
-                addFixedAssetCategory,
                 sortChange,
                 openAddDialog,
+                openEditDialog,
+                openUploadDialog,
                 addCloseDialog,
                 editCloseDialog,
+                importCloseDialog,
+                selectChange,
+                beforeUpload,
+                handleChange,
+                handleRemove,
             };
         },
     };
