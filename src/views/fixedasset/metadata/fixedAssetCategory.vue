@@ -458,7 +458,7 @@
                 </template>
             </el-dialog>
             <!-- 上传弹出框 -->
-            <el-dialog title="导入资产类别" v-loading="dialogLoading" v-model="uploadDialogVisible" @close="importCloseDialog" width="30%" center>
+            <el-dialog title="导入资产类别" v-model="uploadDialogVisible" @close="importCloseDialog" width="30%" center>
         <span style="display: inline-block;">
           <el-upload
                   accept=".xls,.xlsx"
@@ -507,7 +507,6 @@
             const btnLoading = ref(false)
             const btnDisabled = ref(false)
             const loading = ref(true)
-            const dialogLoading = ref(false)
             const depreciationMethodList = ref([])
             const addDialogVisible = ref(false)
             const editDialogVisible = ref(false)
@@ -894,9 +893,15 @@
 
             //导入分类
             const importFixedAssetCategory = () => {
-                dialogLoading.value = true;
+                let fullLoading = ElLoading.service({
+                    lock: true,
+                    text: 'Loading',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
                 if (fileDatas.value == null || fileDatas.value.length == 0) {
                     ElMessage.error("请选择上传文件");
+                    clearImportDialog(fullLoading);
                     return
                 }
                 let formData = new FormData();
@@ -914,16 +919,13 @@
 
                         getFixedAssetCategoryList();
                         uploadDialogVisible.value = false;
-                        fileList.value = []
-                        dialogLoading.value = true;
+                        clearImportDialog(fullLoading);
                     } else {
-                        fileList.value = []
-                        dialogLoading.value = true;
+                        clearImportDialog(fullLoading);
                         ElMessage.error(res.data.data.errorMsg);
                     }
                 }).catch((res) => {
-                    fileList.value = []
-                    dialogLoading.value = true;
+                    clearImportDialog(fullLoading);
                     ElMessage.error(res);
                 });
             }
@@ -995,6 +997,13 @@
                 fileList.value = [];
             }
 
+            //清理导入框
+            const clearImportDialog = (fullLoading) => {
+                fileList.value = [];
+                fileDatas.value = []
+                fullLoading.close();
+            }
+
             const selectChange = (sels) => {
                 selections.value = sels;
             }
@@ -1052,7 +1061,6 @@
                 btnLoading,
                 btnDisabled,
                 loading,
-                dialogLoading,
                 depreciationMethodList,
                 addDialogVisible,
                 editDialogVisible,
@@ -1089,6 +1097,7 @@
                 addCloseDialog,
                 editCloseDialog,
                 importCloseDialog,
+                clearImportDialog,
                 selectChange,
                 beforeUpload,
                 handleChange,
