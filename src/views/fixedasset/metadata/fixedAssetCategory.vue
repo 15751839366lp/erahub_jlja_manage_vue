@@ -130,7 +130,10 @@
                                v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:import'"
                                icon="el-icon-upload">导入
                     </el-button>
-                    <el-button @click="exportFixedAssetCategory" icon="el-icon-download">导出</el-button>
+                    <el-button @click="exportFixedAssetCategory"
+                               v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:export'"
+                               icon="el-icon-download">导出
+                    </el-button>
                     <el-button @click="deleteFixedAssetCategoryByBatchId(selections)"
                                icon="el-icon-delete"
                                v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:delete'"
