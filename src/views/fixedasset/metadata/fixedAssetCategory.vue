@@ -455,7 +455,7 @@
                 </template>
             </el-dialog>
             <!-- 上传弹出框 -->
-            <el-dialog title="导入资产类别" v-model="uploadDialogVisible" @close="importCloseDialog" width="30%" center>
+            <el-dialog title="导入资产类别" v-loading="dialogLoading" v-model="uploadDialogVisible" @close="importCloseDialog" width="30%" center>
         <span style="display: inline-block;">
           <el-upload
                   accept=".xls,.xlsx"
@@ -504,6 +504,7 @@
             const btnLoading = ref(false)
             const btnDisabled = ref(false)
             const loading = ref(true)
+            const dialogLoading = ref(false)
             const depreciationMethodList = ref([])
             const addDialogVisible = ref(false)
             const editDialogVisible = ref(false)
@@ -890,6 +891,7 @@
 
             //导入分类
             const importFixedAssetCategory = () => {
+                dialogLoading.value = true;
                 if (fileDatas.value == null || fileDatas.value.length == 0) {
                     ElMessage.error("请选择上传文件");
                     return
@@ -910,12 +912,15 @@
                         getFixedAssetCategoryList();
                         uploadDialogVisible.value = false;
                         fileList.value = []
+                        dialogLoading.value = true;
                     } else {
                         fileList.value = []
+                        dialogLoading.value = true;
                         ElMessage.error(res.data.data.errorMsg);
                     }
                 }).catch((res) => {
                     fileList.value = []
+                    dialogLoading.value = true;
                     ElMessage.error(res);
                 });
             }
@@ -1044,6 +1049,7 @@
                 btnLoading,
                 btnDisabled,
                 loading,
+                dialogLoading,
                 depreciationMethodList,
                 addDialogVisible,
                 editDialogVisible,
