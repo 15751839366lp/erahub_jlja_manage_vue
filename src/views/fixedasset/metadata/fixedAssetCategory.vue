@@ -94,13 +94,13 @@
                 <div style="display: inline-block">
 
                     <el-form-item label="状态">
-                        <el-radio v-model="queryMap.status" label="true">可用</el-radio>
-                        <el-radio v-model="queryMap.status" label="false">禁用</el-radio>
-                        <el-radio v-model="queryMap.status" label>全部</el-radio>
+                        <el-radio v-model="queryMap.status" :label="1">可用</el-radio>
+                        <el-radio v-model="queryMap.status" :label="0">禁用</el-radio>
+                            <el-radio v-model="queryMap.status" :label="null">全部</el-radio>
                     </el-form-item>
                     <el-form-item label="查询类型" style="margin-left:50px;">
-                        <el-radio v-model="queryMap.isAccurate" label="1">模糊查询</el-radio>
-                        <el-radio v-model="queryMap.isAccurate" label="0">精确查询</el-radio>
+                        <el-radio v-model="queryMap.isAccurate" :label="1">模糊查询</el-radio>
+                        <el-radio v-model="queryMap.isAccurate" :label="0">精确查询</el-radio>
                     </el-form-item>
                     <el-form-item label="创建时间" style="margin-left:50px;">
                         <el-date-picker
@@ -174,6 +174,12 @@
                 <!--                <el-table-column prop="depreciationMethodId" label="折旧方法id"></el-table-column>-->
                 <el-table-column prop="depreciationMethodName" label="折旧方法" width="120px"
                                  :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="categoryDetailed" label="明细">
+                    <template #default="scope">
+                        <el-tag type="success" v-if="scope.row.categoryDetailed===1">是</el-tag>
+                        <el-tag type="danger" v-else-if="scope.row.categoryDetailed===0">否</el-tag>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="measureUnit" label="计量单位" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="capacityUnit" label="能力单位" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="depreciationPeriod" label="折旧年限"></el-table-column>
@@ -186,7 +192,7 @@
                 <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true" width="150"></el-table-column>
                 <el-table-column prop="status" label="状态" width="100" fixed="right">
                     <template #default="scope">
-                        <el-switch v-model="scope.row.status"
+                            <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0"
                                    @change="changeFixedAssetCategoryStatus(scope.row)">
                         </el-switch>
                     </template>
@@ -254,17 +260,17 @@
                       <el-col :span="10">
                         <div class="grid-content bg-purple">
                           <el-form-item label="明细" prop="categoryDetailed">
-                                <el-radio v-model="addFixedAssetCategoryForm.categoryDetailed" label="true">是</el-radio>
+                                <el-radio v-model="addFixedAssetCategoryForm.categoryDetailed" label="1">是</el-radio>
                                 <el-radio v-model="addFixedAssetCategoryForm.categoryDetailed"
-                                          label="false">否</el-radio>
+                                          label="0">否</el-radio>
                           </el-form-item>
                         </div>
                       </el-col>
                       <el-col :span="10" style="margin-left: 30px">
                         <div class="grid-content bg-purple-light">
                           <el-form-item label="状态" prop="status">
-                                <el-radio v-model="addFixedAssetCategoryForm.status" label="true">可用</el-radio>
-                                <el-radio v-model="addFixedAssetCategoryForm.status" label="false">禁用</el-radio>
+                                <el-radio v-model="addFixedAssetCategoryForm.status" :label="1">可用</el-radio>
+                                <el-radio v-model="addFixedAssetCategoryForm.status" :label="0">禁用</el-radio>
                           </el-form-item>
                         </div>
                       </el-col>
@@ -369,17 +375,17 @@
                         <div class="grid-content bg-purple">
                           <el-form-item label="明细" prop="categoryDetailed">
                                 <el-radio v-model="editFixedAssetCategoryForm.categoryDetailed"
-                                          label="true">是</el-radio>
+                                          :label="1">是</el-radio>
                                 <el-radio v-model="editFixedAssetCategoryForm.categoryDetailed"
-                                          label="false">否</el-radio>
+                                          :label="0">否</el-radio>
                           </el-form-item>
                         </div>
                       </el-col>
                       <el-col :span="10" style="margin-left: 30px">
                         <div class="grid-content bg-purple-light">
                           <el-form-item label="状态" prop="status">
-                                <el-radio v-model="editFixedAssetCategoryForm.status" label="true">可用</el-radio>
-                                <el-radio v-model="editFixedAssetCategoryForm.status" label="false">禁用</el-radio>
+                                <el-radio v-model="editFixedAssetCategoryForm.status" :label="1">可用</el-radio>
+                                <el-radio v-model="editFixedAssetCategoryForm.status" :label="0">禁用</el-radio>
                           </el-form-item>
                         </div>
                       </el-col>
@@ -625,7 +631,7 @@
             const queryMap = reactive({
                 categoryId: "",
                 categoryName: null,
-                status: "",
+                status: null,
                 depreciationMethodId: null,
                 depreciationMethodName: null,
                 measureUnit: null,
@@ -633,7 +639,7 @@
                 depreciationPeriod: null,
                 estimatedTotalWorkload: null,
                 netResidualValue: null,
-                isAccurate: "1",
+                isAccurate: 1,
                 startCreateTime: null,
                 endCreateTime: null,
                 isAsc: null,
@@ -648,7 +654,7 @@
             const reset = () => {
                 queryMap.categoryId = "";
                 queryMap.categoryName = null;
-                queryMap.status = "";
+                queryMap.status = null;
                 queryMap.depreciationMethodId = null;
                 queryMap.depreciationMethodName = null;
                 queryMap.measureUnit = null;
@@ -656,7 +662,7 @@
                 queryMap.depreciationPeriod = null;
                 queryMap.estimatedTotalWorkload = null;
                 queryMap.netResidualValue = null;
-                queryMap.isAccurate = "1";
+                queryMap.isAccurate = 1;
                 queryMap.startCreateTime = null;
                 queryMap.endCreateTime = null;
                 timeRange.value = [];
@@ -749,9 +755,9 @@
                 changeFixedAssetCategoryStatusApi(row.categoryId, row.status).then((res) => {
                     if (!res.data.success) {
                         ElMessage.error("更新资产类别状态失败:" + res.data.data.errorMsg);
-                        row.status = !row.status;
+                        row.status = row.status == 1 ? 0 : 1;
                     } else {
-                        const message = row.status ? '资产类别状态已启用' : '资产类别状态已禁用';
+                        const message = row.status == 1 ? '资产类别状态已启用' : '资产类别状态已禁用';
                         ElNotification({
                             type: 'success',
                             title: '操作成功',
