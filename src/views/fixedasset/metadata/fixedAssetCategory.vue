@@ -579,7 +579,7 @@
             })
 
             const addFixedAssetCategoryForm = ref({
-                categoryId: null,
+                categoryId: "",
                 categoryName: null,
                 categoryDetailed: null,
                 status: null,
@@ -594,7 +594,7 @@
             const formRules = ref({
                 categoryId: [
                     {required: true, message: "请输入分类ID", trigger: "blur"},
-                    {pattern: /^[+]?(0|([1-9]\d*))?$/, message: '请输入正确数字'}
+                    {pattern: /^[+]?(0|([0-9]\d*))?$/, message: '请输入正确格式'}
                 ],
                 categoryName: [
                     {required: true, message: "请输入分类名称", trigger: "blur"}
@@ -623,7 +623,7 @@
             })
 
             const queryMap = reactive({
-                categoryId: null,
+                categoryId: "",
                 categoryName: null,
                 status: "",
                 depreciationMethodId: null,
@@ -646,7 +646,7 @@
              * 重置
              */
             const reset = () => {
-                queryMap.categoryId = null;
+                queryMap.categoryId = "";
                 queryMap.categoryName = null;
                 queryMap.status = "";
                 queryMap.depreciationMethodId = null;
@@ -678,7 +678,7 @@
                     queryMap.endCreateTime = timeRange.value[1];
                 }
 
-                if (!utils.isEmpty(queryMap.categoryId) && !utils.isIneger(queryMap.categoryId)) {
+                if (!utils.isEmpty(queryMap.categoryId) && !utils.isStringIneger(queryMap.categoryId)) {
                     ElMessage.error("请输入数值类型ID");
                     return;
                 } else if (!utils.isEmpty(queryMap.depreciationPeriod) && !utils.isNumberTwoScale(queryMap.depreciationPeriod, 2)) {

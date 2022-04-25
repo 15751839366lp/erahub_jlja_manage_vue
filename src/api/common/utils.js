@@ -5,6 +5,14 @@ function isEmpty(obj) {
     return false
 }
 
+function isStringIneger(number) {
+    if (isEmpty(number)) {
+        return false
+    }
+    const reg = /^[+]?(0|([0-9]\d*))?$/;
+    return reg.test(number)
+}
+
 function isIneger(number) {
     if (isEmpty(number)) {
         return false
@@ -56,6 +64,7 @@ function cloneObj(obj,newObj) {
 export default {
     isEmpty,
 
+    isStringIneger,
     isIneger,
     isNumberTwoScale,
     isPercentageTwoScale,
