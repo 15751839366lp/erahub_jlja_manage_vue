@@ -301,6 +301,7 @@
                                       :key="depreciationMethod.depreciationMethodId"
                                       :label="depreciationMethod.depreciationMethodName"
                                       :value="depreciationMethod.depreciationMethodId"
+                                      :disabled="depreciationMethod.status == 1 ? false : true"
                               ></el-option>
                             </el-select>
                           </el-form-item>
@@ -416,6 +417,7 @@
                                       :key="depreciationMethod.depreciationMethodId"
                                       :label="depreciationMethod.depreciationMethodName"
                                       :value="depreciationMethod.depreciationMethodId"
+                                      :disabled="depreciationMethod.status == 1 ? false : true"
                               ></el-option>
                             </el-select>
                           </el-form-item>
