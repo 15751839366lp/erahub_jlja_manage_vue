@@ -93,30 +93,35 @@
                 </el-form-item>
                 <div style="display: inline-block">
 
-                    <el-form-item label="状态">
+                    <el-form-item label="使用状态">
                         <el-radio v-model="queryMap.status" :label="1">可用</el-radio>
                         <el-radio v-model="queryMap.status" :label="0">禁用</el-radio>
-                            <el-radio v-model="queryMap.status" :label="null">全部</el-radio>
+                        <el-radio v-model="queryMap.status" :label="null">全部</el-radio>
                     </el-form-item>
-                    <el-form-item label="查询类型" style="margin-left:50px;">
+                    <el-form-item label="查询类型" style="margin-left:110px;">
                         <el-radio v-model="queryMap.isAccurate" :label="1">模糊查询</el-radio>
                         <el-radio v-model="queryMap.isAccurate" :label="0">精确查询</el-radio>
                     </el-form-item>
-                    <el-form-item label="创建时间" style="margin-left:50px;">
-                        <el-date-picker
-                                :clearable="false"
-                                v-model="timeRange"
-                                type="datetimerange"
-                                :value-format="'YYYY-MM-DD HH:mm:ss'"
-                                :shortcuts="pickerOptions.shortcuts"
-                                unlink-panels
-                                range-separator="至"
-                                start-placeholder="开始日期"
-                                end-placeholder="结束日期"
-                        >
-                        </el-date-picker>
+                    <el-form-item label="明细类型" style="margin-left:110px;">
+                        <el-radio v-model="queryMap.categoryDetailed" :label="1">是</el-radio>
+                        <el-radio v-model="queryMap.categoryDetailed" :label="0">否</el-radio>
+                        <el-radio v-model="queryMap.categoryDetailed" :label="null">全部</el-radio>
                     </el-form-item>
                 </div>
+                <el-form-item label="创建时间">
+                    <el-date-picker
+                            :clearable="false"
+                            v-model="timeRange"
+                            type="datetimerange"
+                            :value-format="'YYYY-MM-DD HH:mm:ss'"
+                            :shortcuts="pickerOptions.shortcuts"
+                            unlink-panels
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                    >
+                    </el-date-picker>
+                </el-form-item>
                 <el-form-item style="float: right;margin-right: 150px; ">
                     <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
                     <el-button type="primary" @click="searchFixedAssetCategory" icon="el-icon-search">查询</el-button>
@@ -631,6 +636,7 @@
             const queryMap = reactive({
                 categoryId: "",
                 categoryName: null,
+                categoryDetailed: null,
                 status: null,
                 depreciationMethodId: null,
                 depreciationMethodName: null,
@@ -654,6 +660,7 @@
             const reset = () => {
                 queryMap.categoryId = "";
                 queryMap.categoryName = null;
+                queryMap.categoryDetailed = null;
                 queryMap.status = null;
                 queryMap.depreciationMethodId = null;
                 queryMap.depreciationMethodName = null;
