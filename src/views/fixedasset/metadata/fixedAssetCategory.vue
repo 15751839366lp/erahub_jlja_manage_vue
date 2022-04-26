@@ -61,6 +61,7 @@
                 </el-form-item>
                 <el-form-item label="能力单位">
                     <el-input
+                            @keyup.enter.native="searchFixedAssetCategory"
                             clearable
                             @clear="searchFixedAssetCategory"
                             v-model="queryMap.capacityUnit"
@@ -69,6 +70,7 @@
                 </el-form-item>
                 <el-form-item label="折旧年限">
                     <el-input
+                            @keyup.enter.native="searchFixedAssetCategory"
                             clearable
                             @clear="searchFixedAssetCategory"
                             v-model="queryMap.depreciationPeriod"
@@ -77,6 +79,7 @@
                 </el-form-item>
                 <el-form-item label="工作量">
                     <el-input
+                            @keyup.enter.native="searchFixedAssetCategory"
                             clearable
                             @clear="searchFixedAssetCategory"
                             v-model="queryMap.estimatedTotalWorkload"
@@ -85,6 +88,7 @@
                 </el-form-item>
                 <el-form-item label="净残值率">
                     <el-input
+                            @keyup.enter.native="searchFixedAssetCategory"
                             clearable
                             @clear="searchFixedAssetCategory"
                             v-model="queryMap.netResidualValue"
