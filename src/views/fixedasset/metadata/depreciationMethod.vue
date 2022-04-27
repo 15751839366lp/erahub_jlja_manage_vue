@@ -47,13 +47,15 @@
                     <el-radio v-model="queryMap.status" :label="0">禁用</el-radio>
                     <el-radio v-model="queryMap.status" :label="null">全部</el-radio>
                 </el-form-item>
-                <el-form-item label="查询类型" style="margin-left:110px;">
+                <el-form-item label="查询类型" style="margin-left:50px;">
                     <el-radio v-model="queryMap.isAccurate" :label="1">模糊查询</el-radio>
                     <el-radio v-model="queryMap.isAccurate" :label="0">精确查询</el-radio>
                 </el-form-item>
                 <el-form-item style="float: right;margin-right: 150px; ">
                     <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
-                    <el-button type="primary" @click="searchDepreciationMethod" icon="el-icon-search">查询</el-button>
+                    <el-button type="primary" @click="searchDepreciationMethod"
+                               v-hasPermission="'fixedAsset:metadata:depreciationMethod:import'"
+                               icon="el-icon-search">查询</el-button>
                     <el-button v-hasPermission="'fixedAsset:metadata:depreciationMethod:add'"
                                type="success"
                                icon="el-icon-plus"

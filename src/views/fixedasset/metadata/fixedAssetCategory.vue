@@ -128,7 +128,8 @@
                 </el-form-item>
                 <el-form-item style="float: right;margin-right: 150px; ">
                     <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
-                    <el-button type="primary" @click="searchFixedAssetCategory" icon="el-icon-search">查询</el-button>
+                    <el-button type="primary" @click="searchFixedAssetCategory" icon="el-icon-search"
+                               v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:select'">查询</el-button>
                     <el-button v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:add'"
                                type="success"
                                icon="el-icon-plus"
