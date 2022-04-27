@@ -475,7 +475,7 @@
                 </template>
             </el-dialog>
             <!-- 上传弹出框 -->
-            <el-dialog title="导入资产类别" v-model="uploadDialogVisible" @close="importCloseDialog" width="30%" center>
+            <el-dialog title="导入资产类别" v-model="uploadDialogVisible" @close="importCloseDialog" width="40%" center>
         <span style="display: inline-block;">
           <el-upload
                   accept=".xls,.xlsx"
@@ -493,7 +493,7 @@
               </template>
                 <el-button style="margin-left: 10px;" size="small" type="success"
                            @click="importFixedAssetCategory">导入文件</el-button>
-          <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件</div>
+          <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件，单个文件大小不能超过20MB，总文件大小不能超过100MB</div>
         </el-upload>
         </span>
             </el-dialog>
