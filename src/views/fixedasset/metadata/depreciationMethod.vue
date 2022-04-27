@@ -91,7 +91,7 @@
                     @selection-change="selectChange"
             >
                 <el-table-column type="selection" width="40px"></el-table-column>
-                <el-table-column prop="depreciationMethodId" label="ID" width="100px" fixed sortable></el-table-column>
+                <el-table-column prop="depreciationMethodId" label="ID" width="60px" fixed sortable></el-table-column>
                 <el-table-column prop="depreciationMethodName" label="方法名称" width="150px" fixed
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="formula" label="计算公式" :show-overflow-tooltip="true"></el-table-column>
@@ -121,7 +121,7 @@
                         <el-button v-hasPermission="'fixedAsset:metadata:depreciationMethod:delete'"
                                    type="danger"
                                    icon="el-icon-delete"
-                                   @click="deleteDepreciationMethod(scope.row.categoryId)"
+                                   @click="deleteDepreciationMethod(scope.row.depreciationMethodId)"
                                    size="mini"
                         >
                         </el-button>
@@ -155,14 +155,14 @@
                     <el-row>
                       <el-col :span="10">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="方法ID" prop="categoryId">
+                          <el-form-item label="方法ID" prop="depreciationMethodId">
                             <el-input v-model="addDepreciationMethodForm.depreciationMethodId"></el-input>
                           </el-form-item>
                         </div>
                       </el-col>
                       <el-col :span="10" style="margin-left: 30px">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="方法名称" prop="categoryName">
+                          <el-form-item label="方法名称" prop="depreciationMethodName">
                             <el-input v-model="addDepreciationMethodForm.depreciationMethodName"></el-input>
                           </el-form-item>
                         </div>
@@ -173,14 +173,14 @@
                         <div class="grid-content bg-purple-light">
                           <el-form-item label="状态" prop="status">
                                 <el-radio v-model="addDepreciationMethodForm.status" :label="1">可用</el-radio>
-                                <el-radio v-model="adddepreciationMethodForm.status" :label="0">禁用</el-radio>
+                                <el-radio v-model="addDepreciationMethodForm.status" :label="0">禁用</el-radio>
                           </el-form-item>
                         </div>
                       </el-col>
                     </el-row>
                       <el-row>
                           <el-col>
-                          <el-form-item label="计算公式" prop="remark">
+                          <el-form-item label="计算公式" prop="formula">
                               <el-input type="textarea" v-model="addDepreciationMethodForm.formula"
                                         style="width: 530px" :rows="3"></el-input>
                           </el-form-item>
@@ -188,7 +188,7 @@
                       </el-row>
                       <el-row>
                           <el-col>
-                          <el-form-item label="公式说明" prop="remark">
+                          <el-form-item label="公式说明" prop="formulaExplain">
                               <el-input type="textarea" v-model="addDepreciationMethodForm.formulaExplain"
                                         style="width: 530px" :rows="3"></el-input>
                           </el-form-item>
@@ -229,7 +229,7 @@
                       </el-col>
                       <el-col :span="10" style="margin-left: 30px">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="方法名称" prop="categoryName">
+                          <el-form-item label="方法名称" prop="depreciationMethodName">
                             <el-input v-model="editDepreciationMethodForm.depreciationMethodName"></el-input>
                           </el-form-item>
                         </div>
@@ -247,7 +247,7 @@
                     </el-row>
                       <el-row>
                           <el-col>
-                          <el-form-item label="计算公式" prop="remark">
+                          <el-form-item label="计算公式" prop="formula">
                               <el-input type="textarea" v-model="editDepreciationMethodForm.formula"
                                         style="width: 530px" :rows="3"></el-input>
                           </el-form-item>
@@ -255,7 +255,7 @@
                       </el-row>
                       <el-row>
                           <el-col>
-                          <el-form-item label="公式说明" prop="remark">
+                          <el-form-item label="公式说明" prop="formulaExplain">
                               <el-input type="textarea" v-model="editDepreciationMethodForm.formulaExplain"
                                         style="width: 530px" :rows="3"></el-input>
                           </el-form-item>
