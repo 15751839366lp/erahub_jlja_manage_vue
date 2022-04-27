@@ -1,6 +1,6 @@
 import service from "../../../utils/request";
 
-export function getFixedAssetCateguryListApi(data) {
+export function getFixedAssetCategoryListApi(data) {
     return service.request({
         url: '/fixedasset/metadata/fixedassetcategory/getFixedAssetCategoryList',
         method: 'post',

@@ -166,7 +166,7 @@
                     @sort-change="sortChange"
                     @selection-change="selectChange"
             >
-                <el-table-column type="selection" width="40"></el-table-column>
+                <el-table-column type="selection" width="40px"></el-table-column>
                 <el-table-column prop="categoryId" label="ID" width="100px" fixed sortable></el-table-column>
                 <el-table-column prop="categoryName" label="类别名称" width="150px" fixed
                                  :show-overflow-tooltip="true"></el-table-column>
@@ -344,7 +344,7 @@
                           <el-col>
                           <el-form-item label="备注" prop="remark">
                               <el-input type="textarea" v-model="addFixedAssetCategoryForm.remark"
-                                        style="width: 545px"></el-input>
+                                        style="width: 530px" :rows="3"></el-input>
                           </el-form-item>
                           </el-col>
                       </el-row>
@@ -460,7 +460,7 @@
                           <el-col>
                           <el-form-item label="备注" prop="remark">
                               <el-input type="textarea" v-model="editFixedAssetCategoryForm.remark"
-                                        style="width: 545px"></el-input>
+                                        style="width: 530px" :rows="3"></el-input>
                           </el-form-item>
                           </el-col>
                       </el-row>
@@ -481,7 +481,7 @@
                   accept=".xls,.xlsx"
                   class="upload-demo"
                   ref="upload"
-                  :action="server + '/fixedasset/metadata/depreciationmethod/importFixedAssetCategory'"
+                  :action="server + '/fixedasset/metadata/fixedassetcategory/importFixedAssetCategory'"
                   :file-list="fileList"
                   :on-remove="handleRemove"
                   :on-change="handleChange"
@@ -506,7 +506,7 @@
     import {ElMessage, ElLoading, ElNotification, ElMessageBox} from "element-plus";
     import utils from '../../../api/common/utils';
     import {
-        getFixedAssetCateguryListApi,
+        getFixedAssetCategoryListApi,
         getAllDepreciationMethodApi,
         changeFixedAssetCategoryStatusApi,
         exportFixedAssetCategoryExcelApi,
@@ -713,7 +713,7 @@
                 loading.value = true;
                 fixedAssetCategorys.value = [];
 
-                getFixedAssetCateguryListApi(queryMap).then((res) => {
+                getFixedAssetCategoryListApi(queryMap).then((res) => {
                     if (!res.data.success) return ElMessage.error("分类列表失败");
                     fixedAssetCategorys.value = res.data.data.rows;
                     total.value = res.data.data.total;
@@ -882,7 +882,7 @@
             const deleteFixedAssetCategoryByBatchId = () => {
                 let categoryIds = selections.value.map(item => item.categoryId);
                 ElMessageBox.confirm(
-                    "此操作将永久批量删除分类, 是否继续?",
+                    "此操作将永久删除分类, 是否继续?",
                     "提示",
                     {
                         confirmButtonText: "确定",
