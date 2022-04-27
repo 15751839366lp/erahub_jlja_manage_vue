@@ -597,7 +597,7 @@
             })
 
             const addFixedAssetCategoryForm = ref({
-                categoryId: "",
+                categoryId: null,
                 categoryName: null,
                 categoryDetailed: null,
                 status: null,
@@ -641,7 +641,7 @@
             })
 
             const queryMap = reactive({
-                categoryId: "",
+                categoryId: null,
                 categoryName: null,
                 categoryDetailed: null,
                 status: null,
@@ -665,7 +665,7 @@
              * 重置
              */
             const reset = () => {
-                queryMap.categoryId = "";
+                queryMap.categoryId = null;
                 queryMap.categoryName = null;
                 queryMap.categoryDetailed = null;
                 queryMap.status = null;
