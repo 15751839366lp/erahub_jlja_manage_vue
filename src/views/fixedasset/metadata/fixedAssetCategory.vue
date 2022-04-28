@@ -735,7 +735,7 @@
                     }
                     depreciationMethodList.value = res.data.data;
                 }).catch((res) => {
-                    ElMessage.error("获取折旧方法列表失败::" + res);
+                    ElMessage.error("获取折旧方法列表失败:" + res);
                 });
             }
 
