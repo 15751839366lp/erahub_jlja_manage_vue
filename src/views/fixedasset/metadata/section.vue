@@ -9,39 +9,106 @@
         </el-breadcrumb>
         <el-card class="box-card">
             <!-- 节点过滤 -->
-            <el-row>
-                <el-col :span="16">
-                    <div class="grid-content bg-purple">
-                        <el-input placeholder="输入关键字进行过滤" v-model="filterText" clearable></el-input>
-                    </div>
-                </el-col>
-                <el-col :span="2">
-                    <div class="grid-content bg-purple-light">
-                        <el-button
-                                type="primary"
-                                icon="el-icon-plus"
-                                style="margin-left:20px;"
-                                @click="openParentAdd"
-                        >父级
-                        </el-button>
-                    </div>
-                </el-col>
-                <el-col :span="2">
-                    <el-button
-                            v-hasPermission=""
-                            style="margin-left:20px;"
-                            icon="el-icon-download"
-                            @click="downExcel"
-                    >导出
-                    </el-button>
-                </el-col>
+            <el-form :inline="true" ref="form" :model="queryMap" label-width="70px" size="small">
 
-            </el-row>
+                <el-form-item label="ID">
+                    <el-input
+                            @keyup.enter.native=""
+                            @clear=""
+                            clearable
+                            v-model="queryMap.sectionId"
+                            placeholder="请输入id查询"
+                    ></el-input>
+                </el-form-item>
+                <el-form-item label="单位名称">
+                    <el-input
+                            @keyup.enter.native=""
+                            @clear=""
+                            clearable
+                            v-model="queryMap.sectionName"
+                            placeholder="请输入单位名称查询"
+                    ></el-input>
+                </el-form-item>
+                <el-form-item label="单位简称">
+                    <el-input
+                            @keyup.enter.native=""
+                            clearable
+                            @clear=""
+                            v-model="queryMap.sectionAbbreviation"
+                            placeholder="请输入单位简称查询"
+                    ></el-input>
+                </el-form-item>
+                <div style="display: inline-block">
+
+                    <el-form-item label="使用状态">
+                        <el-radio v-model="queryMap.status" :label="1">可用</el-radio>
+                        <el-radio v-model="queryMap.status" :label="0">禁用</el-radio>
+                        <el-radio v-model="queryMap.status" :label="null">全部</el-radio>
+                    </el-form-item>
+                    <el-form-item label="查询类型" style="margin-left:110px;">
+                        <el-radio v-model="queryMap.isAccurate" :label="1">模糊查询</el-radio>
+                        <el-radio v-model="queryMap.isAccurate" :label="0">精确查询</el-radio>
+                    </el-form-item>
+                    <el-form-item label="明细类型" style="margin-left:110px;">
+                        <el-radio v-model="queryMap.sectionDetailed" :label="1">是</el-radio>
+                        <el-radio v-model="queryMap.sectionDetailed" :label="0">否</el-radio>
+                        <el-radio v-model="queryMap.sectionDetailed" :label="null">全部</el-radio>
+                    </el-form-item>
+                </div>
+                <el-form-item label="创建时间">
+                    <el-date-picker
+                            :clearable="false"
+                            v-model="timeRange"
+                            type="datetimerange"
+                            :value-format="'YYYY-MM-DD HH:mm:ss'"
+                            :shortcuts="pickerOptions.shortcuts"
+                            unlink-panels
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                    >
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item style="float: right;margin-right: 150px; ">
+<!--                    <el-button-->
+<!--                            type="primary"-->
+<!--                            plain-->
+<!--                            :icon="openFlag ? 'el-icon-arrow-up' : 'el-icon-arrow-down'"-->
+<!--                            size="mini"-->
+<!--                            @click="toggleRowExpansion(openFlag)"-->
+<!--                    >{{openFlag ? '收起' : '展开'}}</el-button>-->
+                    <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
+                    <el-button type="primary" @click="getSectionList" icon="el-icon-search"
+                               v-hasPermission="'fixedAsset:metadata:section:select'">查询
+                    </el-button>
+                    <el-button v-hasPermission="'fixedAsset:metadata:section:add'"
+                               type="success"
+                               icon="el-icon-plus"
+                               @click="openAddDialog"
+                    >添加
+                    </el-button>
+                    <el-button @click="openUploadDialog"
+                               v-hasPermission="'fixedAsset:metadata:section:import'"
+                               icon="el-icon-upload">导入
+                    </el-button>
+                    <el-button @click="exportSection"
+                               v-hasPermission="'fixedAsset:metadata:section:export'"
+                               icon="el-icon-download">导出
+                    </el-button>
+                    <el-button @click="deleteSectionByBatchId(selections)"
+                               icon="el-icon-delete"
+                               v-hasPermission="'fixedAsset:metadata:section:delete'"
+                               :disabled="selections.length === 0">批量
+                    </el-button>
+                </el-form-item>
+            </el-form>
+
             <!-- 表格部分 -->
             <el-table
-                    ref="table"
+                    ref="sectionTable"
                     v-loading="loading"
                     row-key="sectionId"
+                    :default-expand-all="true"
                     style="width: 100%;"
                     height="490"
                     size="mini"
@@ -52,26 +119,28 @@
                     :row-style="{height: '30px'}"
                     @selection-change="selectChange"
                     :tree-props="{children: 'children'}">
-            >
-                <!-- todo -->
+                >
                 <el-table-column type="selection" width="40px"></el-table-column>
-                <el-table-column prop="sectionId" label="ID" width="60px" fixed></el-table-column>
-                <el-table-column prop="sectionName" label="单位名称" fixed :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="sectionAbbreviation" label="单位简称" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="categoryLevel" label="级数" width="100px">
+                <el-table-column prop="sectionId" label="ID" width="150px" fixed
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="sectionName" label="单位名称" width="150px" fixed
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="sectionAbbreviation" label="单位简称" width="150px"
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="sectionLevel" label="级数" width="100px">
                     <template #default="scope">
-                        <el-tag v-if="scope.row.categoryLevel===1">一级分类</el-tag>
-                        <el-tag type="success" v-else-if="scope.row.categoryLevel===2">二级分类</el-tag>
-                        <el-tag type="info" v-else-if="scope.row.categoryLevel===3">三级分类</el-tag>
-                        <el-tag type="warning" v-else-if="scope.row.categoryLevel===4">四级分类</el-tag>
-                        <el-tag type="danger" v-else-if="scope.row.categoryLevel===5">五级分类</el-tag>
+                        <el-tag v-if="scope.row.sectionLevel===1">一级分类</el-tag>
+                        <el-tag type="success" v-else-if="scope.row.sectionLevel===2">二级分类</el-tag>
+                        <el-tag type="info" v-else-if="scope.row.sectionLevel===3">三级分类</el-tag>
+                        <el-tag type="warning" v-else-if="scope.row.sectionLevel===4">四级分类</el-tag>
+                        <el-tag type="danger" v-else-if="scope.row.sectionLevel===5">五级分类</el-tag>
                         <el-tag type="" v-else>六级分类</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="categoryDetailed" label="明细">
+                <el-table-column prop="sectionDetailed" label="明细">
                     <template #default="scope">
-                        <el-tag type="success" v-if="scope.row.categoryDetailed===1">是</el-tag>
-                        <el-tag type="danger" v-else-if="scope.row.categoryDetailed===0">否</el-tag>
+                        <el-tag type="success" v-if="scope.row.sectionDetailed===1">是</el-tag>
+                        <el-tag type="danger" v-else-if="scope.row.sectionDetailed===0">否</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column prop="createTime" label="创建时间" :show-overflow-tooltip="true" width="150"
@@ -82,23 +151,23 @@
                 <el-table-column prop="status" label="状态" width="100" fixed="right">
                     <template #default="scope">
                         <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0"
-                                   @change="changeDepreciationMethodStatus(scope.row)">
+                                   @change="changeSectionStatus(scope.row)">
                         </el-switch>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" fixed="right" width="150px">
                     <template #default="scope">
-                        <el-button v-hasPermission="'fixedAsset:metadata:depreciationMethod:edit'"
+                        <el-button v-hasPermission="'fixedAsset:metadata:section:edit'"
                                    type="primary"
                                    icon="el-icon-edit"
                                    @click="openEditDialog(scope.row)"
                                    size="mini"
                         >
                         </el-button>
-                        <el-button v-hasPermission="'fixedAsset:metadata:depreciationMethod:delete'"
+                        <el-button v-hasPermission="'fixedAsset:metadata:section:delete'"
                                    type="danger"
                                    icon="el-icon-delete"
-                                   @click="deleteDepreciationMethod(scope.row.depreciationMethodId)"
+                                   @click="deleteSection(scope.row.sectionId)"
                                    size="mini"
                         >
                         </el-button>
@@ -109,176 +178,170 @@
             <el-pagination
                     style="margin-top:10px;"
                     background
-
                     :show-header="true"
-                    @size-change="handleSizeChange"
-                    @current-change="handleCurrentChange"
-                    :current-page="queryMap.pageNum"
-                    :page-sizes="[10,20, 30, 50, 100, 200]"
-                    :page-size="queryMap.pageSize"
-                    layout="total, sizes, prev, pager, next, jumper"
+                    layout="total"
                     :total="total"
             ></el-pagination>
 
-            <!-- 添加弹出框 -->
-            <el-dialog title="添加方法" v-model="addDialogVisible" @close="addCloseDialog" width="50%">
-                <span>
-                  <el-form
-                          :model="addDepreciationMethodForm"
-                          :rules="formRules"
-                          ref="addDepreciationMethodFormRef"
-                          label-width="100px"
-                  >
-                    <el-row>
-                      <el-col :span="10">
-                        <div class="grid-content bg-purple">
-                          <el-form-item label="方法ID" prop="depreciationMethodId">
-                            <el-input v-model="addDepreciationMethodForm.depreciationMethodId"></el-input>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                      <el-col :span="10" style="margin-left: 30px">
-                        <div class="grid-content bg-purple">
-                          <el-form-item label="方法名称" prop="depreciationMethodName">
-                            <el-input v-model="addDepreciationMethodForm.depreciationMethodName"></el-input>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                    </el-row>
-                      <el-row>
-                      <el-col :span="10" style="margin-left: 30px">
-                        <div class="grid-content bg-purple-light">
-                          <el-form-item label="状态" prop="status">
-                                <el-radio v-model="addDepreciationMethodForm.status" :label="1">可用</el-radio>
-                                <el-radio v-model="addDepreciationMethodForm.status" :label="0">禁用</el-radio>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                    </el-row>
-                      <el-row>
-                          <el-col>
-                          <el-form-item label="计算公式" prop="formula">
-                              <el-input type="textarea" v-model="addDepreciationMethodForm.formula"
-                                        style="width: 530px" :rows="3"></el-input>
-                          </el-form-item>
-                          </el-col>
-                      </el-row>
-                      <el-row>
-                          <el-col>
-                          <el-form-item label="公式说明" prop="formulaExplain">
-                              <el-input type="textarea" v-model="addDepreciationMethodForm.formulaExplain"
-                                        style="width: 530px" :rows="3"></el-input>
-                          </el-form-item>
-                          </el-col>
-                      </el-row>
-                      <el-row>
-                          <el-col>
-                          <el-form-item label="备注" prop="remark">
-                              <el-input type="textarea" v-model="addDepreciationMethodForm.remark"
-                                        style="width: 530px" :rows="3"></el-input>
-                          </el-form-item>
-                          </el-col>
-                      </el-row>
-                  </el-form>
-                </span>
-                <template #footer>
-                    <span class="dialog-footer">
-                      <el-button @click="addDialogVisible = false">取 消</el-button>
-                      <el-button type="primary" @click="addDepreciationMethod" :disabled="btnDisabled"
-                                 :loading="btnLoading">确 定</el-button>
-                    </span>
-                </template>
-            </el-dialog>
+            <!--            &lt;!&ndash; 添加弹出框 &ndash;&gt;-->
+            <!--            <el-dialog title="添加单位" v-model="addDialogVisible" @close="addCloseDialog" width="50%">-->
+            <!--                <span>-->
+            <!--                  <el-form-->
+            <!--                          :model="addSectionForm"-->
+            <!--                          :rules="formRules"-->
+            <!--                          ref="addSectionFormRef"-->
+            <!--                          label-width="100px"-->
+            <!--                  >-->
+            <!--                    <el-row>-->
+            <!--                      <el-col :span="10">-->
+            <!--                        <div class="grid-content bg-purple">-->
+            <!--                          <el-form-item label="单位ID" prop="sectionId">-->
+            <!--                            <el-input v-model="addSectionForm.sectionId"></el-input>-->
+            <!--                          </el-form-item>-->
+            <!--                        </div>-->
+            <!--                      </el-col>-->
+            <!--                      <el-col :span="10" style="margin-left: 30px">-->
+            <!--                        <div class="grid-content bg-purple">-->
+            <!--                          <el-form-item label="单位名称" prop="sectionName">-->
+            <!--                            <el-input v-model="addSectionForm.sectionName"></el-input>-->
+            <!--                          </el-form-item>-->
+            <!--                        </div>-->
+            <!--                      </el-col>-->
+            <!--                    </el-row>-->
+            <!--                      <el-row>-->
+            <!--                      <el-col :span="10" style="margin-left: 30px">-->
+            <!--                        <div class="grid-content bg-purple-light">-->
+            <!--                          <el-form-item label="状态" prop="status">-->
+            <!--                                <el-radio v-model="addSectionForm.status" :label="1">可用</el-radio>-->
+            <!--                                <el-radio v-model="addSectionForm.status" :label="0">禁用</el-radio>-->
+            <!--                          </el-form-item>-->
+            <!--                        </div>-->
+            <!--                      </el-col>-->
+            <!--                    </el-row>-->
+            <!--                      <el-row>-->
+            <!--                          <el-col>-->
+            <!--                          <el-form-item label="计算公式" prop="formula">-->
+            <!--                              <el-input type="textarea" v-model="addSectionForm.formula"-->
+            <!--                                        style="width: 530px" :rows="3"></el-input>-->
+            <!--                          </el-form-item>-->
+            <!--                          </el-col>-->
+            <!--                      </el-row>-->
+            <!--                      <el-row>-->
+            <!--                          <el-col>-->
+            <!--                          <el-form-item label="公式说明" prop="formulaExplain">-->
+            <!--                              <el-input type="textarea" v-model="addSectionForm.formulaExplain"-->
+            <!--                                        style="width: 530px" :rows="3"></el-input>-->
+            <!--                          </el-form-item>-->
+            <!--                          </el-col>-->
+            <!--                      </el-row>-->
+            <!--                      <el-row>-->
+            <!--                          <el-col>-->
+            <!--                          <el-form-item label="备注" prop="remark">-->
+            <!--                              <el-input type="textarea" v-model="addSectionForm.remark"-->
+            <!--                                        style="width: 530px" :rows="3"></el-input>-->
+            <!--                          </el-form-item>-->
+            <!--                          </el-col>-->
+            <!--                      </el-row>-->
+            <!--                  </el-form>-->
+            <!--                </span>-->
+            <!--                <template #footer>-->
+            <!--                    <span class="dialog-footer">-->
+            <!--                      <el-button @click="addDialogVisible = false">取 消</el-button>-->
+            <!--                      <el-button type="primary" @click="addSection" :disabled="btnDisabled"-->
+            <!--                                 :loading="btnLoading">确 定</el-button>-->
+            <!--                    </span>-->
+            <!--                </template>-->
+            <!--            </el-dialog>-->
 
-            <!-- 编辑弹出框 -->
-            <el-dialog title="编辑方法" v-model="editDialogVisible" @close="editCloseDialog" width="50%">
-        <span>
-          <el-form :model="editDepreciationMethodForm" :rules="formRules" ref="editDepreciationMethodFormRef"
-                   label-width="100px">
-            <el-row>
-                      <el-col :span="10">
-                        <div class="grid-content bg-purple">
-                          <el-form-item label="方法ID" prop="depreciationMethodId">
-                            <el-input v-model="editDepreciationMethodForm.depreciationMethodId"
-                                      :disabled="true"></el-input>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                      <el-col :span="10" style="margin-left: 30px">
-                        <div class="grid-content bg-purple">
-                          <el-form-item label="方法名称" prop="depreciationMethodName">
-                            <el-input v-model="editDepreciationMethodForm.depreciationMethodName"></el-input>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                    </el-row>
-                      <el-row>
-                      <el-col :span="10" style="margin-left: 30px">
-                        <div class="grid-content bg-purple-light">
-                          <el-form-item label="状态" prop="status">
-                                <el-radio v-model="editDepreciationMethodForm.status" :label="1">可用</el-radio>
-                                <el-radio v-model="editDepreciationMethodForm.status" :label="0">禁用</el-radio>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                    </el-row>
-                      <el-row>
-                          <el-col>
-                          <el-form-item label="计算公式" prop="formula">
-                              <el-input type="textarea" v-model="editDepreciationMethodForm.formula"
-                                        style="width: 530px" :rows="3"></el-input>
-                          </el-form-item>
-                          </el-col>
-                      </el-row>
-                      <el-row>
-                          <el-col>
-                          <el-form-item label="公式说明" prop="formulaExplain">
-                              <el-input type="textarea" v-model="editDepreciationMethodForm.formulaExplain"
-                                        style="width: 530px" :rows="3"></el-input>
-                          </el-form-item>
-                          </el-col>
-                      </el-row>
-                      <el-row>
-                          <el-col>
-                          <el-form-item label="备注" prop="remark">
-                              <el-input type="textarea" v-model="editDepreciationMethodForm.remark"
-                                        style="width: 530px" :rows="3"></el-input>
-                          </el-form-item>
-                          </el-col>
-                      </el-row>
-                  </el-form>
-        </span>
-                <template #footer>
-                <span class="dialog-footer">
-          <el-button @click="editDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="updateDepreciationMethod" :disabled="btnDisabled"
-                     :loading="btnLoading">确 定</el-button>
-        </span>
-                </template>
-            </el-dialog>
-            <!-- 上传弹出框 -->
-            <el-dialog title="导入折旧方法" v-model="uploadDialogVisible" @close="importCloseDialog" width="40%" center>
-        <span style="display: inline-block;">
-          <el-upload
-                  accept=".xls,.xlsx"
-                  class="upload-demo"
-                  ref="upload"
-                  :action="server + '/fixedasset/metadata/depreciationmethod/importDepreciationMethod'"
-                  :file-list="fileList"
-                  :on-remove="handleRemove"
-                  :on-change="handleChange"
-                  :before-upload="beforeUpload"
-                  :auto-upload="false"
-          >
-              <template #trigger>
-                 <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-              </template>
-                <el-button style="margin-left: 10px;" size="small" type="success"
-                           @click="importDepreciationMethod">导入文件</el-button>
-          <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件，单个文件大小不能超过20MB，总文件大小不能超过100MB</div>
-        </el-upload>
-        </span>
-            </el-dialog>
+            <!--            &lt;!&ndash; 编辑弹出框 &ndash;&gt;-->
+            <!--            <el-dialog title="编辑单位" v-model="editDialogVisible" @close="editCloseDialog" width="50%">-->
+            <!--        <span>-->
+            <!--          <el-form :model="editSectionForm" :rules="formRules" ref="editSectionFormRef"-->
+            <!--                   label-width="100px">-->
+            <!--            <el-row>-->
+            <!--                      <el-col :span="10">-->
+            <!--                        <div class="grid-content bg-purple">-->
+            <!--                          <el-form-item label="单位ID" prop="sectionId">-->
+            <!--                            <el-input v-model="editSectionForm.sectionId"-->
+            <!--                                      :disabled="true"></el-input>-->
+            <!--                          </el-form-item>-->
+            <!--                        </div>-->
+            <!--                      </el-col>-->
+            <!--                      <el-col :span="10" style="margin-left: 30px">-->
+            <!--                        <div class="grid-content bg-purple">-->
+            <!--                          <el-form-item label="单位名称" prop="sectionName">-->
+            <!--                            <el-input v-model="editSectionForm.sectionName"></el-input>-->
+            <!--                          </el-form-item>-->
+            <!--                        </div>-->
+            <!--                      </el-col>-->
+            <!--                    </el-row>-->
+            <!--                      <el-row>-->
+            <!--                      <el-col :span="10" style="margin-left: 30px">-->
+            <!--                        <div class="grid-content bg-purple-light">-->
+            <!--                          <el-form-item label="状态" prop="status">-->
+            <!--                                <el-radio v-model="editSectionForm.status" :label="1">可用</el-radio>-->
+            <!--                                <el-radio v-model="editSectionForm.status" :label="0">禁用</el-radio>-->
+            <!--                          </el-form-item>-->
+            <!--                        </div>-->
+            <!--                      </el-col>-->
+            <!--                    </el-row>-->
+            <!--                      <el-row>-->
+            <!--                          <el-col>-->
+            <!--                          <el-form-item label="计算公式" prop="formula">-->
+            <!--                              <el-input type="textarea" v-model="editSectionForm.formula"-->
+            <!--                                        style="width: 530px" :rows="3"></el-input>-->
+            <!--                          </el-form-item>-->
+            <!--                          </el-col>-->
+            <!--                      </el-row>-->
+            <!--                      <el-row>-->
+            <!--                          <el-col>-->
+            <!--                          <el-form-item label="公式说明" prop="formulaExplain">-->
+            <!--                              <el-input type="textarea" v-model="editSectionForm.formulaExplain"-->
+            <!--                                        style="width: 530px" :rows="3"></el-input>-->
+            <!--                          </el-form-item>-->
+            <!--                          </el-col>-->
+            <!--                      </el-row>-->
+            <!--                      <el-row>-->
+            <!--                          <el-col>-->
+            <!--                          <el-form-item label="备注" prop="remark">-->
+            <!--                              <el-input type="textarea" v-model="editSectionForm.remark"-->
+            <!--                                        style="width: 530px" :rows="3"></el-input>-->
+            <!--                          </el-form-item>-->
+            <!--                          </el-col>-->
+            <!--                      </el-row>-->
+            <!--                  </el-form>-->
+            <!--        </span>-->
+            <!--                <template #footer>-->
+            <!--                <span class="dialog-footer">-->
+            <!--          <el-button @click="editDialogVisible = false">取 消</el-button>-->
+            <!--          <el-button type="primary" @click="updateSection" :disabled="btnDisabled"-->
+            <!--                     :loading="btnLoading">确 定</el-button>-->
+            <!--        </span>-->
+            <!--                </template>-->
+            <!--            </el-dialog>-->
+            <!--            &lt;!&ndash; 上传弹出框 &ndash;&gt;-->
+            <!--            <el-dialog title="导入单位" v-model="uploadDialogVisible" @close="importCloseDialog" width="40%" center>-->
+            <!--        <span style="display: inline-block;">-->
+            <!--          <el-upload-->
+            <!--                  accept=".xls,.xlsx"-->
+            <!--                  class="upload-demo"-->
+            <!--                  ref="upload"-->
+            <!--                  :action="server + '/fixedasset/metadata/section/importSection'"-->
+            <!--                  :file-list="fileList"-->
+            <!--                  :on-remove="handleRemove"-->
+            <!--                  :on-change="handleChange"-->
+            <!--                  :before-upload="beforeUpload"-->
+            <!--                  :auto-upload="false"-->
+            <!--          >-->
+            <!--              <template #trigger>-->
+            <!--                 <el-button slot="trigger" size="small" type="primary">选取文件</el-button>-->
+            <!--              </template>-->
+            <!--                <el-button style="margin-left: 10px;" size="small" type="success"-->
+            <!--                           @click="importSection">导入文件</el-button>-->
+            <!--          <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件，单个文件大小不能超过20MB，总文件大小不能超过100MB</div>-->
+            <!--        </el-upload>-->
+            <!--        </span>-->
+            <!--            </el-dialog>-->
         </el-card>
     </div>
 </template>
@@ -288,15 +351,9 @@
     import {ElMessage, ElLoading, ElNotification, ElMessageBox} from "element-plus";
     import utils from '../../../api/common/utils';
     import {
-        getDepreciationMethodListApi,
-        changeDepreciationMethodStatusApi,
-        exportDepreciationMethodExcelApi,
-        addDepreciationMethodApi,
-        updateDepreciationMethodApi,
-        deleteDepreciationMethodApi,
-        deleteDepreciationMethodByBatchIdApi,
-        importDepreciationMethodApi,
-    } from '../../../api/fixedasset/metadata/depreciationMethod'
+        getSectionListApi,
+    } from '../../../api/fixedasset/metadata/section'
+
 
     export default {
 
@@ -308,11 +365,11 @@
             const addDialogVisible = ref(false)
             const editDialogVisible = ref(false)
             const uploadDialogVisible = ref(false)
-            const editDepreciationMethodForm = ref(null)
+            const editSectionForm = ref(null)
             const total = ref(0)
-            const depreciationMethods = ref([])
-            const addDepreciationMethodFormRef = ref(null)
-            const editDepreciationMethodFormRef = ref(null)
+            const sections = ref([])
+            const addSectionFormRef = ref(null)
+            const editSectionFormRef = ref(null)
             const timeRange = ref([])
             const fileList = ref([])
             const fileDatas = ref([])
@@ -375,21 +432,24 @@
                     }]
             })
 
-            const addDepreciationMethodForm = ref({
-                depreciationMethodId: null,
-                depreciationMethodName: null,
-                formula: null,
-                formulaExplain: null,
+            const addSectionForm = ref({
+                sectionId: null,
+                sectionName: null,
+                sectionAbbreviation: null,
+                sectionDetailed: null,
                 status: null,
                 remark: null,
             }) //添加表单
             const formRules = ref({
-                depreciationMethodId: [
-                    {required: true, message: "请输入方法ID", trigger: "blur"},
+                sectionId: [
+                    {required: true, message: "请输入单位ID", trigger: "blur"},
                     {pattern: /^[+]?(0|([0-9]\d*))?$/, message: '请输入正确格式'}
                 ],
-                depreciationMethodName: [
-                    {required: true, message: "请输入方法名称", trigger: "blur"}
+                sectionName: [
+                    {required: true, message: "请输入单位名称", trigger: "blur"}
+                ],
+                sectionAbbreviation: [
+                    {required: true, message: "请输入单位简称", trigger: "blur"}
                 ],
                 status: [
                     {required: true, message: "请选择状态", trigger: "blur"}
@@ -397,63 +457,43 @@
             })
 
             const queryMap = reactive({
-                depreciationMethodId: null,
-                depreciationMethodName: null,
-                formula: null,
-                formulaExplain: null,
+                sectionId: null,
+                sectionName: null,
+                sectionAbbreviation: null,
+                sectionDetailed: null,
                 status: null,
                 remark: null,
                 isAccurate: 1,
                 startCreateTime: null,
                 endCreateTime: null,
-                isAsc: null,
-                sortColumn: null,
-                pageNum: 1,
-                pageSize: 10,
             })
 
             /**
              * 重置
              */
             const reset = () => {
-                queryMap.depreciationMethodId = null;
-                queryMap.depreciationMethodName = null;
-                queryMap.formula = null;
-                queryMap.formulaExplain = null;
+                queryMap.sectionId = null;
+                queryMap.sectionName = null;
+                queryMap.sectionAbbreviation = null;
+                queryMap.sectionDetailed = null;
                 queryMap.status = null;
                 queryMap.remark = null;
                 queryMap.isAccurate = 1;
                 queryMap.startCreateTime = null;
                 queryMap.endCreateTime = null;
                 timeRange.value = [];
-                queryMap.isAsc = null;
-                queryMap.sortColumn = null;
-                queryMap.pageNum = 1;
-                queryMap.pageSize = 10;
 
-                getDepreciationMethodList()
+                getSectionList()
             }
 
-            //加载方法数据
-            const getDepreciationMethodList = () => {
+            //加载单位数据
+            const getSectionList = () => {
 
-                if (timeRange.value != null && timeRange.value.length === 1) {
-                    queryMap.startCreateTime = timeRange.value[0];
-                } else if (timeRange.value != null && timeRange.value.length === 2) {
-                    queryMap.startCreateTime = timeRange.value[0];
-                    queryMap.endCreateTime = timeRange.value[1];
-                }
-
-                if (!utils.isEmpty(queryMap.depreciationMethodId) && !utils.isIneger(queryMap.depreciationMethodId)) {
-                    ElMessage.error("请输入数值类型ID");
-                    return;
-                }
                 loading.value = true;
-                depreciationMethods.value = [];
 
-                getDepreciationMethodListApi(queryMap).then((res) => {
+                getSectionListApi(queryMap).then((res) => {
                     if (!res.data.success) return ElMessage.error("查询失败：" + res.data.data.errorMsg);
-                    depreciationMethods.value = res.data.data.rows;
+                    sections.value = res.data.data.rows;
                     total.value = res.data.data.total;
                     loading.value = false;
                 }).catch((res) => {
@@ -465,11 +505,11 @@
             /**
              * 导出
              */
-            const exportDepreciationMethod = () => {
-                exportDepreciationMethodExcelApi().then((res) => {
+            const exportSection = () => {
+                exportSectionExcelApi().then((res) => {
                     if (res.headers["content-type"] === "application/json") {
                         return ElMessage.error(
-                            "Subject does not have permission [fixedAsset:metadata:depreciationMethod:export]"
+                            "Subject does not have permission [fixedAsset:metadata:section:export]"
                         );
                     }
                     const data = res.data;
@@ -477,7 +517,7 @@
                     const a = document.createElement("a");
                     document.body.appendChild(a);
                     a.href = url;
-                    a.download = "折旧方法列表.xlsx";
+                    a.download = "使用单位列表.xlsx";
                     a.click();
                     window.URL.revokeObjectURL(url);
                 }).catch((res) => {
@@ -486,15 +526,15 @@
             }
 
             /**
-             * 禁用启用方法
+             * 禁用启用单位
              */
-            const changeDepreciationMethodStatus = (row) => {
-                changeDepreciationMethodStatusApi(row.depreciationMethodId, row.status).then((res) => {
+            const changeSectionStatus = (row) => {
+                changeSectionStatusApi(row.sectionId, row.status).then((res) => {
                     if (!res.data.success) {
-                        ElMessage.error("更新折旧方法状态失败:" + res.data.data.errorMsg);
+                        ElMessage.error("更新单位状态失败:" + res.data.data.errorMsg);
                         row.status = row.status == 1 ? 0 : 1;
                     } else {
-                        const message = row.status == 1 ? '折旧方法状态已启用' : '折旧方法状态已禁用';
+                        const message = row.status == 1 ? '单位状态已启用' : '单位状态已禁用';
                         ElNotification({
                             type: 'success',
                             title: '操作成功',
@@ -502,23 +542,23 @@
                         });
                     }
                 }).catch((res) => {
-                    ElMessage.error("更新折旧方法状态失败:" + res);
+                    ElMessage.error("更新单位状态失败:" + res);
                 });
             }
 
-            //添加方法
-            const addDepreciationMethod = () => {
-                addDepreciationMethodFormRef.value.validate(valid => {
+            //添加单位
+            const addSection = () => {
+                addSectionFormRef.value.validate(valid => {
                     if (!valid) {
                         return;
                     } else {
                         btnLoading.value = true;
                         btnDisabled.value = true;
 
-                        addDepreciationMethodApi(addDepreciationMethodForm.value).then((res) => {
+                        addSectionApi(addSectionForm.value).then((res) => {
                             if (res.data.success) {
                                 ElMessage.success("添加成功");
-                                getDepreciationMethodList();
+                                getSectionList();
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
                             } else {
@@ -537,22 +577,22 @@
                 });
             }
 
-            //修改方法
-            const updateDepreciationMethod = () => {
-                editDepreciationMethodFormRef.value.validate(valid => {
+            //修改单位
+            const updateSection = () => {
+                editSectionFormRef.value.validate(valid => {
                     if (!valid) {
                         return;
                     } else {
                         btnLoading.value = true;
                         btnDisabled.value = true;
-                        updateDepreciationMethodApi(editDepreciationMethodForm.value).then((res) => {
+                        updateSectionApi(editSectionForm.value).then((res) => {
                             if (res.data.success) {
                                 ElNotification({
                                     title: "成功",
                                     message: "更新成功",
                                     type: "success"
                                 });
-                                getDepreciationMethodList();
+                                getSectionList();
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
                             } else {
@@ -571,10 +611,10 @@
                 });
             }
 
-            //删除方法
-            const deleteDepreciationMethod = (id) => {
+            //删除单位
+            const deleteSection = (id) => {
                 ElMessageBox.confirm(
-                    "此操作将永久删除该折旧方法, 是否继续?",
+                    "此操作将永久删除该单位, 是否继续?",
                     "提示",
                     {
                         confirmButtonText: "确定",
@@ -583,10 +623,10 @@
                     }
                 ).then((res) => {
                     if (res === "confirm") {
-                        deleteDepreciationMethodApi(id).then((res) => {
+                        deleteSectionApi(id).then((res) => {
                             if (res.data.success) {
-                                ElMessage.success("方法删除成功");
-                                getDepreciationMethodList();
+                                ElMessage.success("单位删除成功");
+                                getSectionList();
                             } else {
                                 ElMessage.error(res.data.data.errorMsg);
                             }
@@ -602,11 +642,11 @@
                 });
             }
 
-            //批量删除方法
-            const deleteDepreciationMethodByBatchId = () => {
-                let depreciationMethodIds = selections.value.map(item => item.depreciationMethodId);
+            //批量删除单位
+            const deleteSectionByBatchId = () => {
+                let sectionIds = selections.value.map(item => item.sectionId);
                 ElMessageBox.confirm(
-                    "此操作将永久删除该折旧方法, 是否继续?",
+                    "此操作将永久删除该单位, 是否继续?",
                     "提示",
                     {
                         confirmButtonText: "确定",
@@ -615,10 +655,10 @@
                     }
                 ).then((res) => {
                     if (res === "confirm") {
-                        deleteDepreciationMethodByBatchIdApi(depreciationMethodIds).then((res) => {
+                        deleteSectionByBatchIdApi(sectionIds).then((res) => {
                             if (res.data.success) {
-                                ElMessage.success("方法批量删除成功");
-                                getDepreciationMethodList();
+                                ElMessage.success("单位批量删除成功");
+                                getSectionList();
                             } else {
                                 ElMessage.error(res.data.data.errorMsg);
                             }
@@ -634,8 +674,8 @@
                 });
             }
 
-            //导入方法
-            const importDepreciationMethod = () => {
+            //导入单位
+            const importSection = () => {
                 let fullLoading = ElLoading.service({
                     lock: true,
                     text: 'Loading',
@@ -652,15 +692,15 @@
                     //所有文件保存在formData中
                     formData.append(`file${index}`, file)
                 })
-                importDepreciationMethodApi(formData).then((res) => {
+                importSectionApi(formData).then((res) => {
                     if (res.data.success) {
                         ElNotification({
                             title: "成功",
-                            message: "导入折旧方法成功",
+                            message: "导入单位成功",
                             type: "success"
                         });
 
-                        getDepreciationMethodList();
+                        getSectionList();
                         uploadDialogVisible.value = false;
                         clearImportDialog(fullLoading);
                     } else {
@@ -673,42 +713,6 @@
                 });
             }
 
-            //改变页码
-            const handleSizeChange = (newSize) => {
-                queryMap.pageSize = newSize;
-                queryMap.pageNum = 1;
-                getDepreciationMethodList();
-            }
-            //翻页
-            const handleCurrentChange = (current) => {
-                queryMap.pageNum = current;
-                getDepreciationMethodList();
-            }
-
-            /**
-             * 搜索类别
-             */
-            const searchDepreciationMethod = () => {
-                queryMap.pageNum = 1;
-                getDepreciationMethodList();
-            }
-
-            //改变排序
-            const sortChange = (column) => {
-                if (column.prop == null || column.order == null) {
-                    queryMap.isAsc = null;
-                    queryMap.sortColumn = null;
-                    getDepreciationMethodList();
-                    return;
-                }
-                if (column.order == 'ascending') {
-                    queryMap.isAsc = true;
-                } else if (column.order == 'descending') {
-                    queryMap.isAsc = false;
-                }
-                queryMap.sortColumn = utils.camelToSnakeCase(column.prop);
-                getDepreciationMethodList();
-            }
 
             //打开添加
             const openAddDialog = () => {
@@ -718,7 +722,7 @@
             //打开修改
             const openEditDialog = (row) => {
                 let newObj = {};
-                editDepreciationMethodForm.value = utils.cloneObj(row, newObj);
+                editSectionForm.value = utils.cloneObj(row, newObj);
                 editDialogVisible.value = true;
             }
 
@@ -729,12 +733,12 @@
 
             //关闭弹出框
             const addCloseDialog = () => {
-                addDepreciationMethodFormRef.value.clearValidate();
-                addDepreciationMethodForm.value = {};
+                addSectionFormRef.value.clearValidate();
+                addSectionForm.value = {};
             }
             const editCloseDialog = () => {
-                editDepreciationMethodFormRef.value.clearValidate();
-                editDepreciationMethodForm.value = {};
+                editSectionFormRef.value.clearValidate();
+                editSectionForm.value = {};
             }
             const importCloseDialog = () => {
                 fileList.value = [];
@@ -795,7 +799,19 @@
                 })
             }
 
-            getDepreciationMethodList();
+            // /** 展开收缩 */
+            // const toggleRowExpansion = isExpansion => {
+            //     if(ids.value != null && ids.value != undefined && ids.value.length > 0){
+            //         if(isExpansion){
+            //             expandRowKeys.value = ids.value;
+            //         }else{
+            //             expandRowKeys.value = [];
+            //         }
+            //     }
+            //     openFlag.value = !isExpansion;
+            // }
+
+            getSectionList();
 
             return {
                 selections,
@@ -806,31 +822,27 @@
                 addDialogVisible,
                 editDialogVisible,
                 uploadDialogVisible,
-                editDepreciationMethodForm,
-                addDepreciationMethodForm,
+                editSectionForm,
+                addSectionForm,
                 formRules,
                 total,
                 queryMap,
-                depreciationMethods,
-                addDepreciationMethodFormRef,
-                editDepreciationMethodFormRef,
+                sections,
+                addSectionFormRef,
+                editSectionFormRef,
                 timeRange,
                 fileList,
                 fileDatas,
                 server,
                 reset,
-                getDepreciationMethodList,
-                exportDepreciationMethod,
-                changeDepreciationMethodStatus,
-                addDepreciationMethod,
-                updateDepreciationMethod,
-                deleteDepreciationMethod,
-                deleteDepreciationMethodByBatchId,
-                importDepreciationMethod,
-                handleSizeChange,
-                handleCurrentChange,
-                searchDepreciationMethod,
-                sortChange,
+                getSectionList,
+                exportSection,
+                changeSectionStatus,
+                addSection,
+                updateSection,
+                deleteSection,
+                deleteSectionByBatchId,
+                importSection,
                 openAddDialog,
                 openEditDialog,
                 openUploadDialog,

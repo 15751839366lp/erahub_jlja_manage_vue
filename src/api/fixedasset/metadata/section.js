@@ -1,8 +1,9 @@
 import service from "../../../utils/request";
 
-export function getFixedAssetCategoryListApi() {
+export function getSectionListApi(data) {
     return service.request({
         url: '/fixedasset/metadata/section/getSectionList',
-        method: 'get'
+        method: 'post',
+        data
     });
 }
