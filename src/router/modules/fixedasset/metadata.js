@@ -15,6 +15,14 @@ const fixedAssetCategory = [
         },
         component: () => import( '../../../views/fixedasset/metadata/depreciationMethod.vue'),     //操作日志
     },
+    {
+        path: '/fixedasset/metadata/section',
+        name: 'section',
+        meta:{
+            title: "单位管理"
+        },
+        component: () => import( '../../../views/fixedasset/metadata/section.vue'),     //操作日志
+    },
 ]
 
 export default fixedAssetCategory
