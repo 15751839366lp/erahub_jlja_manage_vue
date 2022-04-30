@@ -38,6 +38,15 @@
                             placeholder="请输入单位简称查询"
                     ></el-input>
                 </el-form-item>
+                <el-form-item label="最深级数">
+                    <el-input
+                            @keyup.enter.native="getSectionList"
+                            clearable
+                            @clear="getSectionList"
+                            v-model="queryMap.sectionLevel"
+                            placeholder="请输入最深级数查询"
+                    ></el-input>
+                </el-form-item>
                 <div style="display: inline-block">
 
                     <el-form-item label="使用状态">
@@ -46,8 +55,8 @@
                         <el-radio v-model="queryMap.status" :label="null">全部</el-radio>
                     </el-form-item>
                     <el-form-item label="查询类型" style="margin-left:110px;">
-                        <el-radio v-model="queryMap.isAccurate" :label="1">模糊查询</el-radio>
-                        <el-radio v-model="queryMap.isAccurate" :label="0">精确查询</el-radio>
+                        <el-radio v-model="queryMap.isAccurate" :label="0">模糊查询</el-radio>
+                        <el-radio v-model="queryMap.isAccurate" :label="1">精确查询</el-radio>
                     </el-form-item>
                     <el-form-item label="明细类型" style="margin-left:110px;">
                         <el-radio v-model="queryMap.sectionDetailed" :label="1">是</el-radio>
@@ -116,17 +125,20 @@
                     element-loading-text="拼命加载中"
                     element-loading-spinner="el-icon-loading"
                     :data="sections"
+                    lazy
                     :row-style="{height: '30px'}"
                     @selection-change="selectChange"
-                    :tree-props="{children: 'children'}">
+                    :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
                 >
                 <el-table-column type="selection" width="40px"></el-table-column>
-                <el-table-column prop="sectionId" label="ID" width="200px" fixed
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="sectionName" label="单位名称" width="150px" fixed
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="sectionAbbreviation" label="单位简称" width="150px"
-                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="sectionId" label="ID" width="200px" fixed :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="sectionName" label="单位名称" width="150px" fixed :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="sectionAbbreviation" label="单位简称" width="150px" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="fixedAssetQuantity" label="资产数量" width="90px">
+                    <template #default="scope">
+                        <el-tag type="success">{{scope.row.fixedAssetQuantity}}</el-tag>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="sectionLevel" label="级数" width="100px">
                     <template #default="scope">
                         <el-tag v-if="scope.row.sectionLevel===1">一级分类</el-tag>
@@ -143,10 +155,8 @@
                         <el-tag type="danger" v-else-if="scope.row.sectionDetailed===0">否</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="createTime" label="创建时间" :show-overflow-tooltip="true" width="150"
-                                 sortable></el-table-column>
-                <el-table-column prop="modifiedTime" label="修改时间" :show-overflow-tooltip="true"
-                                 width="150"></el-table-column>
+                <el-table-column prop="createTime" label="创建时间" :show-overflow-tooltip="true" width="150"></el-table-column>
+                <el-table-column prop="modifiedTime" label="修改时间" :show-overflow-tooltip="true" width="150"></el-table-column>
                 <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true" width="150"></el-table-column>
                 <el-table-column prop="status" label="状态" width="100" fixed="right">
                     <template #default="scope">
@@ -356,6 +366,7 @@
         getSectionListApi,
         exportSectionExcelApi,
         changeSectionStatusApi,
+        addSectionApi,
     } from '../../../api/fixedasset/metadata/section'
 
 
@@ -467,10 +478,11 @@
                 sectionId: null,
                 sectionName: null,
                 sectionAbbreviation: null,
+                sectionLevel: 2,
                 sectionDetailed: null,
                 status: null,
                 remark: null,
-                isAccurate: 1,
+                isAccurate: 0,
                 startCreateTime: null,
                 endCreateTime: null,
             })
@@ -482,10 +494,11 @@
                 queryMap.sectionId = null;
                 queryMap.sectionName = null;
                 queryMap.sectionAbbreviation = null;
+                queryMap.sectionLevel = 5;
                 queryMap.sectionDetailed = null;
                 queryMap.status = null;
                 queryMap.remark = null;
-                queryMap.isAccurate = 1;
+                queryMap.isAccurate = 0;
                 queryMap.startCreateTime = null;
                 queryMap.endCreateTime = null;
                 timeRange.value = [];
@@ -505,6 +518,10 @@
 
                 if (!utils.isEmpty(queryMap.sectionId) && !utils.isStringIneger(queryMap.sectionId)) {
                     ElMessage.error("请输入数值类型ID");
+                    return;
+                }
+                if (!utils.isEmpty(queryMap.sectionLevel) && !utils.isIneger(queryMap.sectionLevel)) {
+                    ElMessage.error("请输入数值类型");
                     return;
                 }
                 loading.value = true;
@@ -818,19 +835,8 @@
                 })
             }
 
-            // /** 展开收缩 */
-            // const toggleRowExpansion = isExpansion => {
-            //     if(ids.value != null && ids.value != undefined && ids.value.length > 0){
-            //         if(isExpansion){
-            //             expandRowKeys.value = ids.value;
-            //         }else{
-            //             expandRowKeys.value = [];
-            //         }
-            //     }
-            //     openFlag.value = !isExpansion;
-            // }
-
             getSectionList();
+            queryMap.sectionLevel = 5;
 
             return {
                 selections,

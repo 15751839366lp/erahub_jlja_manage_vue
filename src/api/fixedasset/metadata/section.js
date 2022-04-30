@@ -22,3 +22,11 @@ export function changeSectionStatusApi(sectionId,status) {
         method: 'put',
     });
 }
+
+export function addSectionApi(data) {
+    return service.request({
+        url: '/fixedasset/metadata/section/addSection',
+        method: 'post',
+        data
+    });
+}
