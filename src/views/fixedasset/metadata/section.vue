@@ -13,8 +13,8 @@
 
                 <el-form-item label="ID">
                     <el-input
-                            @keyup.enter.native=""
-                            @clear=""
+                            @keyup.enter.native="getSectionList"
+                            @clear="getSectionList"
                             clearable
                             v-model="queryMap.sectionId"
                             placeholder="请输入id查询"
@@ -22,8 +22,8 @@
                 </el-form-item>
                 <el-form-item label="单位名称">
                     <el-input
-                            @keyup.enter.native=""
-                            @clear=""
+                            @keyup.enter.native="getSectionList"
+                            @clear="getSectionList"
                             clearable
                             v-model="queryMap.sectionName"
                             placeholder="请输入单位名称查询"
@@ -31,9 +31,9 @@
                 </el-form-item>
                 <el-form-item label="单位简称">
                     <el-input
-                            @keyup.enter.native=""
+                            @keyup.enter.native="getSectionList"
                             clearable
-                            @clear=""
+                            @clear="getSectionList"
                             v-model="queryMap.sectionAbbreviation"
                             placeholder="请输入单位简称查询"
                     ></el-input>
@@ -69,14 +69,14 @@
                     >
                     </el-date-picker>
                 </el-form-item>
-                <el-form-item style="float: right;margin-right: 150px; ">
-<!--                    <el-button-->
-<!--                            type="primary"-->
-<!--                            plain-->
-<!--                            :icon="openFlag ? 'el-icon-arrow-up' : 'el-icon-arrow-down'"-->
-<!--                            size="mini"-->
-<!--                            @click="toggleRowExpansion(openFlag)"-->
-<!--                    >{{openFlag ? '收起' : '展开'}}</el-button>-->
+                <el-form-item style="margin-left: 80px; ">
+                    <!--                    <el-button-->
+                    <!--                            type="primary"-->
+                    <!--                            plain-->
+                    <!--                            :icon="openFlag ? 'el-icon-arrow-up' : 'el-icon-arrow-down'"-->
+                    <!--                            size="mini"-->
+                    <!--                            @click="toggleRowExpansion(openFlag)"-->
+                    <!--                    >{{openFlag ? '收起' : '展开'}}</el-button>-->
                     <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
                     <el-button type="primary" @click="getSectionList" icon="el-icon-search"
                                v-hasPermission="'fixedAsset:metadata:section:select'">查询
@@ -121,7 +121,7 @@
                     :tree-props="{children: 'children'}">
                 >
                 <el-table-column type="selection" width="40px"></el-table-column>
-                <el-table-column prop="sectionId" label="ID" width="150px" fixed
+                <el-table-column prop="sectionId" label="ID" width="200px" fixed
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="sectionName" label="单位名称" width="150px" fixed
                                  :show-overflow-tooltip="true"></el-table-column>
@@ -183,75 +183,77 @@
                     :total="total"
             ></el-pagination>
 
-            <!--            &lt;!&ndash; 添加弹出框 &ndash;&gt;-->
-            <!--            <el-dialog title="添加单位" v-model="addDialogVisible" @close="addCloseDialog" width="50%">-->
-            <!--                <span>-->
-            <!--                  <el-form-->
-            <!--                          :model="addSectionForm"-->
-            <!--                          :rules="formRules"-->
-            <!--                          ref="addSectionFormRef"-->
-            <!--                          label-width="100px"-->
-            <!--                  >-->
-            <!--                    <el-row>-->
-            <!--                      <el-col :span="10">-->
-            <!--                        <div class="grid-content bg-purple">-->
-            <!--                          <el-form-item label="单位ID" prop="sectionId">-->
-            <!--                            <el-input v-model="addSectionForm.sectionId"></el-input>-->
-            <!--                          </el-form-item>-->
-            <!--                        </div>-->
-            <!--                      </el-col>-->
-            <!--                      <el-col :span="10" style="margin-left: 30px">-->
-            <!--                        <div class="grid-content bg-purple">-->
-            <!--                          <el-form-item label="单位名称" prop="sectionName">-->
-            <!--                            <el-input v-model="addSectionForm.sectionName"></el-input>-->
-            <!--                          </el-form-item>-->
-            <!--                        </div>-->
-            <!--                      </el-col>-->
-            <!--                    </el-row>-->
-            <!--                      <el-row>-->
-            <!--                      <el-col :span="10" style="margin-left: 30px">-->
-            <!--                        <div class="grid-content bg-purple-light">-->
-            <!--                          <el-form-item label="状态" prop="status">-->
-            <!--                                <el-radio v-model="addSectionForm.status" :label="1">可用</el-radio>-->
-            <!--                                <el-radio v-model="addSectionForm.status" :label="0">禁用</el-radio>-->
-            <!--                          </el-form-item>-->
-            <!--                        </div>-->
-            <!--                      </el-col>-->
-            <!--                    </el-row>-->
-            <!--                      <el-row>-->
-            <!--                          <el-col>-->
-            <!--                          <el-form-item label="计算公式" prop="formula">-->
-            <!--                              <el-input type="textarea" v-model="addSectionForm.formula"-->
-            <!--                                        style="width: 530px" :rows="3"></el-input>-->
-            <!--                          </el-form-item>-->
-            <!--                          </el-col>-->
-            <!--                      </el-row>-->
-            <!--                      <el-row>-->
-            <!--                          <el-col>-->
-            <!--                          <el-form-item label="公式说明" prop="formulaExplain">-->
-            <!--                              <el-input type="textarea" v-model="addSectionForm.formulaExplain"-->
-            <!--                                        style="width: 530px" :rows="3"></el-input>-->
-            <!--                          </el-form-item>-->
-            <!--                          </el-col>-->
-            <!--                      </el-row>-->
-            <!--                      <el-row>-->
-            <!--                          <el-col>-->
-            <!--                          <el-form-item label="备注" prop="remark">-->
-            <!--                              <el-input type="textarea" v-model="addSectionForm.remark"-->
-            <!--                                        style="width: 530px" :rows="3"></el-input>-->
-            <!--                          </el-form-item>-->
-            <!--                          </el-col>-->
-            <!--                      </el-row>-->
-            <!--                  </el-form>-->
-            <!--                </span>-->
-            <!--                <template #footer>-->
-            <!--                    <span class="dialog-footer">-->
-            <!--                      <el-button @click="addDialogVisible = false">取 消</el-button>-->
-            <!--                      <el-button type="primary" @click="addSection" :disabled="btnDisabled"-->
-            <!--                                 :loading="btnLoading">确 定</el-button>-->
-            <!--                    </span>-->
-            <!--                </template>-->
-            <!--            </el-dialog>-->
+            <!-- 添加弹出框 -->
+            <el-dialog title="添加单位" v-model="addDialogVisible" @close="addCloseDialog" width="50%">
+                            <span>
+                              <el-form
+                                      :model="addSectionForm"
+                                      :rules="formRules"
+                                      ref="addSectionFormRef"
+                                      label-width="100px"
+                              >
+                                <el-row>
+                                  <el-col :span="10">
+                                    <div class="grid-content bg-purple">
+                                      <el-form-item label="单位ID" prop="sectionId">
+                                        <el-input v-model="addSectionForm.sectionId"></el-input>
+                                      </el-form-item>
+                                    </div>
+                                  </el-col>
+                                </el-row>
+                                  <el-row>
+                                      <el-col :span="10">
+                                    <div class="grid-content bg-purple">
+                                      <el-form-item label="单位名称" prop="sectionName">
+                                        <el-input v-model="addSectionForm.sectionName"></el-input>
+                                      </el-form-item>
+                                    </div>
+                                  </el-col>
+                                    <el-col :span="10" style="margin-left: 30px">
+                                    <div class="grid-content bg-purple">
+                                      <el-form-item label="单位简称" prop="sectionName">
+                                        <el-input v-model="addSectionForm.sectionAbbreviation"></el-input>
+                                      </el-form-item>
+                                    </div>
+                                  </el-col>
+
+                                </el-row>
+                                  <el-row>
+                                       <el-col :span="10" >
+                                   <div class="grid-content bg-purple">
+                                      <el-form-item label="明细" prop="sectionDetailed">
+                                            <el-radio v-model="addSectionForm.sectionDetailed" :label="1">是</el-radio>
+                                            <el-radio v-model="addSectionForm.sectionDetailed" :label="0">否</el-radio>
+                                      </el-form-item>
+                                    </div>
+                                  </el-col>
+                                       <el-col :span="10" style="margin-left: 30px">
+                                    <div class="grid-content bg-purple-light">
+                                      <el-form-item label="状态" prop="status">
+                                            <el-radio v-model="addSectionForm.status" :label="1">可用</el-radio>
+                                            <el-radio v-model="addSectionForm.status" :label="0">禁用</el-radio>
+                                      </el-form-item>
+                                    </div>
+                                  </el-col>
+                                  </el-row>
+                                  <el-row>
+                                      <el-col>
+                                      <el-form-item label="备注" prop="remark">
+                                          <el-input type="textarea" v-model="addSectionForm.remark"
+                                                    style="width: 86%" :rows="3"></el-input>
+                                      </el-form-item>
+                                      </el-col>
+                                  </el-row>
+                              </el-form>
+                            </span>
+                <template #footer>
+                                <span class="dialog-footer">
+                                  <el-button @click="addDialogVisible = false">取 消</el-button>
+                                  <el-button type="primary" @click="addSection" :disabled="btnDisabled"
+                                             :loading="btnLoading">确 定</el-button>
+                                </span>
+                </template>
+            </el-dialog>
 
             <!--            &lt;!&ndash; 编辑弹出框 &ndash;&gt;-->
             <!--            <el-dialog title="编辑单位" v-model="editDialogVisible" @close="editCloseDialog" width="50%">-->
@@ -352,6 +354,8 @@
     import utils from '../../../api/common/utils';
     import {
         getSectionListApi,
+        exportSectionExcelApi,
+        changeSectionStatusApi,
     } from '../../../api/fixedasset/metadata/section'
 
 
@@ -451,6 +455,9 @@
                 sectionAbbreviation: [
                     {required: true, message: "请输入单位简称", trigger: "blur"}
                 ],
+                sectionDetailed: [
+                    {required: true, message: "请选择明细", trigger: "blur"}
+                ],
                 status: [
                     {required: true, message: "请选择状态", trigger: "blur"}
                 ],
@@ -489,7 +496,19 @@
             //加载单位数据
             const getSectionList = () => {
 
+                if (timeRange.value != null && timeRange.value.length === 1) {
+                    queryMap.startCreateTime = timeRange.value[0];
+                } else if (timeRange.value != null && timeRange.value.length === 2) {
+                    queryMap.startCreateTime = timeRange.value[0];
+                    queryMap.endCreateTime = timeRange.value[1];
+                }
+
+                if (!utils.isEmpty(queryMap.sectionId) && !utils.isStringIneger(queryMap.sectionId)) {
+                    ElMessage.error("请输入数值类型ID");
+                    return;
+                }
                 loading.value = true;
+                sections.value = [];
 
                 getSectionListApi(queryMap).then((res) => {
                     if (!res.data.success) return ElMessage.error("查询失败：" + res.data.data.errorMsg);

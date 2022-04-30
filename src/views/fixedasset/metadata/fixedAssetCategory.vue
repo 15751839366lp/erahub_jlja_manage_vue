@@ -345,7 +345,7 @@
                           <el-col>
                           <el-form-item label="备注" prop="remark">
                               <el-input type="textarea" v-model="addFixedAssetCategoryForm.remark"
-                                        style="width: 530px" :rows="3"></el-input>
+                                        style="width: 86%" :rows="3"></el-input>
                           </el-form-item>
                           </el-col>
                       </el-row>
@@ -461,7 +461,7 @@
                           <el-col>
                           <el-form-item label="备注" prop="remark">
                               <el-input type="textarea" v-model="editFixedAssetCategoryForm.remark"
-                                        style="width: 530px" :rows="3"></el-input>
+                                        style="width: 86%" :rows="3"></el-input>
                           </el-form-item>
                           </el-col>
                       </el-row>

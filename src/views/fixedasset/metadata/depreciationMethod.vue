@@ -184,7 +184,7 @@
                           <el-col>
                           <el-form-item label="计算公式" prop="formula">
                               <el-input type="textarea" v-model="addDepreciationMethodForm.formula"
-                                        style="width: 530px" :rows="3"></el-input>
+                                        style="width: 86%" :rows="3"></el-input>
                           </el-form-item>
                           </el-col>
                       </el-row>
@@ -192,7 +192,7 @@
                           <el-col>
                           <el-form-item label="公式说明" prop="formulaExplain">
                               <el-input type="textarea" v-model="addDepreciationMethodForm.formulaExplain"
-                                        style="width: 530px" :rows="3"></el-input>
+                                        style="width: 86%" :rows="3"></el-input>
                           </el-form-item>
                           </el-col>
                       </el-row>
@@ -200,7 +200,7 @@
                           <el-col>
                           <el-form-item label="备注" prop="remark">
                               <el-input type="textarea" v-model="addDepreciationMethodForm.remark"
-                                        style="width: 530px" :rows="3"></el-input>
+                                        style="width: 86%" :rows="3"></el-input>
                           </el-form-item>
                           </el-col>
                       </el-row>
@@ -251,7 +251,7 @@
                           <el-col>
                           <el-form-item label="计算公式" prop="formula">
                               <el-input type="textarea" v-model="editDepreciationMethodForm.formula"
-                                        style="width: 530px" :rows="3"></el-input>
+                                        style="width: 86%" :rows="3"></el-input>
                           </el-form-item>
                           </el-col>
                       </el-row>
@@ -259,7 +259,7 @@
                           <el-col>
                           <el-form-item label="公式说明" prop="formulaExplain">
                               <el-input type="textarea" v-model="editDepreciationMethodForm.formulaExplain"
-                                        style="width: 530px" :rows="3"></el-input>
+                                        style="width: 86%" :rows="3"></el-input>
                           </el-form-item>
                           </el-col>
                       </el-row>
@@ -267,7 +267,7 @@
                           <el-col>
                           <el-form-item label="备注" prop="remark">
                               <el-input type="textarea" v-model="editDepreciationMethodForm.remark"
-                                        style="width: 530px" :rows="3"></el-input>
+                                        style="width: 86%" :rows="3"></el-input>
                           </el-form-item>
                           </el-col>
                       </el-row>

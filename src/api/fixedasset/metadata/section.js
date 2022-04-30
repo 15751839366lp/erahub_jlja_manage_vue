@@ -7,3 +7,18 @@ export function getSectionListApi(data) {
         data
     });
 }
+
+export function exportSectionExcelApi() {
+    return service.request({
+        url: '/fixedasset/metadata/section/exportSectionExcel',
+        method: 'get',
+        responseType: "blob"
+    });
+}
+
+export function changeSectionStatusApi(sectionId,status) {
+    return service.request({
+        url: '/fixedasset/metadata/section/changeSectionStatus/' + sectionId + "/" + status,
+        method: 'put',
+    });
+}
