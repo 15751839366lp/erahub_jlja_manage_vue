@@ -8,6 +8,13 @@ export function getSectionListApi(data) {
     });
 }
 
+export function getChildrenListApi(sectionId) {
+    return service.request({
+        url: '/fixedasset/metadata/section/getChildrenList/' + sectionId,
+        method: 'get',
+    });
+}
+
 export function exportSectionExcelApi() {
     return service.request({
         url: '/fixedasset/metadata/section/exportSectionExcel',

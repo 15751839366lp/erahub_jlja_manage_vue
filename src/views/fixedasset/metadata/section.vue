@@ -117,7 +117,7 @@
                     ref="sectionTable"
                     v-loading="loading"
                     row-key="sectionId"
-                    :default-expand-all="true"
+                    default-expand-all
                     style="width: 100%;"
                     height="490"
                     size="mini"
@@ -125,15 +125,17 @@
                     element-loading-text="拼命加载中"
                     element-loading-spinner="el-icon-loading"
                     :data="sections"
-                    lazy
                     :row-style="{height: '30px'}"
                     @selection-change="selectChange"
                     :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
                 >
                 <el-table-column type="selection" width="40px"></el-table-column>
-                <el-table-column prop="sectionId" label="ID" width="200px" fixed :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="sectionName" label="单位名称" width="150px" fixed :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="sectionAbbreviation" label="单位简称" width="150px" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="sectionId" label="ID" width="200px" fixed
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="sectionName" label="单位名称" width="150px" fixed
+                                 :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="sectionAbbreviation" label="单位简称" width="150px"
+                                 :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="fixedAssetQuantity" label="资产数量" width="90px">
                     <template #default="scope">
                         <el-tag type="success">{{scope.row.fixedAssetQuantity}}</el-tag>
@@ -155,8 +157,10 @@
                         <el-tag type="danger" v-else-if="scope.row.sectionDetailed===0">否</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="createTime" label="创建时间" :show-overflow-tooltip="true" width="150"></el-table-column>
-                <el-table-column prop="modifiedTime" label="修改时间" :show-overflow-tooltip="true" width="150"></el-table-column>
+                <el-table-column prop="createTime" label="创建时间" :show-overflow-tooltip="true"
+                                 width="150"></el-table-column>
+                <el-table-column prop="modifiedTime" label="修改时间" :show-overflow-tooltip="true"
+                                 width="150"></el-table-column>
                 <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true" width="150"></el-table-column>
                 <el-table-column prop="status" label="状态" width="100" fixed="right">
                     <template #default="scope">
@@ -229,7 +233,7 @@
 
                                 </el-row>
                                   <el-row>
-                                       <el-col :span="10" >
+                                       <el-col :span="10">
                                    <div class="grid-content bg-purple">
                                       <el-form-item label="明细" prop="sectionDetailed">
                                             <el-radio v-model="addSectionForm.sectionDetailed" :label="1">是</el-radio>
@@ -537,6 +541,20 @@
                     ElMessage.error("查询失败：" + res);
                 });
             }
+
+            // //懒加载
+            // const getChildrenList = (tree, treeNode, resolve) => {
+            //     if (tree.children == []) {
+            //         return
+            //     }
+            //     getChildrenListApi(tree.sectionId).then((res) => {
+            //         if (!res.data.success) return ElMessage.error("查询失败子节点：" + res.data.data.errorMsg);
+            //         resolve(res.data.data.rows);
+            //         total.value = total.value + res.data.data.total;
+            //     }).catch((res) => {
+            //         ElMessage.error("查询失败子节点：" + res);
+            //     });
+            // }
 
             /**
              * 导出
