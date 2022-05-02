@@ -181,7 +181,7 @@
                         <el-button v-hasPermission="'fixedAsset:metadata:section:delete'"
                                    type="danger"
                                    icon="el-icon-delete"
-                                   @click="deleteSection(scope.row.sectionId)"
+                                   @click="deleteSection(scope.row)"
                                    size="mini"
                         >
                         </el-button>
@@ -269,95 +269,96 @@
                 </template>
             </el-dialog>
 
-            <!--            &lt;!&ndash; 编辑弹出框 &ndash;&gt;-->
-            <!--            <el-dialog title="编辑单位" v-model="editDialogVisible" @close="editCloseDialog" width="50%">-->
-            <!--        <span>-->
-            <!--          <el-form :model="editSectionForm" :rules="formRules" ref="editSectionFormRef"-->
-            <!--                   label-width="100px">-->
-            <!--            <el-row>-->
-            <!--                      <el-col :span="10">-->
-            <!--                        <div class="grid-content bg-purple">-->
-            <!--                          <el-form-item label="单位ID" prop="sectionId">-->
-            <!--                            <el-input v-model="editSectionForm.sectionId"-->
-            <!--                                      :disabled="true"></el-input>-->
-            <!--                          </el-form-item>-->
-            <!--                        </div>-->
-            <!--                      </el-col>-->
-            <!--                      <el-col :span="10" style="margin-left: 30px">-->
-            <!--                        <div class="grid-content bg-purple">-->
-            <!--                          <el-form-item label="单位名称" prop="sectionName">-->
-            <!--                            <el-input v-model="editSectionForm.sectionName"></el-input>-->
-            <!--                          </el-form-item>-->
-            <!--                        </div>-->
-            <!--                      </el-col>-->
-            <!--                    </el-row>-->
-            <!--                      <el-row>-->
-            <!--                      <el-col :span="10" style="margin-left: 30px">-->
-            <!--                        <div class="grid-content bg-purple-light">-->
-            <!--                          <el-form-item label="状态" prop="status">-->
-            <!--                                <el-radio v-model="editSectionForm.status" :label="1">可用</el-radio>-->
-            <!--                                <el-radio v-model="editSectionForm.status" :label="0">禁用</el-radio>-->
-            <!--                          </el-form-item>-->
-            <!--                        </div>-->
-            <!--                      </el-col>-->
-            <!--                    </el-row>-->
-            <!--                      <el-row>-->
-            <!--                          <el-col>-->
-            <!--                          <el-form-item label="计算公式" prop="formula">-->
-            <!--                              <el-input type="textarea" v-model="editSectionForm.formula"-->
-            <!--                                        style="width: 530px" :rows="3"></el-input>-->
-            <!--                          </el-form-item>-->
-            <!--                          </el-col>-->
-            <!--                      </el-row>-->
-            <!--                      <el-row>-->
-            <!--                          <el-col>-->
-            <!--                          <el-form-item label="公式说明" prop="formulaExplain">-->
-            <!--                              <el-input type="textarea" v-model="editSectionForm.formulaExplain"-->
-            <!--                                        style="width: 530px" :rows="3"></el-input>-->
-            <!--                          </el-form-item>-->
-            <!--                          </el-col>-->
-            <!--                      </el-row>-->
-            <!--                      <el-row>-->
-            <!--                          <el-col>-->
-            <!--                          <el-form-item label="备注" prop="remark">-->
-            <!--                              <el-input type="textarea" v-model="editSectionForm.remark"-->
-            <!--                                        style="width: 530px" :rows="3"></el-input>-->
-            <!--                          </el-form-item>-->
-            <!--                          </el-col>-->
-            <!--                      </el-row>-->
-            <!--                  </el-form>-->
-            <!--        </span>-->
-            <!--                <template #footer>-->
-            <!--                <span class="dialog-footer">-->
-            <!--          <el-button @click="editDialogVisible = false">取 消</el-button>-->
-            <!--          <el-button type="primary" @click="updateSection" :disabled="btnDisabled"-->
-            <!--                     :loading="btnLoading">确 定</el-button>-->
-            <!--        </span>-->
-            <!--                </template>-->
-            <!--            </el-dialog>-->
-            <!--            &lt;!&ndash; 上传弹出框 &ndash;&gt;-->
-            <!--            <el-dialog title="导入单位" v-model="uploadDialogVisible" @close="importCloseDialog" width="40%" center>-->
-            <!--        <span style="display: inline-block;">-->
-            <!--          <el-upload-->
-            <!--                  accept=".xls,.xlsx"-->
-            <!--                  class="upload-demo"-->
-            <!--                  ref="upload"-->
-            <!--                  :action="server + '/fixedasset/metadata/section/importSection'"-->
-            <!--                  :file-list="fileList"-->
-            <!--                  :on-remove="handleRemove"-->
-            <!--                  :on-change="handleChange"-->
-            <!--                  :before-upload="beforeUpload"-->
-            <!--                  :auto-upload="false"-->
-            <!--          >-->
-            <!--              <template #trigger>-->
-            <!--                 <el-button slot="trigger" size="small" type="primary">选取文件</el-button>-->
-            <!--              </template>-->
-            <!--                <el-button style="margin-left: 10px;" size="small" type="success"-->
-            <!--                           @click="importSection">导入文件</el-button>-->
-            <!--          <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件，单个文件大小不能超过20MB，总文件大小不能超过100MB</div>-->
-            <!--        </el-upload>-->
-            <!--        </span>-->
-            <!--            </el-dialog>-->
+                        <!-- 编辑弹出框 -->
+                        <el-dialog title="编辑单位" v-model="editDialogVisible" @close="editCloseDialog" width="50%">
+                    <span>
+                      <el-form :model="editSectionForm" :rules="formRules" ref="editSectionFormRef"
+                               label-width="100px">
+                        <el-row>
+                                  <el-col :span="10">
+                                    <div class="grid-content bg-purple">
+                                      <el-form-item label="单位ID" prop="sectionId">
+                                        <el-input v-model="editSectionForm.sectionId"></el-input>
+                                      </el-form-item>
+                                    </div>
+                                  </el-col>
+                                </el-row>
+                                  <el-row>
+                                      <el-col :span="10">
+                                    <div class="grid-content bg-purple">
+                                      <el-form-item label="单位名称" prop="sectionName">
+                                        <el-input v-model="editSectionForm.sectionName"></el-input>
+                                      </el-form-item>
+                                    </div>
+                                  </el-col>
+                                    <el-col :span="10" style="margin-left: 30px">
+                                    <div class="grid-content bg-purple">
+                                      <el-form-item label="单位简称" prop="sectionName">
+                                        <el-input v-model="editSectionForm.sectionAbbreviation"></el-input>
+                                      </el-form-item>
+                                    </div>
+                                  </el-col>
+
+                                </el-row>
+                                  <el-row>
+                                       <el-col :span="10">
+                                   <div class="grid-content bg-purple">
+                                      <el-form-item label="明细" prop="sectionDetailed">
+                                            <el-radio v-model="editSectionForm.sectionDetailed" :label="1">是</el-radio>
+                                            <el-radio v-model="editSectionForm.sectionDetailed" :label="0">否</el-radio>
+                                      </el-form-item>
+                                    </div>
+                                  </el-col>
+                                       <el-col :span="10" style="margin-left: 30px">
+                                    <div class="grid-content bg-purple-light">
+                                      <el-form-item label="状态" prop="status">
+                                            <el-radio v-model="editSectionForm.status" :label="1">可用</el-radio>
+                                            <el-radio v-model="editSectionForm.status" :label="0">禁用</el-radio>
+                                      </el-form-item>
+                                    </div>
+                                  </el-col>
+                                  </el-row>
+                                  <el-row>
+                                      <el-col>
+                                      <el-form-item label="备注" prop="remark">
+                                          <el-input type="textarea" v-model="editSectionForm.remark"
+                                                    style="width: 86%" :rows="3"></el-input>
+                                      </el-form-item>
+                                      </el-col>
+                                  </el-row>
+                              </el-form>
+                    </span>
+                            <template #footer>
+                            <span class="dialog-footer">
+                      <el-button @click="editDialogVisible = false">取 消</el-button>
+                      <el-button type="primary" @click="updateSection" :disabled="btnDisabled"
+                                 :loading="btnLoading">确 定</el-button>
+                    </span>
+                            </template>
+                        </el-dialog>
+                        <!-- 上传弹出框 -->
+                        <el-dialog title="导入单位" v-model="uploadDialogVisible" @close="importCloseDialog" width="40%" center>
+                    <span style="display: inline-block;">
+                      <el-upload
+                              accept=".xls,.xlsx"
+                              class="upload-demo"
+                              ref="upload"
+                              :action="server + '/fixedasset/metadata/section/importSection'"
+                              :file-list="fileList"
+                              :on-remove="handleRemove"
+                              :on-change="handleChange"
+                              :before-upload="beforeUpload"
+                              :auto-upload="false"
+                      >
+                          <template #trigger>
+                             <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                          </template>
+                            <el-button style="margin-left: 10px;" size="small" type="success"
+                                       @click="importSection">导入文件</el-button>
+                      <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件，单个文件大小不能超过20MB，总文件大小不能超过100MB</div>
+                    </el-upload>
+                    </span>
+                        </el-dialog>
         </el-card>
     </div>
 </template>
@@ -371,6 +372,10 @@
         exportSectionExcelApi,
         changeSectionStatusApi,
         addSectionApi,
+        updateSectionApi,
+        deleteSectionApi,
+        deleteSectionByBatchIdApi,
+        importSectionApi,
     } from '../../../api/fixedasset/metadata/section'
 
 
@@ -666,7 +671,11 @@
             }
 
             //删除单位
-            const deleteSection = (id) => {
+            const deleteSection = (row) => {
+                if(row.sectionDetailed == 0){
+                    ElMessage.error('该节点非明细节点，无法删除');
+                    return;
+                }
                 ElMessageBox.confirm(
                     "此操作将永久删除该单位, 是否继续?",
                     "提示",
@@ -677,7 +686,7 @@
                     }
                 ).then((res) => {
                     if (res === "confirm") {
-                        deleteSectionApi(id).then((res) => {
+                        deleteSectionApi(row.sectionId).then((res) => {
                             if (res.data.success) {
                                 ElMessage.success("单位删除成功");
                                 getSectionList();
@@ -699,6 +708,18 @@
             //批量删除单位
             const deleteSectionByBatchId = () => {
                 let sectionIds = selections.value.map(item => item.sectionId);
+                let sectionDetaileds = selections.value.map(item => item.sectionDetailed);
+                let hasDetailed = true;
+                sectionDetaileds.forEach(item => {
+                    if(item != null && item == 0){
+                        hasDetailed = false;
+                    }
+                })
+                if(!hasDetailed){
+                    ElMessage.error('请勿选择非明细节点');
+                    return;
+                }
+
                 ElMessageBox.confirm(
                     "此操作将永久删除该单位, 是否继续?",
                     "提示",

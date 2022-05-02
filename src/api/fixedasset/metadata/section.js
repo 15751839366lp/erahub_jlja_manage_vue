@@ -37,3 +37,40 @@ export function addSectionApi(data) {
         data
     });
 }
+
+export function updateSectionApi(data) {
+    return service.request({
+        url: '/fixedasset/metadata/section/updateSection',
+        method: 'put',
+        data
+    });
+}
+
+
+export function deleteSectionApi(id) {
+    return service.request({
+        url: '/fixedasset/metadata/section/deleteSection/' + id,
+        method: 'delete',
+    });
+}
+
+export function deleteSectionByBatchIdApi(data) {
+    return service.request({
+        url: '/fixedasset/metadata/section/deleteSectionByBatchId',
+        method: 'delete',
+        data
+    });
+}
+
+export function importSectionApi(data) {
+    return service.request({
+        url: '/fixedasset/metadata/section/importSection',
+        method: 'post',
+        headers: {
+            'Content-Type': 'multipart/form-data;boundary=<calculated when request is sent>'
+        },
+        contentType: 'application/json',
+        processData: true,
+        data
+    });
+}

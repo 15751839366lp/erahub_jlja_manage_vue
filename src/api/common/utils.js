@@ -53,9 +53,15 @@ function cloneObj(obj,newObj) {
     if (obj instanceof Array) {
         newObj = [];
     }
-    for (let key in obj) {
-        let val = obj[key];
-        newObj[key] = typeof val === 'object' ? cloneObj(val) : val;
+    for (const key in obj) {
+        const val = obj[key];
+        if(val == null || val == undefined){
+            newObj[key] = val;
+        }else{
+            //newObj[key] = typeof val === 'object' ? arguments.callee(val) : val; //arguments.callee 在哪⼀个函数中运⾏，它就代表哪个函数, ⼀般⽤在匿名函数中。
+            let objChild = {};
+            newObj[key] = typeof val === 'object' ? cloneObj(val,objChild): val;
+        }
     }
     return newObj;
 }
