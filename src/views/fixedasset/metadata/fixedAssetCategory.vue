@@ -171,6 +171,11 @@
                 <el-table-column prop="categoryId" label="ID" width="100px" fixed sortable></el-table-column>
                 <el-table-column prop="categoryName" label="类别名称" width="150px" fixed
                                  :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="fixedAssetQuantity" label="资产数量" width="100px" sortable>
+                    <template #default="scope">
+                        <el-tag type="success">{{scope.row.fixedAssetQuantity}}</el-tag>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="categoryLevel" label="级数" width="100px">
                     <template #default="scope">
                         <el-tag v-if="scope.row.categoryLevel===1">一级分类</el-tag>
@@ -219,7 +224,7 @@
                         <el-button v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:delete'"
                                    type="danger"
                                    icon="el-icon-delete"
-                                   @click="deleteFixedAssetCategory(scope.row.categoryId)"
+                                   @click="deleteFixedAssetCategory(scope.row)"
                                    size="mini"
                         >
                         </el-button>
@@ -849,7 +854,16 @@
             }
 
             //删除分类
-            const deleteFixedAssetCategory = (id) => {
+            const deleteFixedAssetCategory = (row) => {
+                if(row.categoryDetailed == 0){
+                    ElMessage.error('该节点非明细节点，无法删除');
+                    return;
+                }
+                if(row.fixedAssetQuantity > 0){
+                    ElMessage.error('该类别存在资产，无法删除');
+                    return;
+                }
+
                 ElMessageBox.confirm(
                     "此操作将永久删除该分类, 是否继续?",
                     "提示",
@@ -860,7 +874,7 @@
                     }
                 ).then((res) => {
                     if (res === "confirm") {
-                        deleteFixedAssetCategoryApi(id).then((res) => {
+                        deleteFixedAssetCategoryApi(row.categoryId).then((res) => {
                             if (res.data.success) {
                                 ElMessage.success("分类删除成功");
                                 getFixedAssetCategoryList();
@@ -882,6 +896,21 @@
             //批量删除分类
             const deleteFixedAssetCategoryByBatchId = () => {
                 let categoryIds = selections.value.map(item => item.categoryId);
+
+                let flag = true;
+                selections.value.forEach(item => {
+                    if(item.categoryDetailed == 0){
+                        flag = false;
+                    }
+                    if(item.fixedAssetQuantity > 0){
+                        flag = false;
+                    }
+                })
+
+                if(!flag){
+                    ElMessage.error('请勿选择非明细节点,或存在资产的节点');
+                    return;
+                }
                 ElMessageBox.confirm(
                     "此操作将永久删除分类, 是否继续?",
                     "提示",

@@ -48,8 +48,8 @@
                     <el-radio v-model="queryMap.status" :label="null">全部</el-radio>
                 </el-form-item>
                 <el-form-item label="查询类型" style="margin-left:50px;">
-                    <el-radio v-model="queryMap.isAccurate" :label="1">模糊查询</el-radio>
-                    <el-radio v-model="queryMap.isAccurate" :label="0">精确查询</el-radio>
+                    <el-radio v-model="queryMap.isAccurate" :label="0">模糊查询</el-radio>
+                    <el-radio v-model="queryMap.isAccurate" :label="1">精确查询</el-radio>
                 </el-form-item>
                 <el-form-item style="float: right;margin-right: 150px; ">
                     <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
@@ -96,6 +96,16 @@
                 <el-table-column prop="depreciationMethodId" label="ID" width="60px" fixed sortable></el-table-column>
                 <el-table-column prop="depreciationMethodName" label="方法名称" width="150px" fixed
                                  :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="fixedAssetQuantity" label="资产数量" width="100px" sortable>
+                    <template #default="scope">
+                        <el-tag type="success">{{scope.row.fixedAssetQuantity}}</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="fixedAssetCategoryQuantity" label="类别数量" width="100px" sortable>
+                    <template #default="scope">
+                        <el-tag type="success">{{scope.row.fixedAssetCategoryQuantity}}</el-tag>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="formula" label="计算公式" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="formulaExplain" label="公式说明" :show-overflow-tooltip="true"></el-table-column>
                 >
@@ -123,7 +133,7 @@
                         <el-button v-hasPermission="'fixedAsset:metadata:depreciationMethod:delete'"
                                    type="danger"
                                    icon="el-icon-delete"
-                                   @click="deleteDepreciationMethod(scope.row.depreciationMethodId)"
+                                   @click="deleteDepreciationMethod(scope.row)"
                                    size="mini"
                         >
                         </el-button>
@@ -428,7 +438,7 @@
                 formulaExplain: null,
                 status: null,
                 remark: null,
-                isAccurate: 1,
+                isAccurate: 0,
                 startCreateTime: null,
                 endCreateTime: null,
                 isAsc: null,
@@ -447,7 +457,7 @@
                 queryMap.formulaExplain = null;
                 queryMap.status = null;
                 queryMap.remark = null;
-                queryMap.isAccurate = 1;
+                queryMap.isAccurate = 0;
                 queryMap.startCreateTime = null;
                 queryMap.endCreateTime = null;
                 timeRange.value = [];
@@ -597,7 +607,15 @@
             }
 
             //删除方法
-            const deleteDepreciationMethod = (id) => {
+            const deleteDepreciationMethod = (row) => {
+                if(row.fixedAssetQuantity > 0){
+                    ElMessage.error('该方法存在资产，无法删除');
+                    return;
+                }
+                if(row.fixedAssetCategoryQuantity > 0){
+                    ElMessage.error('该方法存在类别，无法删除');
+                    return;
+                }
                 ElMessageBox.confirm(
                     "此操作将永久删除该折旧方法, 是否继续?",
                     "提示",
@@ -608,7 +626,7 @@
                     }
                 ).then((res) => {
                     if (res === "confirm") {
-                        deleteDepreciationMethodApi(id).then((res) => {
+                        deleteDepreciationMethodApi(row.depreciationMethodId).then((res) => {
                             if (res.data.success) {
                                 ElMessage.success("方法删除成功");
                                 getDepreciationMethodList();
@@ -630,6 +648,21 @@
             //批量删除方法
             const deleteDepreciationMethodByBatchId = () => {
                 let depreciationMethodIds = selections.value.map(item => item.depreciationMethodId);
+
+                let flag = true;
+                selections.value.forEach(item => {
+                    if(item.fixedAssetQuantity > 0){
+                        flag = false;
+                    }
+                    if(item.fixedAssetCategoryQuantity > 0){
+                        flag = false;
+                    }
+                })
+
+                if(!flag){
+                    ElMessage.error('该方法存在资产或类别');
+                    return;
+                }
                 ElMessageBox.confirm(
                     "此操作将永久删除该折旧方法, 是否继续?",
                     "提示",

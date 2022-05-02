@@ -136,7 +136,7 @@
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="sectionAbbreviation" label="单位简称" width="150px"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="fixedAssetQuantity" label="资产数量" width="90px">
+                <el-table-column prop="fixedAssetQuantity" label="资产数量">
                     <template #default="scope">
                         <el-tag type="success">{{scope.row.fixedAssetQuantity}}</el-tag>
                     </template>
@@ -676,6 +676,10 @@
                     ElMessage.error('该节点非明细节点，无法删除');
                     return;
                 }
+                if(row.fixedAssetQuantity > 0){
+                    ElMessage.error('该单位存在资产，无法删除');
+                    return;
+                }
                 ElMessageBox.confirm(
                     "此操作将永久删除该单位, 是否继续?",
                     "提示",
@@ -708,15 +712,17 @@
             //批量删除单位
             const deleteSectionByBatchId = () => {
                 let sectionIds = selections.value.map(item => item.sectionId);
-                let sectionDetaileds = selections.value.map(item => item.sectionDetailed);
-                let hasDetailed = true;
-                sectionDetaileds.forEach(item => {
-                    if(item != null && item == 0){
-                        hasDetailed = false;
+                let flag = true;
+                selections.value.forEach(item => {
+                    if(item.categoryDetailed == 0){
+                        flag = false;
+                    }
+                    if(item.fixedAssetQuantity > 0){
+                        flag = false;
                     }
                 })
-                if(!hasDetailed){
-                    ElMessage.error('请勿选择非明细节点');
+                if(!flag){
+                    ElMessage.error('请勿选择非明细节点，或存在资产的节点');
                     return;
                 }
 
