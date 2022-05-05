@@ -54,24 +54,24 @@
                 <el-form-item style="float: right;margin-right: 150px; ">
                     <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
                     <el-button type="primary" @click="searchDepreciationMethod"
-                               v-hasPermission="'fixedAsset:metadata:depreciationMethod:import'"
+                               v-hasPermission="'asset:metadata:depreciationMethod:import'"
                                icon="el-icon-search">查询</el-button>
-                    <el-button v-hasPermission="'fixedAsset:metadata:depreciationMethod:add'"
+                    <el-button v-hasPermission="'asset:metadata:depreciationMethod:add'"
                                type="success"
                                icon="el-icon-plus"
                                @click="openAddDialog">添加
                     </el-button>
                     <el-button @click="openUploadDialog"
-                               v-hasPermission="'fixedAsset:metadata:depreciationMethod:import'"
+                               v-hasPermission="'asset:metadata:depreciationMethod:import'"
                                icon="el-icon-upload">导入
                     </el-button>
                     <el-button @click="exportDepreciationMethod"
-                               v-hasPermission="'fixedAsset:metadata:depreciationMethod:export'"
+                               v-hasPermission="'asset:metadata:depreciationMethod:export'"
                                icon="el-icon-download">导出
                     </el-button>
                     <el-button @click="deleteDepreciationMethodByBatchId(selections)"
                                icon="el-icon-delete"
-                               v-hasPermission="'fixedAsset:metadata:depreciationMethod:delete'"
+                               v-hasPermission="'asset:metadata:depreciationMethod:delete'"
                                :disabled="selections.length === 0">批量
                     </el-button>
                 </el-form-item>
@@ -123,14 +123,14 @@
                 </el-table-column>
                 <el-table-column label="操作" fixed="right" width="150px">
                     <template #default="scope">
-                        <el-button v-hasPermission="'fixedAsset:metadata:depreciationMethod:edit'"
+                        <el-button v-hasPermission="'asset:metadata:depreciationMethod:edit'"
                                    type="primary"
                                    icon="el-icon-edit"
                                    @click="openEditDialog(scope.row)"
                                    size="mini"
                         >
                         </el-button>
-                        <el-button v-hasPermission="'fixedAsset:metadata:depreciationMethod:delete'"
+                        <el-button v-hasPermission="'asset:metadata:depreciationMethod:delete'"
                                    type="danger"
                                    icon="el-icon-delete"
                                    @click="deleteDepreciationMethod(scope.row)"
@@ -504,7 +504,7 @@
                 exportDepreciationMethodExcelApi().then((res) => {
                     if (res.headers["content-type"] === "application/json") {
                         return ElMessage.error(
-                            "Subject does not have permission [fixedAsset:metadata:depreciationMethod:export]"
+                            "Subject does not have permission [asset:metadata:depreciationMethod:export]"
                         );
                     }
                     const data = res.data;

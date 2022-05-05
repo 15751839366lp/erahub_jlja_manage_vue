@@ -1,5 +1,5 @@
 <template>
-    <div id="fixedAssetCategory">
+    <div id="assetCategory">
         <!-- 面包导航 -->
         <el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:12px;">
             <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
@@ -129,24 +129,24 @@
                 <el-form-item style="float: right;margin-right: 150px; ">
                     <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
                     <el-button type="primary" @click="searchFixedAssetCategory" icon="el-icon-search"
-                               v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:select'">查询</el-button>
-                    <el-button v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:add'"
+                               v-hasPermission="'asset:metadata:assetCategory:select'">查询</el-button>
+                    <el-button v-hasPermission="'asset:metadata:assetCategory:add'"
                                type="success"
                                icon="el-icon-plus"
                                @click="openAddDialog"
                     >添加
                     </el-button>
                     <el-button @click="openUploadDialog"
-                               v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:import'"
+                               v-hasPermission="'asset:metadata:assetCategory:import'"
                                icon="el-icon-upload">导入
                     </el-button>
                     <el-button @click="exportFixedAssetCategory"
-                               v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:export'"
+                               v-hasPermission="'asset:metadata:assetCategory:export'"
                                icon="el-icon-download">导出
                     </el-button>
                     <el-button @click="deleteFixedAssetCategoryByBatchId(selections)"
                                icon="el-icon-delete"
-                               v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:delete'"
+                               v-hasPermission="'asset:metadata:assetCategory:delete'"
                                :disabled="selections.length === 0">批量
                     </el-button>
                 </el-form-item>
@@ -162,7 +162,7 @@
                     border
                     element-loading-text="拼命加载中"
                     element-loading-spinner="el-icon-loading"
-                    :data="fixedAssetCategorys"
+                    :data="assetCategories"
                     :row-style="{height: '30px'}"
                     @sort-change="sortChange"
                     @selection-change="selectChange"
@@ -214,14 +214,14 @@
                 </el-table-column>
                 <el-table-column label="操作" fixed="right" width="150px">
                     <template #default="scope">
-                        <el-button v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:edit'"
+                        <el-button v-hasPermission="'asset:metadata:assetCategory:edit'"
                                    type="primary"
                                    icon="el-icon-edit"
                                    @click="openEditDialog(scope.row)"
                                    size="mini"
                         >
                         </el-button>
-                        <el-button v-hasPermission="'fixedAsset:metadata:fixedAssetCategory:delete'"
+                        <el-button v-hasPermission="'asset:metadata:assetCategory:delete'"
                                    type="danger"
                                    icon="el-icon-delete"
                                    @click="deleteFixedAssetCategory(scope.row)"
@@ -475,7 +475,7 @@
                 <template #footer>
                 <span class="dialog-footer">
           <el-button @click="editDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="updateFixedAssetCategory" :disabled="btnDisabled"
+          <el-button type="primary" @click="updateAssetCategory" :disabled="btnDisabled"
                      :loading="btnLoading">确 定</el-button>
         </span>
                 </template>
@@ -521,7 +521,7 @@
         deleteFixedAssetCategoryApi,
         deleteFixedAssetCategoryByBatchIdApi,
         importFixedAssetCategoryApi,
-    } from '../../../api/fixedasset/metadata/fixedAssetCategory'
+    } from '../../../api/fixedasset/metadata/assetCategory'
 
     export default {
 
@@ -536,7 +536,7 @@
             const uploadDialogVisible = ref(false)
             const editFixedAssetCategoryForm = ref(null)
             const total = ref(0)
-            const fixedAssetCategorys = ref([])
+            const assetCategories = ref([])
             const addFixedAssetCategoryFormRef = ref(null)
             const editFixedAssetCategoryFormRef = ref(null)
             const timeRange = ref([])
@@ -717,11 +717,11 @@
                     return;
                 }
                 loading.value = true;
-                fixedAssetCategorys.value = [];
+                assetCategories.value = [];
 
                 getFixedAssetCategoryListApi(queryMap).then((res) => {
                     if (!res.data.success) return ElMessage.error("分类列表失败");
-                    fixedAssetCategorys.value = res.data.data.rows;
+                    assetCategories.value = res.data.data.rows;
                     total.value = res.data.data.total;
                     loading.value = false;
                 }).catch((res) => {
@@ -751,7 +751,7 @@
                 exportFixedAssetCategoryExcelApi().then((res) => {
                     if (res.headers["content-type"] === "application/json") {
                         return ElMessage.error(
-                            "Subject does not have permission [fixedAsset:metadata:fixedAssetCategory:export]"
+                            "Subject does not have permission [asset:metadata:assetCategory:export]"
                         );
                     }
                     const data = res.data;
@@ -820,7 +820,7 @@
             }
 
             //修改分类
-            const updateFixedAssetCategory = () => {
+            const updateAssetCategory = () => {
                 editFixedAssetCategoryFormRef.value.validate(valid => {
                     if (!valid) {
                         return;
@@ -1119,7 +1119,7 @@
                 formRules,
                 total,
                 queryMap,
-                fixedAssetCategorys,
+                assetCategories,
                 addFixedAssetCategoryFormRef,
                 editFixedAssetCategoryFormRef,
                 timeRange,
@@ -1132,7 +1132,7 @@
                 exportFixedAssetCategory,
                 changeFixedAssetCategoryStatus,
                 addFixedAssetCategory,
-                updateFixedAssetCategory,
+                updateAssetCategory,
                 deleteFixedAssetCategory,
                 deleteFixedAssetCategoryByBatchId,
                 importFixedAssetCategory,

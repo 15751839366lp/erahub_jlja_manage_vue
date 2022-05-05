@@ -88,25 +88,25 @@
                     <!--                    >{{openFlag ? '收起' : '展开'}}</el-button>-->
                     <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
                     <el-button type="primary" @click="getSectionList" icon="el-icon-search"
-                               v-hasPermission="'fixedAsset:metadata:section:select'">查询
+                               v-hasPermission="'asset:metadata:section:select'">查询
                     </el-button>
-                    <el-button v-hasPermission="'fixedAsset:metadata:section:add'"
+                    <el-button v-hasPermission="'asset:metadata:section:add'"
                                type="success"
                                icon="el-icon-plus"
                                @click="openAddDialog"
                     >添加
                     </el-button>
                     <el-button @click="openUploadDialog"
-                               v-hasPermission="'fixedAsset:metadata:section:import'"
+                               v-hasPermission="'asset:metadata:section:import'"
                                icon="el-icon-upload">导入
                     </el-button>
                     <el-button @click="exportSection"
-                               v-hasPermission="'fixedAsset:metadata:section:export'"
+                               v-hasPermission="'asset:metadata:section:export'"
                                icon="el-icon-download">导出
                     </el-button>
                     <el-button @click="deleteSectionByBatchId(selections)"
                                icon="el-icon-delete"
-                               v-hasPermission="'fixedAsset:metadata:section:delete'"
+                               v-hasPermission="'asset:metadata:section:delete'"
                                :disabled="selections.length === 0">批量
                     </el-button>
                 </el-form-item>
@@ -171,14 +171,14 @@
                 </el-table-column>
                 <el-table-column label="操作" fixed="right" width="150px">
                     <template #default="scope">
-                        <el-button v-hasPermission="'fixedAsset:metadata:section:edit'"
+                        <el-button v-hasPermission="'asset:metadata:section:edit'"
                                    type="primary"
                                    icon="el-icon-edit"
                                    @click="openEditDialog(scope.row)"
                                    size="mini"
                         >
                         </el-button>
-                        <el-button v-hasPermission="'fixedAsset:metadata:section:delete'"
+                        <el-button v-hasPermission="'asset:metadata:section:delete'"
                                    type="danger"
                                    icon="el-icon-delete"
                                    @click="deleteSection(scope.row)"
@@ -568,7 +568,7 @@
                 exportSectionExcelApi().then((res) => {
                     if (res.headers["content-type"] === "application/json") {
                         return ElMessage.error(
-                            "Subject does not have permission [fixedAsset:metadata:section:export]"
+                            "Subject does not have permission [asset:metadata:section:export]"
                         );
                     }
                     const data = res.data;
