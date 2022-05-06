@@ -2,7 +2,7 @@ import service from "../../../utils/request";
 
 export function getSectionListApi(data) {
     return service.request({
-        url: '/fixedasset/metadata/section/getSectionList',
+        url: '/asset/metadata/section/getSectionList',
         method: 'post',
         data
     });
@@ -10,14 +10,14 @@ export function getSectionListApi(data) {
 
 export function getChildrenListApi(sectionId) {
     return service.request({
-        url: '/fixedasset/metadata/section/getChildrenList/' + sectionId,
+        url: '/asset/metadata/section/getChildrenList/' + sectionId,
         method: 'get',
     });
 }
 
 export function exportSectionExcelApi() {
     return service.request({
-        url: '/fixedasset/metadata/section/exportSectionExcel',
+        url: '/asset/metadata/section/exportSectionExcel',
         method: 'get',
         responseType: "blob"
     });
@@ -25,14 +25,14 @@ export function exportSectionExcelApi() {
 
 export function changeSectionStatusApi(sectionId,status) {
     return service.request({
-        url: '/fixedasset/metadata/section/changeSectionStatus/' + sectionId + "/" + status,
+        url: '/asset/metadata/section/changeSectionStatus/' + sectionId + "/" + status,
         method: 'put',
     });
 }
 
 export function addSectionApi(data) {
     return service.request({
-        url: '/fixedasset/metadata/section/addSection',
+        url: '/asset/metadata/section/addSection',
         method: 'post',
         data
     });
@@ -40,7 +40,7 @@ export function addSectionApi(data) {
 
 export function updateSectionApi(data) {
     return service.request({
-        url: '/fixedasset/metadata/section/updateSection',
+        url: '/asset/metadata/section/updateSection',
         method: 'put',
         data
     });
@@ -49,14 +49,14 @@ export function updateSectionApi(data) {
 
 export function deleteSectionApi(id) {
     return service.request({
-        url: '/fixedasset/metadata/section/deleteSection/' + id,
+        url: '/asset/metadata/section/deleteSection/' + id,
         method: 'delete',
     });
 }
 
 export function deleteSectionByBatchIdApi(data) {
     return service.request({
-        url: '/fixedasset/metadata/section/deleteSectionByBatchId',
+        url: '/asset/metadata/section/deleteSectionByBatchId',
         method: 'delete',
         data
     });
@@ -64,7 +64,7 @@ export function deleteSectionByBatchIdApi(data) {
 
 export function importSectionApi(data) {
     return service.request({
-        url: '/fixedasset/metadata/section/importSection',
+        url: '/asset/metadata/section/importSection',
         method: 'post',
         headers: {
             'Content-Type': 'multipart/form-data;boundary=<calculated when request is sent>'

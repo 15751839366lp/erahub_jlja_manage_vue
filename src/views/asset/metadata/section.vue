@@ -3,7 +3,7 @@
         <!-- 面包导航 -->
         <el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:12px;">
             <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-            <el-breadcrumb-item>固定资产管理</el-breadcrumb-item>
+            <el-breadcrumb-item>资产管理</el-breadcrumb-item>
             <el-breadcrumb-item>元数据管理</el-breadcrumb-item>
             <el-breadcrumb-item>单位管理</el-breadcrumb-item>
         </el-breadcrumb>
@@ -43,7 +43,7 @@
                             @keyup.enter.native="getSectionList"
                             clearable
                             @clear="getSectionList"
-                            v-model="queryMap.sectionLevel"
+                            v-model="queryMap.level"
                             placeholder="请输入最深级数查询"
                     ></el-input>
                 </el-form-item>
@@ -59,9 +59,9 @@
                         <el-radio v-model="queryMap.isAccurate" :label="1">精确查询</el-radio>
                     </el-form-item>
                     <el-form-item label="明细类型" style="margin-left:110px;">
-                        <el-radio v-model="queryMap.sectionDetailed" :label="1">是</el-radio>
-                        <el-radio v-model="queryMap.sectionDetailed" :label="0">否</el-radio>
-                        <el-radio v-model="queryMap.sectionDetailed" :label="null">全部</el-radio>
+                        <el-radio v-model="queryMap.detailed" :label="1">是</el-radio>
+                        <el-radio v-model="queryMap.detailed" :label="0">否</el-radio>
+                        <el-radio v-model="queryMap.detailed" :label="null">全部</el-radio>
                     </el-form-item>
                 </div>
                 <el-form-item label="创建时间">
@@ -136,25 +136,25 @@
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="sectionAbbreviation" label="单位简称" width="150px"
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="fixedAssetQuantity" label="资产数量">
+                <el-table-column prop="assetQuantity" label="资产数量">
                     <template #default="scope">
-                        <el-tag type="success">{{scope.row.fixedAssetQuantity}}</el-tag>
+                        <el-tag type="success">{{scope.row.assetQuantity}}</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="sectionLevel" label="级数" width="100px">
+                <el-table-column prop="level" label="级数" width="100px">
                     <template #default="scope">
-                        <el-tag v-if="scope.row.sectionLevel===1">一级分类</el-tag>
-                        <el-tag type="success" v-else-if="scope.row.sectionLevel===2">二级分类</el-tag>
-                        <el-tag type="info" v-else-if="scope.row.sectionLevel===3">三级分类</el-tag>
-                        <el-tag type="warning" v-else-if="scope.row.sectionLevel===4">四级分类</el-tag>
-                        <el-tag type="danger" v-else-if="scope.row.sectionLevel===5">五级分类</el-tag>
+                        <el-tag v-if="scope.row.level===1">一级分类</el-tag>
+                        <el-tag type="success" v-else-if="scope.row.level===2">二级分类</el-tag>
+                        <el-tag type="info" v-else-if="scope.row.level===3">三级分类</el-tag>
+                        <el-tag type="warning" v-else-if="scope.row.level===4">四级分类</el-tag>
+                        <el-tag type="danger" v-else-if="scope.row.level===5">五级分类</el-tag>
                         <el-tag type="" v-else>六级分类</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="sectionDetailed" label="明细">
+                <el-table-column prop="detailed" label="明细">
                     <template #default="scope">
-                        <el-tag type="success" v-if="scope.row.sectionDetailed===1">是</el-tag>
-                        <el-tag type="danger" v-else-if="scope.row.sectionDetailed===0">否</el-tag>
+                        <el-tag type="success" v-if="scope.row.detailed===1">是</el-tag>
+                        <el-tag type="danger" v-else-if="scope.row.detailed===0">否</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column prop="createTime" label="创建时间" :show-overflow-tooltip="true"
@@ -235,9 +235,9 @@
                                   <el-row>
                                        <el-col :span="10">
                                    <div class="grid-content bg-purple">
-                                      <el-form-item label="明细" prop="sectionDetailed">
-                                            <el-radio v-model="addSectionForm.sectionDetailed" :label="1">是</el-radio>
-                                            <el-radio v-model="addSectionForm.sectionDetailed" :label="0">否</el-radio>
+                                      <el-form-item label="明细" prop="detailed">
+                                            <el-radio v-model="addSectionForm.detailed" :label="1">是</el-radio>
+                                            <el-radio v-model="addSectionForm.detailed" :label="0">否</el-radio>
                                       </el-form-item>
                                     </div>
                                   </el-col>
@@ -303,9 +303,9 @@
                                   <el-row>
                                        <el-col :span="10">
                                    <div class="grid-content bg-purple">
-                                      <el-form-item label="明细" prop="sectionDetailed">
-                                            <el-radio v-model="editSectionForm.sectionDetailed" :label="1">是</el-radio>
-                                            <el-radio v-model="editSectionForm.sectionDetailed" :label="0">否</el-radio>
+                                      <el-form-item label="明细" prop="detailed">
+                                            <el-radio v-model="editSectionForm.detailed" :label="1">是</el-radio>
+                                            <el-radio v-model="editSectionForm.detailed" :label="0">否</el-radio>
                                       </el-form-item>
                                     </div>
                                   </el-col>
@@ -343,7 +343,7 @@
                               accept=".xls,.xlsx"
                               class="upload-demo"
                               ref="upload"
-                              :action="server + '/fixedasset/metadata/section/importSection'"
+                              :action="server + '/asset/metadata/section/importSection'"
                               :file-list="fileList"
                               :on-remove="handleRemove"
                               :on-change="handleChange"
@@ -376,7 +376,7 @@
         deleteSectionApi,
         deleteSectionByBatchIdApi,
         importSectionApi,
-    } from '../../../api/fixedasset/metadata/section'
+    } from '../../../api/asset/metadata/section'
 
 
     export default {
@@ -460,7 +460,7 @@
                 sectionId: null,
                 sectionName: null,
                 sectionAbbreviation: null,
-                sectionDetailed: null,
+                detailed: null,
                 status: null,
                 remark: null,
             }) //添加表单
@@ -475,7 +475,7 @@
                 sectionAbbreviation: [
                     {required: true, message: "请输入单位简称", trigger: "blur"}
                 ],
-                sectionDetailed: [
+                detailed: [
                     {required: true, message: "请选择明细", trigger: "blur"}
                 ],
                 status: [
@@ -487,8 +487,8 @@
                 sectionId: null,
                 sectionName: null,
                 sectionAbbreviation: null,
-                sectionLevel: 2,
-                sectionDetailed: null,
+                level: 2,
+                detailed: null,
                 status: null,
                 remark: null,
                 isAccurate: 0,
@@ -503,8 +503,8 @@
                 queryMap.sectionId = null;
                 queryMap.sectionName = null;
                 queryMap.sectionAbbreviation = null;
-                queryMap.sectionLevel = 5;
-                queryMap.sectionDetailed = null;
+                queryMap.level = 5;
+                queryMap.detailed = null;
                 queryMap.status = null;
                 queryMap.remark = null;
                 queryMap.isAccurate = 0;
@@ -529,7 +529,7 @@
                     ElMessage.error("请输入数值类型ID");
                     return;
                 }
-                if (!utils.isEmpty(queryMap.sectionLevel) && !utils.isIneger(queryMap.sectionLevel)) {
+                if (!utils.isEmpty(queryMap.level) && !utils.isIneger(queryMap.level)) {
                     ElMessage.error("请输入数值类型");
                     return;
                 }
@@ -672,11 +672,11 @@
 
             //删除单位
             const deleteSection = (row) => {
-                if(row.sectionDetailed == 0){
+                if(row.detailed == 0){
                     ElMessage.error('该节点非明细节点，无法删除');
                     return;
                 }
-                if(row.fixedAssetQuantity > 0){
+                if(row.assetQuantity > 0){
                     ElMessage.error('该单位存在资产，无法删除');
                     return;
                 }
@@ -714,10 +714,10 @@
                 let sectionIds = selections.value.map(item => item.sectionId);
                 let flag = true;
                 selections.value.forEach(item => {
-                    if(item.categoryDetailed == 0){
+                    if(item.detailed == 0){
                         flag = false;
                     }
-                    if(item.fixedAssetQuantity > 0){
+                    if(item.assetQuantity > 0){
                         flag = false;
                     }
                 })
@@ -881,7 +881,7 @@
             }
 
             getSectionList();
-            queryMap.sectionLevel = 5;
+            queryMap.level = 5;
 
             return {
                 selections,

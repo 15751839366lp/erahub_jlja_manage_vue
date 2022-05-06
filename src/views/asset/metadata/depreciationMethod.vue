@@ -3,7 +3,7 @@
         <!-- 面包导航 -->
         <el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:12px;">
             <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-            <el-breadcrumb-item>固定资产管理</el-breadcrumb-item>
+            <el-breadcrumb-item>资产管理</el-breadcrumb-item>
             <el-breadcrumb-item>元数据管理</el-breadcrumb-item>
             <el-breadcrumb-item>折旧方法</el-breadcrumb-item>
         </el-breadcrumb>
@@ -96,14 +96,14 @@
                 <el-table-column prop="depreciationMethodId" label="ID" width="60px" fixed sortable></el-table-column>
                 <el-table-column prop="depreciationMethodName" label="方法名称" width="150px" fixed
                                  :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="fixedAssetQuantity" label="资产数量" width="100px" sortable>
+                <el-table-column prop="assetQuantity" label="资产数量" width="100px" sortable>
                     <template #default="scope">
-                        <el-tag type="success">{{scope.row.fixedAssetQuantity}}</el-tag>
+                        <el-tag type="success">{{scope.row.assetQuantity}}</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="fixedAssetCategoryQuantity" label="类别数量" width="100px" sortable>
+                <el-table-column prop="assetCategoryQuantity" label="类别数量" width="100px" sortable>
                     <template #default="scope">
-                        <el-tag type="success">{{scope.row.fixedAssetCategoryQuantity}}</el-tag>
+                        <el-tag type="success">{{scope.row.assetCategoryQuantity}}</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column prop="formula" label="计算公式" :show-overflow-tooltip="true"></el-table-column>
@@ -298,7 +298,7 @@
                   accept=".xls,.xlsx"
                   class="upload-demo"
                   ref="upload"
-                  :action="server + '/fixedasset/metadata/depreciationmethod/importDepreciationMethod'"
+                  :action="server + '/asset/metadata/depreciationmethod/importDepreciationMethod'"
                   :file-list="fileList"
                   :on-remove="handleRemove"
                   :on-change="handleChange"
@@ -331,7 +331,7 @@
         deleteDepreciationMethodApi,
         deleteDepreciationMethodByBatchIdApi,
         importDepreciationMethodApi,
-    } from '../../../api/fixedasset/metadata/depreciationMethod'
+    } from '../../../api/asset/metadata/depreciationMethod'
 
     export default {
 
@@ -608,11 +608,11 @@
 
             //删除方法
             const deleteDepreciationMethod = (row) => {
-                if(row.fixedAssetQuantity > 0){
+                if(row.assetQuantity > 0){
                     ElMessage.error('该方法存在资产，无法删除');
                     return;
                 }
-                if(row.fixedAssetCategoryQuantity > 0){
+                if(row.assetCategoryQuantity > 0){
                     ElMessage.error('该方法存在类别，无法删除');
                     return;
                 }
@@ -651,10 +651,10 @@
 
                 let flag = true;
                 selections.value.forEach(item => {
-                    if(item.fixedAssetQuantity > 0){
+                    if(item.assetQuantity > 0){
                         flag = false;
                     }
-                    if(item.fixedAssetCategoryQuantity > 0){
+                    if(item.assetCategoryQuantity > 0){
                         flag = false;
                     }
                 })
