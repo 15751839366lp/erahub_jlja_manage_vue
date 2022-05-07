@@ -1,205 +1,123 @@
 <template>
-    <div id="assetCategory">
+    <div id="serviceCondition">
         <!-- 面包导航 -->
         <el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:12px;">
             <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item>资产管理</el-breadcrumb-item>
             <el-breadcrumb-item>元数据管理</el-breadcrumb-item>
-            <el-breadcrumb-item>资产类别</el-breadcrumb-item>
+            <el-breadcrumb-item>使用状态</el-breadcrumb-item>
         </el-breadcrumb>
         <el-card class="box-card">
             <el-form :inline="true" ref="form" :model="queryMap" label-width="70px" size="small">
-
-                <el-form-item label="ID">
-                    <el-input
-                            @keyup.enter.native="searchAssetCategory"
-                            @clear="searchAssetCategory"
-                            clearable
-                            v-model="queryMap.assetCategoryId"
-                            placeholder="请输入id查询"
-                    ></el-input>
-                </el-form-item>
-                <el-form-item label="类别名称">
-                    <el-input
-                            @keyup.enter.native="searchAssetCategory"
-                            @clear="searchAssetCategory"
-                            clearable
-                            v-model="queryMap.assetCategoryName"
-                            placeholder="请输入类别名称查询"
-                    ></el-input>
-                </el-form-item>
-                <el-form-item label="折旧方法">
-                    <el-select
-                            clearable
-                            @clear="searchAssetCategory"
-                            v-model="queryMap.depreciationMethodId"
-                            placeholder="请选择折旧方法"
-                    >
-                        <el-option
-                                v-for="depreciationMethod in depreciationMethodList"
-                                :label="depreciationMethod.depreciationMethodName"
-                                :key="depreciationMethod.depreciationMethodId"
-                                :value="depreciationMethod.depreciationMethodId"
-                        >
-                            <span style="float: left">{{ depreciationMethod.depreciationMethodName }}</span>
-                            <!--                            <span style="float: right; color: #8492a6; font-size: 13px">-->
-                            <!--                                <el-tag size="small" effect="plain" type="success">-->
-                            <!--                                  {{ department.total }}人-->
-                            <!--                                </el-tag>-->
-                            <!--                              </span>-->
-                        </el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="计量单位">
-                    <el-input
-                            @keyup.enter.native="searchAssetCategory"
-                            clearable
-                            @clear="searchAssetCategory"
-                            v-model="queryMap.measureUnit"
-                            placeholder="请输入计量单位查询"
-                    ></el-input>
-                </el-form-item>
-                <el-form-item label="能力单位">
-                    <el-input
-                            @keyup.enter.native="searchAssetCategory"
-                            clearable
-                            @clear="searchAssetCategory"
-                            v-model="queryMap.capacityUnit"
-                            placeholder="请输入能力单位查询">
-                    </el-input>
-                </el-form-item>
-                <el-form-item label="折旧年限">
-                    <el-input
-                            @keyup.enter.native="searchAssetCategory"
-                            clearable
-                            @clear="searchAssetCategory"
-                            v-model="queryMap.depreciationPeriod"
-                            placeholder="请输入折旧年限查询">
-                    </el-input>
-                </el-form-item>
-                <el-form-item label="工作量">
-                    <el-input
-                            @keyup.enter.native="searchAssetCategory"
-                            clearable
-                            @clear="searchAssetCategory"
-                            v-model="queryMap.estimatedTotalWorkload"
-                            placeholder="请输入最大工作量查询">
-                    </el-input>
-                </el-form-item>
-                <el-form-item label="净残值率">
-                    <el-input
-                            @keyup.enter.native="searchAssetCategory"
-                            clearable
-                            @clear="searchAssetCategory"
-                            v-model="queryMap.netResidualValue"
-                            placeholder="请输入净残值率查询">
-                    </el-input>
-                </el-form-item>
                 <div style="display: inline-block">
-
+                    <el-form-item label="ID" >
+                        <el-input
+                                @keyup.enter.native="searchServiceCondition"
+                                @clear="searchServiceCondition"
+                                clearable
+                                v-model="queryMap.serviceConditionId"
+                                placeholder="请输入id查询"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="状态名称" style="margin-left: 50px">
+                        <el-input
+                                @keyup.enter.native="searchServiceCondition"
+                                @clear="searchServiceCondition"
+                                clearable
+                                v-model="queryMap.serviceConditionName"
+                                placeholder="请输入状态名称查询"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="计提折旧" style="margin-left: 50px">
+                        <el-radio v-model="queryMap.accrualDepreciation" :label="1">是</el-radio>
+                        <el-radio v-model="queryMap.accrualDepreciation" :label="0">否</el-radio>
+                        <el-radio v-model="queryMap.accrualDepreciation" :label="null">全部</el-radio>
+                    </el-form-item>
+                </div>
+                <div style="display: inline-block">
                     <el-form-item label="使用状态">
                         <el-radio v-model="queryMap.status" :label="1">可用</el-radio>
                         <el-radio v-model="queryMap.status" :label="0">禁用</el-radio>
                         <el-radio v-model="queryMap.status" :label="null">全部</el-radio>
                     </el-form-item>
-                    <el-form-item label="查询类型" style="margin-left:110px;">
+                    <el-form-item label="查询类型" style="margin-left: 300px">
                         <el-radio v-model="queryMap.isAccurate" :label="0">模糊查询</el-radio>
                         <el-radio v-model="queryMap.isAccurate" :label="1">精确查询</el-radio>
                     </el-form-item>
-                    <el-form-item label="明细类型" style="margin-left:110px;">
-                        <el-radio v-model="queryMap.detailed" :label="1">是</el-radio>
-                        <el-radio v-model="queryMap.detailed" :label="0">否</el-radio>
-                        <el-radio v-model="queryMap.detailed" :label="null">全部</el-radio>
+                </div>
+                <div style="display: inline-block">
+                    <el-form-item label="创建时间">
+                        <el-date-picker
+                                :clearable="false"
+                                v-model="timeRange"
+                                type="datetimerange"
+                                :value-format="'YYYY-MM-DD HH:mm:ss'"
+                                :shortcuts="pickerOptions.shortcuts"
+                                unlink-panels
+                                range-separator="至"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                        >
+                        </el-date-picker>
+                    </el-form-item>
+                    <el-form-item style="float: right;margin-left: 30px; ">
+                        <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
+                        <el-button type="primary" @click="searchServiceCondition" icon="el-icon-search"
+                                   v-hasPermission="'asset:metadata:serviceCondition:select'">查询
+                        </el-button>
+                        <el-button v-hasPermission="'asset:metadata:serviceCondition:add'"
+                                   type="success"
+                                   icon="el-icon-plus"
+                                   @click="openAddDialog"
+                        >添加
+                        </el-button>
+                        <el-button @click="openUploadDialog"
+                                   v-hasPermission="'asset:metadata:serviceCondition:import'"
+                                   icon="el-icon-upload">导入
+                        </el-button>
+                        <el-button @click="exportServiceCondition"
+                                   v-hasPermission="'asset:metadata:serviceCondition:export'"
+                                   icon="el-icon-download">导出
+                        </el-button>
+                        <el-button @click="deleteServiceConditionByBatchId(selections)"
+                                   icon="el-icon-delete"
+                                   v-hasPermission="'asset:metadata:serviceCondition:delete'"
+                                   :disabled="selections.length === 0">批量
+                        </el-button>
                     </el-form-item>
                 </div>
-                <el-form-item label="创建时间">
-                    <el-date-picker
-                            :clearable="false"
-                            v-model="timeRange"
-                            type="datetimerange"
-                            :value-format="'YYYY-MM-DD HH:mm:ss'"
-                            :shortcuts="pickerOptions.shortcuts"
-                            unlink-panels
-                            range-separator="至"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期"
-                    >
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item style="float: right;margin-right: 150px; ">
-                    <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
-                    <el-button type="primary" @click="searchAssetCategory" icon="el-icon-search"
-                               v-hasPermission="'asset:metadata:assetCategory:select'">查询</el-button>
-                    <el-button v-hasPermission="'asset:metadata:assetCategory:add'"
-                               type="success"
-                               icon="el-icon-plus"
-                               @click="openAddDialog"
-                    >添加
-                    </el-button>
-                    <el-button @click="openUploadDialog"
-                               v-hasPermission="'asset:metadata:assetCategory:import'"
-                               icon="el-icon-upload">导入
-                    </el-button>
-                    <el-button @click="exportAssetCategory"
-                               v-hasPermission="'asset:metadata:assetCategory:export'"
-                               icon="el-icon-download">导出
-                    </el-button>
-                    <el-button @click="deleteAssetCategoryByBatchId(selections)"
-                               icon="el-icon-delete"
-                               v-hasPermission="'asset:metadata:assetCategory:delete'"
-                               :disabled="selections.length === 0">批量
-                    </el-button>
-                </el-form-item>
             </el-form>
             <!-- 表格部分 -->
             <el-table
                     ref="table"
                     v-loading="loading"
-                    row-key="assetCategoryId"
+                    row-key="serviceConditionId"
                     style="width: 100%;"
                     height="490"
                     size="mini"
                     border
                     element-loading-text="拼命加载中"
                     element-loading-spinner="el-icon-loading"
-                    :data="assetCategories"
+                    :data="serviceConditions"
                     :row-style="{height: '30px'}"
                     @sort-change="sortChange"
                     @selection-change="selectChange"
             >
                 <el-table-column type="selection" width="40px"></el-table-column>
-                <el-table-column prop="assetCategoryId" label="ID" width="100px" fixed sortable></el-table-column>
-                <el-table-column prop="assetCategoryName" label="类别名称" width="150px" fixed
+                <el-table-column prop="serviceConditionId" label="ID" width="100px" fixed sortable></el-table-column>
+                <el-table-column prop="serviceConditionName" label="状态名称" width="150px" fixed
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="assetQuantity" label="资产数量" width="100px" sortable>
                     <template #default="scope">
                         <el-tag type="success">{{scope.row.assetQuantity}}</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="level" label="级数" width="100px">
+                <el-table-column prop="accrualDepreciation" label="计提折旧">
                     <template #default="scope">
-                        <el-tag v-if="scope.row.level===1">一级分类</el-tag>
-                        <el-tag type="success" v-else-if="scope.row.level===2">二级分类</el-tag>
-                        <el-tag type="info" v-else-if="scope.row.level===3">三级分类</el-tag>
-                        <el-tag type="warning" v-else-if="scope.row.level===4">四级分类</el-tag>
-                        <el-tag type="danger" v-else-if="scope.row.level===5">五级分类</el-tag>
-                        <el-tag type="" v-else>六级分类</el-tag>
+                        <el-tag type="success" v-if="scope.row.accrualDepreciation===1">是</el-tag>
+                        <el-tag type="danger" v-else-if="scope.row.accrualDepreciation===0">否</el-tag>
                     </template>
                 </el-table-column>
-                <!--                <el-table-column prop="depreciationMethodId" label="折旧方法id"></el-table-column>-->
-                <el-table-column prop="depreciationMethodName" label="折旧方法" width="120px"
-                                 :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="detailed" label="明细">
-                    <template #default="scope">
-                        <el-tag type="success" v-if="scope.row.detailed===1">是</el-tag>
-                        <el-tag type="danger" v-else-if="scope.row.detailed===0">否</el-tag>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="measureUnit" label="计量单位" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="capacityUnit" label="能力单位" :show-overflow-tooltip="true"></el-table-column>
-                <el-table-column prop="depreciationPeriod" label="折旧年限"></el-table-column>
-                <el-table-column prop="estimatedTotalWorkload" label="总工作量"></el-table-column>
-                <el-table-column prop="netResidualValue" label="净残值率"></el-table-column>
                 <el-table-column prop="createTime" label="创建时间" :show-overflow-tooltip="true" width="150"
                                  sortable></el-table-column>
                 <el-table-column prop="modifiedTime" label="修改时间" :show-overflow-tooltip="true"
@@ -207,24 +125,24 @@
                 <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true" width="150"></el-table-column>
                 <el-table-column prop="status" label="状态" width="100" fixed="right">
                     <template #default="scope">
-                            <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0"
-                                   @change="changeAssetCategoryStatus(scope.row)">
+                        <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0"
+                                   @change="changeServiceConditionStatus(scope.row)">
                         </el-switch>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" fixed="right" width="150px">
                     <template #default="scope">
-                        <el-button v-hasPermission="'asset:metadata:assetCategory:edit'"
+                        <el-button v-hasPermission="'asset:metadata:serviceCondition:edit'"
                                    type="primary"
                                    icon="el-icon-edit"
                                    @click="openEditDialog(scope.row)"
                                    size="mini"
                         >
                         </el-button>
-                        <el-button v-hasPermission="'asset:metadata:assetCategory:delete'"
+                        <el-button v-hasPermission="'asset:metadata:serviceCondition:delete'"
                                    type="danger"
                                    icon="el-icon-delete"
-                                   @click="deleteAssetCategory(scope.row)"
+                                   @click="deleteServiceCondition(scope.row)"
                                    size="mini"
                         >
                         </el-button>
@@ -250,23 +168,23 @@
             <el-dialog title="添加分类" v-model="addDialogVisible" @close="addCloseDialog" width="50%">
                 <span>
                   <el-form
-                          :model="addAssetCategoryForm"
+                          :model="addServiceConditionForm"
                           :rules="formRules"
-                          ref="addAssetCategoryFormRef"
+                          ref="addServiceConditionFormRef"
                           label-width="100px"
                   >
                     <el-row>
                       <el-col :span="10">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="类别ID" prop="assetCategoryId">
-                            <el-input v-model="addAssetCategoryForm.assetCategoryId"></el-input>
+                          <el-form-item label="状态ID" prop="serviceConditionId">
+                            <el-input v-model="addServiceConditionForm.serviceConditionId"></el-input>
                           </el-form-item>
                         </div>
                       </el-col>
                       <el-col :span="10" style="margin-left: 30px">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="类别名称" prop="assetCategoryName">
-                            <el-input v-model="addAssetCategoryForm.assetCategoryName"></el-input>
+                          <el-form-item label="状态名称" prop="serviceConditionName">
+                            <el-input v-model="addServiceConditionForm.serviceConditionName"></el-input>
                           </el-form-item>
                         </div>
                       </el-col>
@@ -274,9 +192,9 @@
                       <el-row>
                       <el-col :span="10">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="明细" prop="detailed">
-                                <el-radio v-model="addAssetCategoryForm.detailed" label="1">是</el-radio>
-                                <el-radio v-model="addAssetCategoryForm.detailed"
+                          <el-form-item label="计提折旧" prop="accrualDepreciation">
+                                <el-radio v-model="addServiceConditionForm.accrualDepreciation" label="1">是</el-radio>
+                                <el-radio v-model="addServiceConditionForm.accrualDepreciation"
                                           label="0">否</el-radio>
                           </el-form-item>
                         </div>
@@ -284,64 +202,8 @@
                       <el-col :span="10" style="margin-left: 30px">
                         <div class="grid-content bg-purple-light">
                           <el-form-item label="状态" prop="status">
-                                <el-radio v-model="addAssetCategoryForm.status" :label="1">可用</el-radio>
-                                <el-radio v-model="addAssetCategoryForm.status" :label="0">禁用</el-radio>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                    </el-row>
-                      <el-row>
-                      <el-col :span="10">
-                        <div class="grid-content bg-purple">
-                          <el-form-item label="净残值率" prop="netResidualValue">
-                            <el-input v-model="addAssetCategoryForm.netResidualValue"></el-input>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                      <el-col :span="10" style="margin-left: 30px">
-                        <div class="grid-content bg-purple-light">
-                          <el-form-item label="折旧方法" prop="depreciationMethodId">
-                            <el-select v-model="addAssetCategoryForm.depreciationMethodId" placeholder="请选择折旧方法">
-                              <el-option
-                                      v-for="depreciationMethod in depreciationMethodList"
-                                      :key="depreciationMethod.depreciationMethodId"
-                                      :label="depreciationMethod.depreciationMethodName"
-                                      :value="depreciationMethod.depreciationMethodId"
-                                      :disabled="depreciationMethod.status == 1 ? false : true"
-                              ></el-option>
-                            </el-select>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                    </el-row>
-                      <el-row>
-                      <el-col :span="10">
-                        <div class="grid-content bg-purple">
-                          <el-form-item label="计量单位" prop="measureUnit">
-                            <el-input v-model="addAssetCategoryForm.measureUnit"></el-input>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                      <el-col :span="10" style="margin-left: 30px">
-                        <div class="grid-content bg-purple-light">
-                          <el-form-item label="能力单位" prop="capacityUnit">
-                             <el-input v-model="addAssetCategoryForm.capacityUnit"></el-input>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                    </el-row>
-                      <el-row>
-                      <el-col :span="10">
-                        <div class="grid-content bg-purple">
-                          <el-form-item label="折旧年限" prop="depreciationPeriod">
-                            <el-input v-model="addAssetCategoryForm.depreciationPeriod"></el-input>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                      <el-col :span="10" style="margin-left: 30px">
-                        <div class="grid-content bg-purple">
-                          <el-form-item label="总工作量" prop="estimatedTotalWorkload">
-                            <el-input v-model="addAssetCategoryForm.estimatedTotalWorkload"></el-input>
+                                <el-radio v-model="addServiceConditionForm.status" :label="1">可用</el-radio>
+                                <el-radio v-model="addServiceConditionForm.status" :label="0">禁用</el-radio>
                           </el-form-item>
                         </div>
                       </el-col>
@@ -349,7 +211,7 @@
                       <el-row>
                           <el-col>
                           <el-form-item label="备注" prop="remark">
-                              <el-input type="textarea" v-model="addAssetCategoryForm.remark"
+                              <el-input type="textarea" v-model="addServiceConditionForm.remark"
                                         style="width: 86%" :rows="3"></el-input>
                           </el-form-item>
                           </el-col>
@@ -359,7 +221,7 @@
                 <template #footer>
                     <span class="dialog-footer">
                       <el-button @click="addDialogVisible = false">取 消</el-button>
-                      <el-button type="primary" @click="addAssetCategory" :disabled="btnDisabled"
+                      <el-button type="primary" @click="addServiceCondition" :disabled="btnDisabled"
                                  :loading="btnLoading">确 定</el-button>
                     </span>
                 </template>
@@ -368,20 +230,20 @@
             <!-- 编辑弹出框 -->
             <el-dialog title="编辑分类" v-model="editDialogVisible" @close="editCloseDialog" width="50%">
         <span>
-          <el-form :model="editAssetCategoryForm" :rules="formRules" ref="editAssetCategoryFormRef"
+          <el-form :model="editServiceConditionForm" :rules="formRules" ref="editServiceConditionFormRef"
                    label-width="100px">
             <el-row>
                       <el-col :span="10">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="类别ID" prop="assetCategoryId">
-                            <el-input v-model="editAssetCategoryForm.assetCategoryId" :disabled="true"></el-input>
+                          <el-form-item label="状态ID" prop="serviceConditionId">
+                            <el-input v-model="editServiceConditionForm.serviceConditionId" :disabled="true"></el-input>
                           </el-form-item>
                         </div>
                       </el-col>
                       <el-col :span="10" style="margin-left: 30px">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="类别名称" prop="assetCategoryName">
-                            <el-input v-model="editAssetCategoryForm.assetCategoryName"></el-input>
+                          <el-form-item label="状态名称" prop="serviceConditionName">
+                            <el-input v-model="editServiceConditionForm.serviceConditionName"></el-input>
                           </el-form-item>
                         </div>
                       </el-col>
@@ -389,10 +251,10 @@
                       <el-row>
                       <el-col :span="10">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="明细" prop="detailed">
-                                <el-radio v-model="editAssetCategoryForm.detailed"
+                          <el-form-item label="计提折旧" prop="accrualDepreciation">
+                                <el-radio v-model="editServiceConditionForm.accrualDepreciation"
                                           :label="1">是</el-radio>
-                                <el-radio v-model="editAssetCategoryForm.detailed"
+                                <el-radio v-model="editServiceConditionForm.accrualDepreciation"
                                           :label="0">否</el-radio>
                           </el-form-item>
                         </div>
@@ -400,64 +262,8 @@
                       <el-col :span="10" style="margin-left: 30px">
                         <div class="grid-content bg-purple-light">
                           <el-form-item label="状态" prop="status">
-                                <el-radio v-model="editAssetCategoryForm.status" :label="1">可用</el-radio>
-                                <el-radio v-model="editAssetCategoryForm.status" :label="0">禁用</el-radio>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                    </el-row>
-                      <el-row>
-                      <el-col :span="10">
-                        <div class="grid-content bg-purple">
-                          <el-form-item label="净残值率" prop="netResidualValue">
-                            <el-input v-model="editAssetCategoryForm.netResidualValue"></el-input>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                      <el-col :span="10" style="margin-left: 30px">
-                        <div class="grid-content bg-purple-light">
-                          <el-form-item label="折旧方法" prop="depreciationMethodId">
-                            <el-select v-model="editAssetCategoryForm.depreciationMethodId" placeholder="请选择折旧方法">
-                              <el-option
-                                      v-for="depreciationMethod in depreciationMethodList"
-                                      :key="depreciationMethod.depreciationMethodId"
-                                      :label="depreciationMethod.depreciationMethodName"
-                                      :value="depreciationMethod.depreciationMethodId"
-                                      :disabled="depreciationMethod.status == 1 ? false : true"
-                              ></el-option>
-                            </el-select>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                    </el-row>
-                      <el-row>
-                      <el-col :span="10">
-                        <div class="grid-content bg-purple">
-                          <el-form-item label="计量单位" prop="measureUnit">
-                            <el-input v-model="editAssetCategoryForm.measureUnit"></el-input>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                      <el-col :span="10" style="margin-left: 30px">
-                        <div class="grid-content bg-purple-light">
-                          <el-form-item label="能力单位" prop="capacityUnit">
-                             <el-input v-model="editAssetCategoryForm.capacityUnit"></el-input>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                    </el-row>
-                      <el-row>
-                      <el-col :span="10">
-                        <div class="grid-content bg-purple">
-                          <el-form-item label="折旧年限" prop="depreciationPeriod">
-                            <el-input v-model="editAssetCategoryForm.depreciationPeriod"></el-input>
-                          </el-form-item>
-                        </div>
-                      </el-col>
-                      <el-col :span="10" style="margin-left: 30px">
-                        <div class="grid-content bg-purple">
-                          <el-form-item label="总工作量" prop="estimatedTotalWorkload">
-                            <el-input v-model="editAssetCategoryForm.estimatedTotalWorkload"></el-input>
+                                <el-radio v-model="editServiceConditionForm.status" :label="1">可用</el-radio>
+                                <el-radio v-model="editServiceConditionForm.status" :label="0">禁用</el-radio>
                           </el-form-item>
                         </div>
                       </el-col>
@@ -465,7 +271,7 @@
                       <el-row>
                           <el-col>
                           <el-form-item label="备注" prop="remark">
-                              <el-input type="textarea" v-model="editAssetCategoryForm.remark"
+                              <el-input type="textarea" v-model="editServiceConditionForm.remark"
                                         style="width: 86%" :rows="3"></el-input>
                           </el-form-item>
                           </el-col>
@@ -475,19 +281,19 @@
                 <template #footer>
                 <span class="dialog-footer">
           <el-button @click="editDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="updateAssetCategory" :disabled="btnDisabled"
+          <el-button type="primary" @click="updateServiceCondition" :disabled="btnDisabled"
                      :loading="btnLoading">确 定</el-button>
         </span>
                 </template>
             </el-dialog>
             <!-- 上传弹出框 -->
-            <el-dialog title="导入资产类别" v-model="uploadDialogVisible" @close="importCloseDialog" width="40%" center>
+            <el-dialog title="导入使用状态" v-model="uploadDialogVisible" @close="importCloseDialog" width="40%" center>
         <span style="display: inline-block;">
           <el-upload
                   accept=".xls,.xlsx"
                   class="upload-demo"
                   ref="upload"
-                  :action="server + '/asset/metadata/assetcategory/importAssetCategory'"
+                  :action="server + '/asset/metadata/servicecondition/importServiceCondition'"
                   :file-list="fileList"
                   :on-remove="handleRemove"
                   :on-change="handleChange"
@@ -498,7 +304,7 @@
                  <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
               </template>
                 <el-button style="margin-left: 10px;" size="small" type="success"
-                           @click="importAssetCategory">导入文件</el-button>
+                           @click="importServiceCondition">导入文件</el-button>
           <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件，单个文件大小不能超过20MB，总文件大小不能超过100MB</div>
         </el-upload>
         </span>
@@ -512,16 +318,15 @@
     import {ElMessage, ElLoading, ElNotification, ElMessageBox} from "element-plus";
     import utils from '../../../api/common/utils';
     import {
-        getAssetCategoryListApi,
-        getAllDepreciationMethodApi,
-        changeAssetCategoryStatusApi,
-        exportAssetCategoryExcelApi,
-        addAssetCategoryApi,
-        updateAssetCategoryApi,
-        deleteAssetCategoryApi,
-        deleteAssetCategoryByBatchIdApi,
-        importAssetCategoryApi,
-    } from '../../../api/asset/metadata/assetCategory'
+        getServiceConditionListApi,
+        changeServiceConditionStatusApi,
+        exportServiceConditionExcelApi,
+        addServiceConditionApi,
+        updateServiceConditionApi,
+        deleteServiceConditionApi,
+        deleteServiceConditionByBatchIdApi,
+        importServiceConditionApi,
+    } from '../../../api/asset/metadata/serviceCondition'
 
     export default {
 
@@ -530,15 +335,14 @@
             const btnLoading = ref(false)
             const btnDisabled = ref(false)
             const loading = ref(true)
-            const depreciationMethodList = ref([])
             const addDialogVisible = ref(false)
             const editDialogVisible = ref(false)
             const uploadDialogVisible = ref(false)
-            const editAssetCategoryForm = ref(null)
+            const editServiceConditionForm = ref(null)
             const total = ref(0)
-            const assetCategories = ref([])
-            const addAssetCategoryFormRef = ref(null)
-            const editAssetCategoryFormRef = ref(null)
+            const serviceConditions = ref([])
+            const addServiceConditionFormRef = ref(null)
+            const editServiceConditionFormRef = ref(null)
             const timeRange = ref([])
             const fileList = ref([])
             const fileDatas = ref([])
@@ -601,62 +405,35 @@
                     }]
             })
 
-            const addAssetCategoryForm = ref({
-                assetCategoryId: null,
-                assetCategoryName: null,
-                detailed: null,
-                status: null,
-                depreciationMethodId: null,
-                measureUnit: null,
-                capacityUnit: null,
-                depreciationPeriod: null,
-                estimatedTotalWorkload: null,
-                netResidualValue: null,
-                remark: null,
-            }) //添加表单
             const formRules = ref({
-                assetCategoryId: [
+                serviceConditionId: [
                     {required: true, message: "请输入分类ID", trigger: "blur"},
                     {pattern: /^[+]?(0|([0-9]\d*))?$/, message: '请输入正确格式'}
                 ],
-                assetCategoryName: [
+                serviceConditionName: [
                     {required: true, message: "请输入分类名称", trigger: "blur"}
                 ],
-                detailed: [
-                    {required: true, message: "请选择是否为明细", trigger: "blur"}
+                accrualDepreciation: [
+                    {required: true, message: "请选择是否计提折旧", trigger: "blur"}
                 ],
                 status: [
                     {required: true, message: "请选择状态", trigger: "blur"}
                 ],
-                depreciationMethodId: [
-                    {required: true, message: "请选择折旧方法", trigger: "blur"}
-                ],
-                depreciationPeriod: [
-                    {required: true, message: "请输入折旧年限", trigger: "blur"},
-                    {pattern: /^[+-]?(0|([1-9]\d*))(\.\d{1,2})?$/, message: '请输入正确数字'}
-                ],
-                estimatedTotalWorkload: [
-                    {required: true, message: "请输入总工作量", trigger: "blur"},
-                    {pattern: /^[+-]?(0|([1-9]\d*))(\.\d{1,2})?$/, message: '请输入正确数字'}
-                ],
-                netResidualValue: [
-                    {required: true, message: "请输入净残值率", trigger: "blur"},
-                    {pattern: /^(0(\.\d{1,2})?|1(\.0{1,2})?)$/, message: '请输入0-1之间两位小数'}
-                ],
             })
 
+            const addServiceConditionForm = ref({
+                serviceConditionId: null,
+                serviceConditionName: null,
+                accrualDepreciation: 1,
+                status: 1,
+                remark: null
+            }) //添加表单
+
             const queryMap = reactive({
-                assetCategoryId: null,
-                assetCategoryName: null,
-                detailed: null,
+                serviceConditionId: null,
+                serviceConditionName: null,
+                accrualDepreciation: null,
                 status: null,
-                depreciationMethodId: null,
-                depreciationMethodName: null,
-                measureUnit: null,
-                capacityUnit: null,
-                depreciationPeriod: null,
-                estimatedTotalWorkload: null,
-                netResidualValue: null,
                 isAccurate: 0,
                 startCreateTime: null,
                 endCreateTime: null,
@@ -670,16 +447,10 @@
              * 重置
              */
             const reset = () => {
-                queryMap.assetCategoryId = null;
-                queryMap.assetCategoryName = null;
-                queryMap.detailed = null;
+                queryMap.serviceConditionId = null;
+                queryMap.serviceConditionName = null;
+                queryMap.accrualDepreciation = null;
                 queryMap.status = null;
-                queryMap.depreciationMethodId = null;
-                queryMap.depreciationMethodName = null;
-                queryMap.measureUnit = null;
-                queryMap.capacityUnit = null;
-                queryMap.depreciationPeriod = null;
-                queryMap.estimatedTotalWorkload = null;
                 queryMap.netResidualValue = null;
                 queryMap.isAccurate = 0;
                 queryMap.startCreateTime = null;
@@ -690,11 +461,11 @@
                 queryMap.pageNum = 1;
                 queryMap.pageSize = 10;
 
-                getAssetCategoryList()
+                getServiceConditionList()
             }
 
             //加载分类数据
-            const getAssetCategoryList = () => {
+            const getServiceConditionList = () => {
 
                 if (timeRange.value != null && timeRange.value.length === 1) {
                     queryMap.startCreateTime = timeRange.value[0];
@@ -703,25 +474,16 @@
                     queryMap.endCreateTime = timeRange.value[1];
                 }
 
-                if (!utils.isEmpty(queryMap.assetCategoryId) && !utils.isStringIneger(queryMap.assetCategoryId)) {
+                if (!utils.isEmpty(queryMap.serviceConditionId) && !utils.isIneger(queryMap.serviceConditionId)) {
                     ElMessage.error("请输入数值类型ID");
-                    return;
-                } else if (!utils.isEmpty(queryMap.depreciationPeriod) && !utils.isNumberTwoScale(queryMap.depreciationPeriod, 2)) {
-                    ElMessage.error("请输入数值类型折旧年限");
-                    return;
-                } else if (!utils.isEmpty(queryMap.estimatedTotalWorkload) && !utils.isNumberTwoScale(queryMap.estimatedTotalWorkload, 2)) {
-                    ElMessage.error("请输入数值类型工作量");
-                    return;
-                } else if (!utils.isEmpty(queryMap.netResidualValue) && !utils.isNumberTwoScale(queryMap.netResidualValue, 2)) {
-                    ElMessage.error("请输入数值类型净残值率");
                     return;
                 }
                 loading.value = true;
-                assetCategories.value = [];
+                serviceConditions.value = [];
 
-                getAssetCategoryListApi(queryMap).then((res) => {
+                getServiceConditionListApi(queryMap).then((res) => {
                     if (!res.data.success) return ElMessage.error("分类列表失败");
-                    assetCategories.value = res.data.data.rows;
+                    serviceConditions.value = res.data.data.rows;
                     total.value = res.data.data.total;
                     loading.value = false;
                 }).catch((res) => {
@@ -731,27 +493,13 @@
             }
 
             /**
-             * 加载所有折旧方法
-             */
-            const getAllDepreciationMethod = () => {
-                getAllDepreciationMethodApi().then((res) => {
-                    if (!res.data.success) {
-                        return ElMessage.error("获取折旧方法列表失败:" + res.data.data.errorMsg);
-                    }
-                    depreciationMethodList.value = res.data.data;
-                }).catch((res) => {
-                    ElMessage.error("获取折旧方法列表失败:" + res);
-                });
-            }
-
-            /**
              * 导出
              */
-            const exportAssetCategory = () => {
-                exportAssetCategoryExcelApi().then((res) => {
+            const exportServiceCondition = () => {
+                exportServiceConditionExcelApi().then((res) => {
                     if (res.headers["content-type"] === "application/json") {
                         return ElMessage.error(
-                            "Subject does not have permission [asset:metadata:assetCategory:export]"
+                            "Subject does not have permission [asset:metadata:serviceCondition:export]"
                         );
                     }
                     const data = res.data;
@@ -759,7 +507,7 @@
                     const a = document.createElement("a");
                     document.body.appendChild(a);
                     a.href = url;
-                    a.download = "资产类别列表.xlsx";
+                    a.download = "使用状态列表.xlsx";
                     a.click();
                     window.URL.revokeObjectURL(url);
                 }).catch((res) => {
@@ -768,15 +516,15 @@
             }
 
             /**
-             * 禁用启用类别
+             * 禁用启用状态
              */
-            const changeAssetCategoryStatus = (row) => {
-                changeAssetCategoryStatusApi(row.assetCategoryId, row.status).then((res) => {
+            const changeServiceConditionStatus = (row) => {
+                changeServiceConditionStatusApi(row.serviceConditionId, row.status).then((res) => {
                     if (!res.data.success) {
-                        ElMessage.error("更新资产类别状态失败:" + res.data.data.errorMsg);
+                        ElMessage.error("更新使用状态状态失败:" + res.data.data.errorMsg);
                         row.status = row.status == 1 ? 0 : 1;
                     } else {
-                        const message = row.status == 1 ? '资产类别状态已启用' : '资产类别状态已禁用';
+                        const message = row.status == 1 ? '使用状态状态已启用' : '使用状态状态已禁用';
                         ElNotification({
                             type: 'success',
                             title: '操作成功',
@@ -784,23 +532,23 @@
                         });
                     }
                 }).catch((res) => {
-                    ElMessage.error("更新资产类别状态失败:" + res);
+                    ElMessage.error("更新使用状态状态失败:" + res);
                 });
             }
 
             //添加分类
-            const addAssetCategory = () => {
-                addAssetCategoryFormRef.value.validate(valid => {
+            const addServiceCondition = () => {
+                addServiceConditionFormRef.value.validate(valid => {
                     if (!valid) {
                         return;
                     } else {
                         btnLoading.value = true;
                         btnDisabled.value = true;
 
-                        addAssetCategoryApi(addAssetCategoryForm.value).then((res) => {
+                        addServiceConditionApi(addServiceConditionForm.value).then((res) => {
                             if (res.data.success) {
                                 ElMessage.success("分类添加成功");
-                                getAssetCategoryList();
+                                getServiceConditionList();
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
                             } else {
@@ -820,21 +568,21 @@
             }
 
             //修改分类
-            const updateAssetCategory = () => {
-                editAssetCategoryFormRef.value.validate(valid => {
+            const updateServiceCondition = () => {
+                editServiceConditionFormRef.value.validate(valid => {
                     if (!valid) {
                         return;
                     } else {
                         btnLoading.value = true;
                         btnDisabled.value = true;
-                        updateAssetCategoryApi(editAssetCategoryForm.value).then((res) => {
+                        updateServiceConditionApi(editServiceConditionForm.value).then((res) => {
                             if (res.data.success) {
                                 ElNotification({
                                     title: "成功",
                                     message: "分类信息更新成功",
                                     type: "success"
                                 });
-                                getAssetCategoryList();
+                                getServiceConditionList();
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
                             } else {
@@ -854,13 +602,9 @@
             }
 
             //删除分类
-            const deleteAssetCategory = (row) => {
-                if(row.detailed == 0){
-                    ElMessage.error('该节点非明细节点，无法删除');
-                    return;
-                }
-                if(row.assetQuantity > 0){
-                    ElMessage.error('该类别存在资产，无法删除');
+            const deleteServiceCondition = (row) => {
+                if (row.assetQuantity > 0) {
+                    ElMessage.error('该状态存在资产，无法删除');
                     return;
                 }
 
@@ -874,10 +618,10 @@
                     }
                 ).then((res) => {
                     if (res === "confirm") {
-                        deleteAssetCategoryApi(row.assetCategoryId).then((res) => {
+                        deleteServiceConditionApi(row.serviceConditionId).then((res) => {
                             if (res.data.success) {
                                 ElMessage.success("分类删除成功");
-                                getAssetCategoryList();
+                                getServiceConditionList();
                             } else {
                                 ElMessage.error(res.data.data.errorMsg);
                             }
@@ -894,21 +638,18 @@
             }
 
             //批量删除分类
-            const deleteAssetCategoryByBatchId = () => {
-                let assetCategoryIds = selections.value.map(item => item.assetCategoryId);
+            const deleteServiceConditionByBatchId = () => {
+                let serviceConditionIds = selections.value.map(item => item.serviceConditionId);
 
                 let flag = true;
                 selections.value.forEach(item => {
-                    if(item.detailed == 0){
-                        flag = false;
-                    }
-                    if(item.assetQuantity > 0){
+                    if (item.assetQuantity > 0) {
                         flag = false;
                     }
                 })
 
-                if(!flag){
-                    ElMessage.error('请勿选择非明细节点,或存在资产的节点');
+                if (!flag) {
+                    ElMessage.error('请勿选择存在资产的节点');
                     return;
                 }
                 ElMessageBox.confirm(
@@ -921,10 +662,10 @@
                     }
                 ).then((res) => {
                     if (res === "confirm") {
-                        deleteAssetCategoryByBatchIdApi(assetCategoryIds).then((res) => {
+                        deleteServiceConditionByBatchIdApi(serviceConditionIds).then((res) => {
                             if (res.data.success) {
                                 ElMessage.success("分类批量删除成功");
-                                getAssetCategoryList();
+                                getServiceConditionList();
                             } else {
                                 ElMessage.error(res.data.data.errorMsg);
                             }
@@ -941,7 +682,7 @@
             }
 
             //导入分类
-            const importAssetCategory = () => {
+            const importServiceCondition = () => {
                 let fullLoading = ElLoading.service({
                     lock: true,
                     text: 'Loading',
@@ -958,7 +699,7 @@
                     //所有文件保存在formData中
                     formData.append(`file${index}`, file)
                 })
-                importAssetCategoryApi(formData).then((res) => {
+                importServiceConditionApi(formData).then((res) => {
                     if (res.data.success) {
                         ElNotification({
                             title: "成功",
@@ -966,7 +707,7 @@
                             type: "success"
                         });
 
-                        getAssetCategoryList();
+                        getServiceConditionList();
                         uploadDialogVisible.value = false;
                         clearImportDialog(fullLoading);
                     } else {
@@ -983,20 +724,20 @@
             const handleSizeChange = (newSize) => {
                 queryMap.pageSize = newSize;
                 queryMap.pageNum = 1;
-                getAssetCategoryList();
+                getServiceConditionList();
             }
             //翻页
             const handleCurrentChange = (current) => {
                 queryMap.pageNum = current;
-                getAssetCategoryList();
+                getServiceConditionList();
             }
 
             /**
-             * 搜索类别
+             * 搜索状态
              */
-            const searchAssetCategory = () => {
+            const searchServiceCondition = () => {
                 queryMap.pageNum = 1;
-                getAssetCategoryList();
+                getServiceConditionList();
             }
 
             //改变排序
@@ -1004,7 +745,7 @@
                 if (column.prop == null || column.order == null) {
                     queryMap.isAsc = null;
                     queryMap.sortColumn = null;
-                    getAssetCategoryList();
+                    getServiceConditionList();
                     return;
                 }
                 if (column.order == 'ascending') {
@@ -1013,7 +754,7 @@
                     queryMap.isAsc = false;
                 }
                 queryMap.sortColumn = utils.camelToSnakeCase(column.prop);
-                getAssetCategoryList();
+                getServiceConditionList();
             }
 
             //打开添加
@@ -1024,7 +765,7 @@
             //打开修改
             const openEditDialog = (row) => {
                 let newObj = {};
-                editAssetCategoryForm.value = utils.cloneObj(row, newObj);
+                editServiceConditionForm.value = utils.cloneObj(row, newObj);
                 editDialogVisible.value = true;
             }
 
@@ -1035,12 +776,12 @@
 
             //关闭弹出框
             const addCloseDialog = () => {
-                addAssetCategoryFormRef.value.clearValidate();
-                addAssetCategoryForm.value = {};
+                addServiceConditionFormRef.value.clearValidate();
+                addServiceConditionForm.value = {};
             }
             const editCloseDialog = () => {
-                editAssetCategoryFormRef.value.clearValidate();
-                editAssetCategoryForm.value = {};
+                editServiceConditionFormRef.value.clearValidate();
+                editServiceConditionForm.value = {};
             }
             const importCloseDialog = () => {
                 fileList.value = [];
@@ -1101,8 +842,7 @@
                 })
             }
 
-            getAllDepreciationMethod();
-            getAssetCategoryList();
+            getServiceConditionList();
 
             return {
                 selections,
@@ -1110,35 +850,33 @@
                 btnLoading,
                 btnDisabled,
                 loading,
-                depreciationMethodList,
                 addDialogVisible,
                 editDialogVisible,
                 uploadDialogVisible,
-                editAssetCategoryForm,
-                addAssetCategoryForm,
+                editServiceConditionForm,
+                addServiceConditionForm,
                 formRules,
                 total,
                 queryMap,
-                assetCategories,
-                addAssetCategoryFormRef,
-                editAssetCategoryFormRef,
+                serviceConditions,
+                addServiceConditionFormRef,
+                editServiceConditionFormRef,
                 timeRange,
                 fileList,
                 fileDatas,
                 server,
                 reset,
-                getAssetCategoryList,
-                getAllDepreciationMethod,
-                exportAssetCategory,
-                changeAssetCategoryStatus,
-                addAssetCategory,
-                updateAssetCategory,
-                deleteAssetCategory,
-                deleteAssetCategoryByBatchId,
-                importAssetCategory,
+                getServiceConditionList,
+                exportServiceCondition,
+                changeServiceConditionStatus,
+                addServiceCondition,
+                updateServiceCondition,
+                deleteServiceCondition,
+                deleteServiceConditionByBatchId,
+                importServiceCondition,
                 handleSizeChange,
                 handleCurrentChange,
-                searchAssetCategory,
+                searchServiceCondition,
                 sortChange,
                 openAddDialog,
                 openEditDialog,

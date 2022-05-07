@@ -5,7 +5,7 @@ const assetCategory = [
         meta:{
             title: "资产类别"
         },
-        component: () => import( '../../../views/asset/metadata/assetCategory.vue'),     //操作日志
+        component: () => import( '../../../views/asset/metadata/assetCategory.vue'),
     },
     {
         path: '/asset/metadata/depreciationMethod',
@@ -13,7 +13,7 @@ const assetCategory = [
         meta:{
             title: "折旧方法"
         },
-        component: () => import( '../../../views/asset/metadata/depreciationMethod.vue'),     //操作日志
+        component: () => import( '../../../views/asset/metadata/depreciationMethod.vue'),
     },
     {
         path: '/asset/metadata/section',
@@ -21,7 +21,15 @@ const assetCategory = [
         meta:{
             title: "单位管理"
         },
-        component: () => import( '../../../views/asset/metadata/section.vue'),     //操作日志
+        component: () => import( '../../../views/asset/metadata/section.vue'),
+    },
+    {
+        path: '/asset/metadata/serviceCondition',
+        name: 'serviceCondition',
+        meta:{
+            title: "使用状态"
+        },
+        component: () => import( '../../../views/asset/metadata/serviceCondition.vue'),
     },
 ]
 
