@@ -31,6 +31,38 @@ const assetCategory = [
         },
         component: () => import( '../../../views/asset/metadata/serviceCondition.vue'),
     },
+    {
+        path: '/asset/metadata/assetSource',
+        name: 'assetSource',
+        meta:{
+            title: "资产来源"
+        },
+        component: () => import( '../../../views/asset/metadata/assetSource.vue'),
+    },
+    {
+        path: '/asset/metadata/reduceMethod',
+        name: 'reduceMethod',
+        meta:{
+            title: "减少方式"
+        },
+        component: () => import( '../../../views/asset/metadata/reduceMethod.vue'),
+    },
+    {
+        path: '/asset/metadata/reduceReason',
+        name: 'reduceReason',
+        meta:{
+            title: "减少原因"
+        },
+        component: () => import( '../../../views/asset/metadata/reduceReason.vue'),
+    },
+    {
+        path: '/asset/metadata/technicalCondition',
+        name: 'technicalCondition',
+        meta:{
+            title: "技术状态"
+        },
+        component: () => import( '../../../views/asset/metadata/technicalCondition.vue'),
+    },
 ]
 
 export default assetCategory
