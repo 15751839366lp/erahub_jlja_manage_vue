@@ -720,13 +720,13 @@
                 assetCategories.value = [];
 
                 getAssetCategoryListApi(queryMap).then((res) => {
-                    if (!res.data.success) return ElMessage.error("分类列表失败");
+                    if (!res.data.success) return ElMessage.error("查询失败: " + res.data.data.errorMsg);
                     assetCategories.value = res.data.data.rows;
                     total.value = res.data.data.total;
                     loading.value = false;
                 }).catch((res) => {
                     loading.value = false;
-                    ElMessage.error("分类列表失败");
+                    ElMessage.error("查询失败: " + res);
                 });
             }
 

@@ -1,53 +1,37 @@
 <template>
-    <div id="reduceMethod">
+    <div id="decreaseReason">
         <!-- 面包导航 -->
         <el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:12px;">
             <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item>资产管理</el-breadcrumb-item>
             <el-breadcrumb-item>元数据管理</el-breadcrumb-item>
-            <el-breadcrumb-item>减少方式</el-breadcrumb-item>
+            <el-breadcrumb-item>减少原因</el-breadcrumb-item>
         </el-breadcrumb>
         <el-card class="box-card">
             <el-form :inline="true" ref="form" :model="queryMap" label-width="70px" size="small">
                 <div style="display: inline-block">
                     <el-form-item label="ID" >
                         <el-input
-                                @keyup.enter.native="searchReduceMethod"
-                                @clear="searchReduceMethod"
+                                @keyup.enter.native="searchDecreaseReason"
+                                @clear="searchDecreaseReason"
                                 clearable
-                                v-model="queryMap.reduceMethodId"
+                                v-model="queryMap.decreaseReasonId"
                                 placeholder="请输入id查询"
                         ></el-input>
                     </el-form-item>
-                    <el-form-item label="方式名称" style="margin-left: 50px">
+                    <el-form-item label="原因名称" style="margin-left: 50px">
                         <el-input
-                                @keyup.enter.native="searchReduceMethod"
-                                @clear="searchReduceMethod"
+                                @keyup.enter.native="searchDecreaseReason"
+                                @clear="searchDecreaseReason"
                                 clearable
-                                v-model="queryMap.reduceMethodName"
-                                placeholder="请输入方式名称查询"
+                                v-model="queryMap.decreaseReasonName"
+                                placeholder="请输入原因名称查询"
                         ></el-input>
                     </el-form-item>
-                    <el-form-item label="方式标记" style="margin-left: 50px">
-                        <el-select
-                                clearable
-                                @clear="searchReduceMethod"
-                                v-model="queryMap.methodMark"
-                                placeholder="请选择方式标记"
-                        >
-                            <el-option
-                                    v-for="methodMark in methodMarkList"
-                                    :label="methodMark.methodMarkName"
-                                    :key="methodMark.methodMarkId"
-                                    :value="methodMark.methodMarkId"
-                            >
-                                <span style="float: left">{{ methodMark.methodMarkName }}</span>
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
+
                 </div>
                 <div style="display: inline-block">
-                    <el-form-item label="减少方式">
+                    <el-form-item label="减少原因">
                         <el-radio v-model="queryMap.status" :label="1">可用</el-radio>
                         <el-radio v-model="queryMap.status" :label="0">禁用</el-radio>
                         <el-radio v-model="queryMap.status" :label="null">全部</el-radio>
@@ -74,26 +58,26 @@
                     </el-form-item>
                     <el-form-item style="float: right;margin-left: 30px; ">
                         <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
-                        <el-button type="primary" @click="searchReduceMethod" icon="el-icon-search"
-                                   v-hasPermission="'asset:metadata:reduceMethod:select'">查询
+                        <el-button type="primary" @click="searchDecreaseReason" icon="el-icon-search"
+                                   v-hasPermission="'asset:metadata:decreaseReason:select'">查询
                         </el-button>
-                        <el-button v-hasPermission="'asset:metadata:reduceMethod:add'"
+                        <el-button v-hasPermission="'asset:metadata:decreaseReason:add'"
                                    type="success"
                                    icon="el-icon-plus"
                                    @click="openAddDialog"
                         >添加
                         </el-button>
                         <el-button @click="openUploadDialog"
-                                   v-hasPermission="'asset:metadata:reduceMethod:import'"
+                                   v-hasPermission="'asset:metadata:decreaseReason:import'"
                                    icon="el-icon-upload">导入
                         </el-button>
-                        <el-button @click="exportReduceMethod"
-                                   v-hasPermission="'asset:metadata:reduceMethod:export'"
+                        <el-button @click="exportDecreaseReason"
+                                   v-hasPermission="'asset:metadata:decreaseReason:export'"
                                    icon="el-icon-download">导出
                         </el-button>
-                        <el-button @click="deleteReduceMethodByBatchId(selections)"
+                        <el-button @click="deleteDecreaseReasonByBatchId(selections)"
                                    icon="el-icon-delete"
-                                   v-hasPermission="'asset:metadata:reduceMethod:delete'"
+                                   v-hasPermission="'asset:metadata:decreaseReason:delete'"
                                    :disabled="selections.length === 0">批量
                         </el-button>
                     </el-form-item>
@@ -103,60 +87,51 @@
             <el-table
                     ref="table"
                     v-loading="loading"
-                    row-key="reduceMethodId"
+                    row-key="decreaseReasonId"
                     style="width: 100%;"
                     height="490"
                     size="mini"
                     border
                     element-loading-text="拼命加载中"
                     element-loading-spinner="el-icon-loading"
-                    :data="reduceMethods"
+                    :data="decreaseReasons"
                     :row-style="{height: '30px'}"
                     @sort-change="sortChange"
                     @selection-change="selectChange"
             >
                 <el-table-column type="selection" width="40px"></el-table-column>
-                <el-table-column prop="reduceMethodId" label="ID" width="100px" fixed sortable></el-table-column>
-                <el-table-column prop="reduceMethodName" label="方式名称" width="150px" fixed
+                <el-table-column prop="decreaseReasonId" label="ID" width="100px" fixed sortable></el-table-column>
+                <el-table-column prop="decreaseReasonName" label="原因名称" width="150px" fixed
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="assetQuantity" label="资产数量" width="100px" sortable>
                     <template #default="scope">
                         <el-tag type="success">{{scope.row.assetQuantity}}</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="methodMark" label="资源标记">
-                    <template #default="scope">
-                        <el-tag type="success" v-if="scope.row.methodMark==='0'">一般</el-tag>
-                        <el-tag type="warning" v-if="scope.row.methodMark==='3'">盘亏</el-tag>
-                        <el-tag type="danger" v-if="scope.row.methodMark==='5'">调出</el-tag>
-                        <el-tag type="info" v-if="scope.row.methodMark==='9'">评估</el-tag>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="createTime" label="创建时间" :show-overflow-tooltip="true" width="150"
-                                 sortable></el-table-column>
-                <el-table-column prop="modifiedTime" label="修改时间" :show-overflow-tooltip="true"
-                                 width="150"></el-table-column>
-                <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true" width="150"></el-table-column>
+
+                <el-table-column prop="createTime" label="创建时间" :show-overflow-tooltip="true" sortable></el-table-column>
+                <el-table-column prop="modifiedTime" label="修改时间" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="status" label="状态" width="100" fixed="right">
                     <template #default="scope">
                         <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0"
-                                   @change="changeReduceMethodStatus(scope.row)">
+                                   @change="changeDecreaseReasonStatus(scope.row)">
                         </el-switch>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" fixed="right" width="150px">
                     <template #default="scope">
-                        <el-button v-hasPermission="'asset:metadata:reduceMethod:edit'"
+                        <el-button v-hasPermission="'asset:metadata:decreaseReason:edit'"
                                    type="primary"
                                    icon="el-icon-edit"
                                    @click="openEditDialog(scope.row)"
                                    size="mini"
                         >
                         </el-button>
-                        <el-button v-hasPermission="'asset:metadata:reduceMethod:delete'"
+                        <el-button v-hasPermission="'asset:metadata:decreaseReason:delete'"
                                    type="danger"
                                    icon="el-icon-delete"
-                                   @click="deleteReduceMethod(scope.row)"
+                                   @click="deleteDecreaseReason(scope.row)"
                                    size="mini"
                         >
                         </el-button>
@@ -182,47 +157,33 @@
             <el-dialog title="添加分类" v-model="addDialogVisible" @close="addCloseDialog" width="50%">
                 <span>
                   <el-form
-                          :model="addReduceMethodForm"
+                          :model="addDecreaseReasonForm"
                           :rules="formRules"
-                          ref="addReduceMethodFormRef"
+                          ref="addDecreaseReasonFormRef"
                           label-width="100px"
                   >
                     <el-row>
                       <el-col :span="10">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="方式ID" prop="reduceMethodId">
-                            <el-input v-model="addReduceMethodForm.reduceMethodId"></el-input>
+                          <el-form-item label="原因ID" prop="decreaseReasonId">
+                            <el-input v-model="addDecreaseReasonForm.decreaseReasonId"></el-input>
                           </el-form-item>
                         </div>
                       </el-col>
                       <el-col :span="10" style="margin-left: 30px">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="方式名称" prop="reduceMethodName">
-                            <el-input v-model="addReduceMethodForm.reduceMethodName"></el-input>
+                          <el-form-item label="原因名称" prop="decreaseReasonName">
+                            <el-input v-model="addDecreaseReasonForm.decreaseReasonName"></el-input>
                           </el-form-item>
                         </div>
                       </el-col>
                     </el-row>
                       <el-row>
-                      <el-col :span="10">
-                        <div class="grid-content bg-purple">
-                          <el-form-item label="资源标记" prop="methodMark">
-                                 <el-select v-model="addReduceMethodForm.methodMark" placeholder="请选择资源标记">
-                              <el-option
-                                      v-for="methodMark in methodMarkList"
-                                      :key="methodMark.methodMarkId"
-                                      :label="methodMark.methodMarkName"
-                                      :value="methodMark.methodMarkId"
-                              ></el-option>
-                            </el-select>
-                          </el-form-item>
-                        </div>
-                      </el-col>
                       <el-col :span="10" style="margin-left: 30px">
                         <div class="grid-content bg-purple-light">
                           <el-form-item label="状态" prop="status">
-                                <el-radio v-model="addReduceMethodForm.status" :label="1">可用</el-radio>
-                                <el-radio v-model="addReduceMethodForm.status" :label="0">禁用</el-radio>
+                                <el-radio v-model="addDecreaseReasonForm.status" :label="1">可用</el-radio>
+                                <el-radio v-model="addDecreaseReasonForm.status" :label="0">禁用</el-radio>
                           </el-form-item>
                         </div>
                       </el-col>
@@ -230,7 +191,7 @@
                       <el-row>
                           <el-col>
                           <el-form-item label="备注" prop="remark">
-                              <el-input type="textarea" v-model="addReduceMethodForm.remark"
+                              <el-input type="textarea" v-model="addDecreaseReasonForm.remark"
                                         style="width: 86%" :rows="3"></el-input>
                           </el-form-item>
                           </el-col>
@@ -240,7 +201,7 @@
                 <template #footer>
                     <span class="dialog-footer">
                       <el-button @click="addDialogVisible = false">取 消</el-button>
-                      <el-button type="primary" @click="addReduceMethod" :disabled="btnDisabled"
+                      <el-button type="primary" @click="addDecreaseReason" :disabled="btnDisabled"
                                  :loading="btnLoading">确 定</el-button>
                     </span>
                 </template>
@@ -249,44 +210,30 @@
             <!-- 编辑弹出框 -->
             <el-dialog title="编辑分类" v-model="editDialogVisible" @close="editCloseDialog" width="50%">
         <span>
-          <el-form :model="editReduceMethodForm" :rules="formRules" ref="editReduceMethodFormRef"
+          <el-form :model="editDecreaseReasonForm" :rules="formRules" ref="editDecreaseReasonFormRef"
                    label-width="100px">
             <el-row>
                       <el-col :span="10">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="方式ID" prop="reduceMethodId">
-                            <el-input v-model="editReduceMethodForm.reduceMethodId" :disabled="true"></el-input>
+                          <el-form-item label="原因ID" prop="decreaseReasonId">
+                            <el-input v-model="editDecreaseReasonForm.decreaseReasonId" :disabled="true"></el-input>
                           </el-form-item>
                         </div>
                       </el-col>
                       <el-col :span="10" style="margin-left: 30px">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="方式名称" prop="reduceMethodName">
-                            <el-input v-model="editReduceMethodForm.reduceMethodName"></el-input>
+                          <el-form-item label="原因名称" prop="decreaseReasonName">
+                            <el-input v-model="editDecreaseReasonForm.decreaseReasonName"></el-input>
                           </el-form-item>
                         </div>
                       </el-col>
                     </el-row>
                       <el-row>
-                      <el-col :span="10">
-                        <div class="grid-content bg-purple">
-                          <el-form-item label="资源标记" prop="methodMark">
-                                  <el-select v-model="editReduceMethodForm.methodMark" placeholder="请选择资源标记">
-                              <el-option
-                                      v-for="methodMark in methodMarkList"
-                                      :key="methodMark.methodMarkId"
-                                      :label="methodMark.methodMarkName"
-                                      :value="methodMark.methodMarkId"
-                              ></el-option>
-                                  </el-select>
-                          </el-form-item>
-                        </div>
-                      </el-col>
                       <el-col :span="10" style="margin-left: 30px">
                         <div class="grid-content bg-purple-light">
                           <el-form-item label="状态" prop="status">
-                                <el-radio v-model="editReduceMethodForm.status" :label="1">可用</el-radio>
-                                <el-radio v-model="editReduceMethodForm.status" :label="0">禁用</el-radio>
+                                <el-radio v-model="editDecreaseReasonForm.status" :label="1">可用</el-radio>
+                                <el-radio v-model="editDecreaseReasonForm.status" :label="0">禁用</el-radio>
                           </el-form-item>
                         </div>
                       </el-col>
@@ -294,7 +241,7 @@
                       <el-row>
                           <el-col>
                           <el-form-item label="备注" prop="remark">
-                              <el-input type="textarea" v-model="editReduceMethodForm.remark"
+                              <el-input type="textarea" v-model="editDecreaseReasonForm.remark"
                                         style="width: 86%" :rows="3"></el-input>
                           </el-form-item>
                           </el-col>
@@ -304,19 +251,19 @@
                 <template #footer>
                 <span class="dialog-footer">
           <el-button @click="editDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="updateReduceMethod" :disabled="btnDisabled"
+          <el-button type="primary" @click="updateDecreaseReason" :disabled="btnDisabled"
                      :loading="btnLoading">确 定</el-button>
         </span>
                 </template>
             </el-dialog>
             <!-- 上传弹出框 -->
-            <el-dialog title="导入减少方式" v-model="uploadDialogVisible" @close="importCloseDialog" width="40%" center>
+            <el-dialog title="导入减少原因" v-model="uploadDialogVisible" @close="importCloseDialog" width="40%" center>
         <span style="display: inline-block;">
           <el-upload
                   accept=".xls,.xlsx"
                   class="upload-demo"
                   ref="upload"
-                  :action="server + '/asset/metadata/assetsource/importReduceMethod'"
+                  :action="server + '/asset/metadata/assetsource/importDecreaseReason'"
                   :file-list="fileList"
                   :on-remove="handleRemove"
                   :on-change="handleChange"
@@ -327,7 +274,7 @@
                  <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
               </template>
                 <el-button style="margin-left: 10px;" size="small" type="success"
-                           @click="importReduceMethod">导入文件</el-button>
+                           @click="importDecreaseReason">导入文件</el-button>
           <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件，单个文件大小不能超过20MB，总文件大小不能超过100MB</div>
         </el-upload>
         </span>
@@ -341,15 +288,15 @@
     import {ElMessage, ElLoading, ElNotification, ElMessageBox} from "element-plus";
     import utils from '../../../api/common/utils';
     import {
-        getReduceMethodListApi,
-        changeReduceMethodStatusApi,
-        exportReduceMethodExcelApi,
-        addReduceMethodApi,
-        updateReduceMethodApi,
-        deleteReduceMethodApi,
-        deleteReduceMethodByBatchIdApi,
-        importReduceMethodApi,
-    } from '../../../api/asset/metadata/reduceMethod'
+        getDecreaseReasonListApi,
+        changeDecreaseReasonStatusApi,
+        exportDecreaseReasonExcelApi,
+        addDecreaseReasonApi,
+        updateDecreaseReasonApi,
+        deleteDecreaseReasonApi,
+        deleteDecreaseReasonByBatchIdApi,
+        importDecreaseReasonApi,
+    } from '../../../api/asset/metadata/decreaseReason'
 
     export default {
 
@@ -361,34 +308,15 @@
             const addDialogVisible = ref(false)
             const editDialogVisible = ref(false)
             const uploadDialogVisible = ref(false)
-            const editReduceMethodForm = ref(null)
+            const editDecreaseReasonForm = ref(null)
             const total = ref(0)
-            const reduceMethods = ref([])
-            const addReduceMethodFormRef = ref(null)
-            const editReduceMethodFormRef = ref(null)
+            const decreaseReasons = ref([])
+            const addDecreaseReasonFormRef = ref(null)
+            const editDecreaseReasonFormRef = ref(null)
             const timeRange = ref([])
             const fileList = ref([])
             const fileDatas = ref([])
             const server = import.meta.env.PROD ? import.meta.env.VITE_APP_BASE_API : "/api"
-
-            const methodMarkList = ref([
-                {
-                    methodMarkId: '0',
-                    methodMarkName: '一般',
-                },
-                {
-                    methodMarkId: '3',
-                    methodMarkName: '盘亏',
-                },
-                {
-                    methodMarkId: '5',
-                    methodMarkName: '调出',
-                },
-                {
-                    methodMarkId: '9',
-                    methodMarkName: '评估',
-                },
-            ])
 
             const pickerOptions = reactive({
                 shortcuts: [
@@ -448,33 +376,28 @@
             })
 
             const formRules = ref({
-                reduceMethodId: [
+                decreaseReasonId: [
                     {required: true, message: "请输入分类ID", trigger: "blur"},
                     {pattern: /^[+]?(0|([0-9]\d*))?$/, message: '请输入正确格式'}
                 ],
-                reduceMethodName: [
+                decreaseReasonName: [
                     {required: true, message: "请输入分类名称", trigger: "blur"}
-                ],
-                methodMark: [
-                    {required: true, message: "请选择资源标记", trigger: "blur"}
                 ],
                 status: [
                     {required: true, message: "请选择状态", trigger: "blur"}
                 ],
             })
 
-            const addReduceMethodForm = ref({
-                reduceMethodId: null,
-                reduceMethodName: null,
-                methodMark: null,
+            const addDecreaseReasonForm = ref({
+                decreaseReasonId: null,
+                decreaseReasonName: null,
                 status: 1,
                 remark: null
             }) //添加表单
 
             const queryMap = reactive({
-                reduceMethodId: null,
-                reduceMethodName: null,
-                methodMark: null,
+                decreaseReasonId: null,
+                decreaseReasonName: null,
                 status: null,
                 isAccurate: 0,
                 startCreateTime: null,
@@ -489,9 +412,8 @@
              * 重置
              */
             const reset = () => {
-                queryMap.reduceMethodId = null;
-                queryMap.reduceMethodName = null;
-                queryMap.methodMark = null;
+                queryMap.decreaseReasonId = null;
+                queryMap.decreaseReasonName = null;
                 queryMap.status = null;
                 queryMap.isAccurate = 0;
                 queryMap.startCreateTime = null;
@@ -502,11 +424,11 @@
                 queryMap.pageNum = 1;
                 queryMap.pageSize = 10;
 
-                getReduceMethodList()
+                getDecreaseReasonList()
             }
 
             //加载分类数据
-            const getReduceMethodList = () => {
+            const getDecreaseReasonList = () => {
 
                 if (timeRange.value != null && timeRange.value.length === 1) {
                     queryMap.startCreateTime = timeRange.value[0];
@@ -515,32 +437,32 @@
                     queryMap.endCreateTime = timeRange.value[1];
                 }
 
-                if (!utils.isEmpty(queryMap.reduceMethodId) && !utils.isIneger(queryMap.reduceMethodId)) {
+                if (!utils.isEmpty(queryMap.decreaseReasonId) && !utils.isIneger(queryMap.decreaseReasonId)) {
                     ElMessage.error("请输入数值类型ID");
                     return;
                 }
                 loading.value = true;
-                reduceMethods.value = [];
+                decreaseReasons.value = [];
 
-                getReduceMethodListApi(queryMap).then((res) => {
-                    if (!res.data.success) return ElMessage.error("分类列表失败");
-                    reduceMethods.value = res.data.data.rows;
+                getDecreaseReasonListApi(queryMap).then((res) => {
+                    if (!res.data.success) return ElMessage.error("查询失败: " + res.data.data.errorMsg);
+                    decreaseReasons.value = res.data.data.rows;
                     total.value = res.data.data.total;
                     loading.value = false;
                 }).catch((res) => {
                     loading.value = false;
-                    ElMessage.error("分类列表失败");
+                    ElMessage.error("查询失败: " + res);
                 });
             }
 
             /**
              * 导出
              */
-            const exportReduceMethod = () => {
-                exportReduceMethodExcelApi().then((res) => {
+            const exportDecreaseReason = () => {
+                exportDecreaseReasonExcelApi().then((res) => {
                     if (res.headers["content-type"] === "application/json") {
                         return ElMessage.error(
-                            "Subject does not have permission [asset:metadata:reduceMethod:export]"
+                            "Subject does not have permission [asset:metadata:decreaseReason:export]"
                         );
                     }
                     const data = res.data;
@@ -548,7 +470,7 @@
                     const a = document.createElement("a");
                     document.body.appendChild(a);
                     a.href = url;
-                    a.download = "减少方式列表.xlsx";
+                    a.download = "减少原因列表.xlsx";
                     a.click();
                     window.URL.revokeObjectURL(url);
                 }).catch((res) => {
@@ -557,15 +479,15 @@
             }
 
             /**
-             * 禁用启用减少方式
+             * 禁用启用减少原因
              */
-            const changeReduceMethodStatus = (row) => {
-                changeReduceMethodStatusApi(row.reduceMethodId, row.status).then((res) => {
+            const changeDecreaseReasonStatus = (row) => {
+                changeDecreaseReasonStatusApi(row.decreaseReasonId, row.status).then((res) => {
                     if (!res.data.success) {
-                        ElMessage.error("更新减少方式状态失败:" + res.data.data.errorMsg);
+                        ElMessage.error("更新减少原因状态失败:" + res.data.data.errorMsg);
                         row.status = row.status == 1 ? 0 : 1;
                     } else {
-                        const message = row.status == 1 ? '减少方式已启用' : '减少方式已禁用';
+                        const message = row.status == 1 ? '减少原因已启用' : '减少原因已禁用';
                         ElNotification({
                             type: 'success',
                             title: '操作成功',
@@ -573,23 +495,23 @@
                         });
                     }
                 }).catch((res) => {
-                    ElMessage.error("更新减少方式状态失败:" + res);
+                    ElMessage.error("更新减少原因状态失败:" + res);
                 });
             }
 
             //添加分类
-            const addReduceMethod = () => {
-                addReduceMethodFormRef.value.validate(valid => {
+            const addDecreaseReason = () => {
+                addDecreaseReasonFormRef.value.validate(valid => {
                     if (!valid) {
                         return;
                     } else {
                         btnLoading.value = true;
                         btnDisabled.value = true;
 
-                        addReduceMethodApi(addReduceMethodForm.value).then((res) => {
+                        addDecreaseReasonApi(addDecreaseReasonForm.value).then((res) => {
                             if (res.data.success) {
                                 ElMessage.success("分类添加成功");
-                                getReduceMethodList();
+                                getDecreaseReasonList();
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
                             } else {
@@ -609,21 +531,21 @@
             }
 
             //修改分类
-            const updateReduceMethod = () => {
-                editReduceMethodFormRef.value.validate(valid => {
+            const updateDecreaseReason = () => {
+                editDecreaseReasonFormRef.value.validate(valid => {
                     if (!valid) {
                         return;
                     } else {
                         btnLoading.value = true;
                         btnDisabled.value = true;
-                        updateReduceMethodApi(editReduceMethodForm.value).then((res) => {
+                        updateDecreaseReasonApi(editDecreaseReasonForm.value).then((res) => {
                             if (res.data.success) {
                                 ElNotification({
                                     title: "成功",
                                     message: "分类信息更新成功",
                                     type: "success"
                                 });
-                                getReduceMethodList();
+                                getDecreaseReasonList();
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
                             } else {
@@ -643,9 +565,9 @@
             }
 
             //删除分类
-            const deleteReduceMethod = (row) => {
+            const deleteDecreaseReason = (row) => {
                 if (row.assetQuantity > 0) {
-                    ElMessage.error('该减少方式存在资产，无法删除');
+                    ElMessage.error('该减少原因存在资产，无法删除');
                     return;
                 }
 
@@ -659,10 +581,10 @@
                     }
                 ).then((res) => {
                     if (res === "confirm") {
-                        deleteReduceMethodApi(row.reduceMethodId).then((res) => {
+                        deleteDecreaseReasonApi(row.decreaseReasonId).then((res) => {
                             if (res.data.success) {
                                 ElMessage.success("分类删除成功");
-                                getReduceMethodList();
+                                getDecreaseReasonList();
                             } else {
                                 ElMessage.error(res.data.data.errorMsg);
                             }
@@ -679,8 +601,8 @@
             }
 
             //批量删除分类
-            const deleteReduceMethodByBatchId = () => {
-                let reduceMethodIds = selections.value.map(item => item.reduceMethodId);
+            const deleteDecreaseReasonByBatchId = () => {
+                let decreaseReasonIds = selections.value.map(item => item.decreaseReasonId);
 
                 let flag = true;
                 selections.value.forEach(item => {
@@ -703,10 +625,10 @@
                     }
                 ).then((res) => {
                     if (res === "confirm") {
-                        deleteReduceMethodByBatchIdApi(reduceMethodIds).then((res) => {
+                        deleteDecreaseReasonByBatchIdApi(decreaseReasonIds).then((res) => {
                             if (res.data.success) {
                                 ElMessage.success("分类批量删除成功");
-                                getReduceMethodList();
+                                getDecreaseReasonList();
                             } else {
                                 ElMessage.error(res.data.data.errorMsg);
                             }
@@ -723,7 +645,7 @@
             }
 
             //导入分类
-            const importReduceMethod = () => {
+            const importDecreaseReason = () => {
                 let fullLoading = ElLoading.service({
                     lock: true,
                     text: 'Loading',
@@ -740,7 +662,7 @@
                     //所有文件保存在formData中
                     formData.append(`file${index}`, file)
                 })
-                importReduceMethodApi(formData).then((res) => {
+                importDecreaseReasonApi(formData).then((res) => {
                     if (res.data.success) {
                         ElNotification({
                             title: "成功",
@@ -748,7 +670,7 @@
                             type: "success"
                         });
 
-                        getReduceMethodList();
+                        getDecreaseReasonList();
                         uploadDialogVisible.value = false;
                         clearImportDialog(fullLoading);
                     } else {
@@ -765,20 +687,20 @@
             const handleSizeChange = (newSize) => {
                 queryMap.pageSize = newSize;
                 queryMap.pageNum = 1;
-                getReduceMethodList();
+                getDecreaseReasonList();
             }
             //翻页
             const handleCurrentChange = (current) => {
                 queryMap.pageNum = current;
-                getReduceMethodList();
+                getDecreaseReasonList();
             }
 
             /**
-             * 搜索减少方式
+             * 搜索减少原因
              */
-            const searchReduceMethod = () => {
+            const searchDecreaseReason = () => {
                 queryMap.pageNum = 1;
-                getReduceMethodList();
+                getDecreaseReasonList();
             }
 
             //改变排序
@@ -786,7 +708,7 @@
                 if (column.prop == null || column.order == null) {
                     queryMap.isAsc = null;
                     queryMap.sortColumn = null;
-                    getReduceMethodList();
+                    getDecreaseReasonList();
                     return;
                 }
                 if (column.order == 'ascending') {
@@ -795,7 +717,7 @@
                     queryMap.isAsc = false;
                 }
                 queryMap.sortColumn = utils.camelToSnakeCase(column.prop);
-                getReduceMethodList();
+                getDecreaseReasonList();
             }
 
             //打开添加
@@ -806,7 +728,7 @@
             //打开修改
             const openEditDialog = (row) => {
                 let newObj = {};
-                editReduceMethodForm.value = utils.cloneObj(row, newObj);
+                editDecreaseReasonForm.value = utils.cloneObj(row, newObj);
                 editDialogVisible.value = true;
             }
 
@@ -817,12 +739,12 @@
 
             //关闭弹出框
             const addCloseDialog = () => {
-                addReduceMethodFormRef.value.clearValidate();
-                addReduceMethodForm.value = {};
+                addDecreaseReasonFormRef.value.clearValidate();
+                addDecreaseReasonForm.value = {};
             }
             const editCloseDialog = () => {
-                editReduceMethodFormRef.value.clearValidate();
-                editReduceMethodForm.value = {};
+                editDecreaseReasonFormRef.value.clearValidate();
+                editDecreaseReasonForm.value = {};
             }
             const importCloseDialog = () => {
                 fileList.value = [];
@@ -883,7 +805,7 @@
                 })
             }
 
-            getReduceMethodList();
+            getDecreaseReasonList();
 
             return {
                 selections,
@@ -894,31 +816,30 @@
                 addDialogVisible,
                 editDialogVisible,
                 uploadDialogVisible,
-                editReduceMethodForm,
-                addReduceMethodForm,
+                editDecreaseReasonForm,
+                addDecreaseReasonForm,
                 formRules,
                 total,
                 queryMap,
-                reduceMethods,
-                addReduceMethodFormRef,
-                editReduceMethodFormRef,
+                decreaseReasons,
+                addDecreaseReasonFormRef,
+                editDecreaseReasonFormRef,
                 timeRange,
                 fileList,
                 fileDatas,
                 server,
-                methodMarkList,
                 reset,
-                getReduceMethodList,
-                exportReduceMethod,
-                changeReduceMethodStatus,
-                addReduceMethod,
-                updateReduceMethod,
-                deleteReduceMethod,
-                deleteReduceMethodByBatchId,
-                importReduceMethod,
+                getDecreaseReasonList,
+                exportDecreaseReason,
+                changeDecreaseReasonStatus,
+                addDecreaseReason,
+                updateDecreaseReason,
+                deleteDecreaseReason,
+                deleteDecreaseReasonByBatchId,
+                importDecreaseReason,
                 handleSizeChange,
                 handleCurrentChange,
-                searchReduceMethod,
+                searchDecreaseReason,
                 sortChange,
                 openAddDialog,
                 openEditDialog,

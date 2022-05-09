@@ -40,20 +40,20 @@ const assetCategory = [
         component: () => import( '../../../views/asset/metadata/assetSource.vue'),
     },
     {
-        path: '/asset/metadata/reduceMethod',
-        name: 'reduceMethod',
+        path: '/asset/metadata/decreaseMethod',
+        name: 'decreaseMethod',
         meta:{
             title: "减少方式"
         },
-        component: () => import( '../../../views/asset/metadata/reduceMethod.vue'),
+        component: () => import( '../../../views/asset/metadata/decreaseMethod.vue'),
     },
     {
-        path: '/asset/metadata/reduceReason',
-        name: 'reduceReason',
+        path: '/asset/metadata/decreaseReason',
+        name: 'decreaseReason',
         meta:{
             title: "减少原因"
         },
-        component: () => import( '../../../views/asset/metadata/reduceReason.vue'),
+        component: () => import( '../../../views/asset/metadata/decreaseReason.vue'),
     },
     {
         path: '/asset/metadata/technicalCondition',
