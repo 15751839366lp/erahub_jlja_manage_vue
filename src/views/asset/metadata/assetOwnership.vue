@@ -1,41 +1,37 @@
 <template>
-    <div id="serviceCondition">
+    <div id="assetOwnership">
         <!-- 面包导航 -->
         <el-breadcrumb separator="/" style="padding-left:10px;padding-bottom:10px;font-size:12px;">
             <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item>资产管理</el-breadcrumb-item>
             <el-breadcrumb-item>元数据管理</el-breadcrumb-item>
-            <el-breadcrumb-item>使用状态</el-breadcrumb-item>
+            <el-breadcrumb-item>产权归属</el-breadcrumb-item>
         </el-breadcrumb>
         <el-card class="box-card">
             <el-form :inline="true" ref="form" :model="queryMap" label-width="70px" size="small">
                 <div style="display: inline-block">
                     <el-form-item label="ID" >
                         <el-input
-                                @keyup.enter.native="searchServiceCondition"
-                                @clear="searchServiceCondition"
+                                @keyup.enter.native="searchAssetOwnership"
+                                @clear="searchAssetOwnership"
                                 clearable
-                                v-model="queryMap.serviceConditionId"
+                                v-model="queryMap.assetOwnershipId"
                                 placeholder="请输入id查询"
                         ></el-input>
                     </el-form-item>
-                    <el-form-item label="状态名称" style="margin-left: 50px">
+                    <el-form-item label="名称" style="margin-left: 50px">
                         <el-input
-                                @keyup.enter.native="searchServiceCondition"
-                                @clear="searchServiceCondition"
+                                @keyup.enter.native="searchAssetOwnership"
+                                @clear="searchAssetOwnership"
                                 clearable
-                                v-model="queryMap.serviceConditionName"
-                                placeholder="请输入状态名称查询"
+                                v-model="queryMap.assetOwnershipName"
+                                placeholder="请输入名称查询"
                         ></el-input>
                     </el-form-item>
-                    <el-form-item label="计提折旧" style="margin-left: 50px">
-                        <el-radio v-model="queryMap.accrualDepreciation" :label="1">是</el-radio>
-                        <el-radio v-model="queryMap.accrualDepreciation" :label="0">否</el-radio>
-                        <el-radio v-model="queryMap.accrualDepreciation" :label="null">全部</el-radio>
-                    </el-form-item>
+
                 </div>
                 <div style="display: inline-block">
-                    <el-form-item label="使用状态">
+                    <el-form-item label="产权归属">
                         <el-radio v-model="queryMap.status" :label="1">可用</el-radio>
                         <el-radio v-model="queryMap.status" :label="0">禁用</el-radio>
                         <el-radio v-model="queryMap.status" :label="null">全部</el-radio>
@@ -62,26 +58,26 @@
                     </el-form-item>
                     <el-form-item style="float: right;margin-left: 30px; ">
                         <el-button @click="reset" icon="el-icon-refresh">重置</el-button>
-                        <el-button type="primary" @click="searchServiceCondition" icon="el-icon-search"
-                                   v-hasPermission="'asset:metadata:serviceCondition:select'">查询
+                        <el-button type="primary" @click="searchAssetOwnership" icon="el-icon-search"
+                                   v-hasPermission="'asset:metadata:assetOwnership:select'">查询
                         </el-button>
-                        <el-button v-hasPermission="'asset:metadata:serviceCondition:add'"
+                        <el-button v-hasPermission="'asset:metadata:assetOwnership:add'"
                                    type="success"
                                    icon="el-icon-plus"
                                    @click="openAddDialog"
                         >添加
                         </el-button>
                         <el-button @click="openUploadDialog"
-                                   v-hasPermission="'asset:metadata:serviceCondition:import'"
+                                   v-hasPermission="'asset:metadata:assetOwnership:import'"
                                    icon="el-icon-upload">导入
                         </el-button>
-                        <el-button @click="exportServiceCondition"
-                                   v-hasPermission="'asset:metadata:serviceCondition:export'"
+                        <el-button @click="exportAssetOwnership"
+                                   v-hasPermission="'asset:metadata:assetOwnership:export'"
                                    icon="el-icon-download">导出
                         </el-button>
-                        <el-button @click="deleteServiceConditionByBatchId(selections)"
+                        <el-button @click="deleteAssetOwnershipByBatchId(selections)"
                                    icon="el-icon-delete"
-                                   v-hasPermission="'asset:metadata:serviceCondition:delete'"
+                                   v-hasPermission="'asset:metadata:assetOwnership:delete'"
                                    :disabled="selections.length === 0">批量
                         </el-button>
                     </el-form-item>
@@ -91,58 +87,51 @@
             <el-table
                     ref="table"
                     v-loading="loading"
-                    row-key="serviceConditionId"
+                    row-key="assetOwnershipId"
                     style="width: 100%;"
                     height="490"
                     size="mini"
                     border
                     element-loading-text="拼命加载中"
                     element-loading-spinner="el-icon-loading"
-                    :data="serviceConditions"
+                    :data="assetOwnerships"
                     :row-style="{height: '30px'}"
                     @sort-change="sortChange"
                     @selection-change="selectChange"
             >
                 <el-table-column type="selection" width="40px"></el-table-column>
-                <el-table-column prop="serviceConditionId" label="ID" width="100px" fixed sortable></el-table-column>
-                <el-table-column prop="serviceConditionName" label="状态名称" width="150px" fixed
+                <el-table-column prop="assetOwnershipId" label="ID" width="100px" fixed sortable></el-table-column>
+                <el-table-column prop="assetOwnershipName" label="名称" width="150px" fixed
                                  :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="assetQuantity" label="资产数量" width="100px" sortable>
                     <template #default="scope">
                         <el-tag type="success">{{scope.row.assetQuantity}}</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="accrualDepreciation" label="计提折旧">
-                    <template #default="scope">
-                        <el-tag type="success" v-if="scope.row.accrualDepreciation===1">是</el-tag>
-                        <el-tag type="danger" v-else-if="scope.row.accrualDepreciation===0">否</el-tag>
-                    </template>
-                </el-table-column>
-                <el-table-column prop="createTime" label="创建时间" :show-overflow-tooltip="true" width="150"
-                                 sortable></el-table-column>
-                <el-table-column prop="modifiedTime" label="修改时间" :show-overflow-tooltip="true"
-                                 width="150"></el-table-column>
-                <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true" width="150"></el-table-column>
+
+                <el-table-column prop="createTime" label="创建时间" :show-overflow-tooltip="true" sortable></el-table-column>
+                <el-table-column prop="modifiedTime" label="修改时间" :show-overflow-tooltip="true"></el-table-column>
+                <el-table-column prop="remark" label="备注" :show-overflow-tooltip="true"></el-table-column>
                 <el-table-column prop="status" label="状态" width="100" fixed="right">
                     <template #default="scope">
                         <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0"
-                                   @change="changeServiceConditionStatus(scope.row)">
+                                   @change="changeAssetOwnershipStatus(scope.row)">
                         </el-switch>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" fixed="right" width="150px">
                     <template #default="scope">
-                        <el-button v-hasPermission="'asset:metadata:serviceCondition:edit'"
+                        <el-button v-hasPermission="'asset:metadata:assetOwnership:edit'"
                                    type="primary"
                                    icon="el-icon-edit"
                                    @click="openEditDialog(scope.row)"
                                    size="mini"
                         >
                         </el-button>
-                        <el-button v-hasPermission="'asset:metadata:serviceCondition:delete'"
+                        <el-button v-hasPermission="'asset:metadata:assetOwnership:delete'"
                                    type="danger"
                                    icon="el-icon-delete"
-                                   @click="deleteServiceCondition(scope.row)"
+                                   @click="deleteAssetOwnership(scope.row)"
                                    size="mini"
                         >
                         </el-button>
@@ -165,45 +154,36 @@
             ></el-pagination>
 
             <!-- 添加弹出框 -->
-            <el-dialog title="添加使用状态" v-model="addDialogVisible" @close="addCloseDialog" width="50%">
+            <el-dialog title="添加产权归属" v-model="addDialogVisible" @close="addCloseDialog" width="50%">
                 <span>
                   <el-form
-                          :model="addServiceConditionForm"
+                          :model="addAssetOwnershipForm"
                           :rules="formRules"
-                          ref="addServiceConditionFormRef"
+                          ref="addAssetOwnershipFormRef"
                           label-width="100px"
                   >
                     <el-row>
                       <el-col :span="10">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="状态ID" prop="serviceConditionId">
-                            <el-input v-model="addServiceConditionForm.serviceConditionId"></el-input>
+                          <el-form-item label="ID" prop="assetOwnershipId">
+                            <el-input v-model="addAssetOwnershipForm.assetOwnershipId"></el-input>
                           </el-form-item>
                         </div>
                       </el-col>
                       <el-col :span="10" style="margin-left: 30px">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="状态名称" prop="serviceConditionName">
-                            <el-input v-model="addServiceConditionForm.serviceConditionName"></el-input>
+                          <el-form-item label="名称" prop="assetOwnershipName">
+                            <el-input v-model="addAssetOwnershipForm.assetOwnershipName"></el-input>
                           </el-form-item>
                         </div>
                       </el-col>
                     </el-row>
                       <el-row>
-                      <el-col :span="10">
-                        <div class="grid-content bg-purple">
-                          <el-form-item label="计提折旧" prop="accrualDepreciation">
-                                <el-radio v-model="addServiceConditionForm.accrualDepreciation" label="1">是</el-radio>
-                                <el-radio v-model="addServiceConditionForm.accrualDepreciation"
-                                          label="0">否</el-radio>
-                          </el-form-item>
-                        </div>
-                      </el-col>
                       <el-col :span="10" style="margin-left: 30px">
                         <div class="grid-content bg-purple-light">
                           <el-form-item label="状态" prop="status">
-                                <el-radio v-model="addServiceConditionForm.status" :label="1">可用</el-radio>
-                                <el-radio v-model="addServiceConditionForm.status" :label="0">禁用</el-radio>
+                                <el-radio v-model="addAssetOwnershipForm.status" :label="1">可用</el-radio>
+                                <el-radio v-model="addAssetOwnershipForm.status" :label="0">禁用</el-radio>
                           </el-form-item>
                         </div>
                       </el-col>
@@ -211,7 +191,7 @@
                       <el-row>
                           <el-col>
                           <el-form-item label="备注" prop="remark">
-                              <el-input type="textarea" v-model="addServiceConditionForm.remark"
+                              <el-input type="textarea" v-model="addAssetOwnershipForm.remark"
                                         style="width: 86%" :rows="3"></el-input>
                           </el-form-item>
                           </el-col>
@@ -221,49 +201,39 @@
                 <template #footer>
                     <span class="dialog-footer">
                       <el-button @click="addDialogVisible = false">取 消</el-button>
-                      <el-button type="primary" @click="addServiceCondition" :disabled="btnDisabled"
+                      <el-button type="primary" @click="addAssetOwnership" :disabled="btnDisabled"
                                  :loading="btnLoading">确 定</el-button>
                     </span>
                 </template>
             </el-dialog>
 
             <!-- 编辑弹出框 -->
-            <el-dialog title="编辑使用状态" v-model="editDialogVisible" @close="editCloseDialog" width="50%">
+            <el-dialog title="编辑产权归属" v-model="editDialogVisible" @close="editCloseDialog" width="50%">
         <span>
-          <el-form :model="editServiceConditionForm" :rules="formRules" ref="editServiceConditionFormRef"
+          <el-form :model="editAssetOwnershipForm" :rules="formRules" ref="editAssetOwnershipFormRef"
                    label-width="100px">
             <el-row>
                       <el-col :span="10">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="状态ID" prop="serviceConditionId">
-                            <el-input v-model="editServiceConditionForm.serviceConditionId" :disabled="true"></el-input>
+                          <el-form-item label="ID" prop="assetOwnershipId">
+                            <el-input v-model="editAssetOwnershipForm.assetOwnershipId" :disabled="true"></el-input>
                           </el-form-item>
                         </div>
                       </el-col>
                       <el-col :span="10" style="margin-left: 30px">
                         <div class="grid-content bg-purple">
-                          <el-form-item label="状态名称" prop="serviceConditionName">
-                            <el-input v-model="editServiceConditionForm.serviceConditionName"></el-input>
+                          <el-form-item label="名称" prop="assetOwnershipName">
+                            <el-input v-model="editAssetOwnershipForm.assetOwnershipName"></el-input>
                           </el-form-item>
                         </div>
                       </el-col>
                     </el-row>
                       <el-row>
-                      <el-col :span="10">
-                        <div class="grid-content bg-purple">
-                          <el-form-item label="计提折旧" prop="accrualDepreciation">
-                                <el-radio v-model="editServiceConditionForm.accrualDepreciation"
-                                          :label="1">是</el-radio>
-                                <el-radio v-model="editServiceConditionForm.accrualDepreciation"
-                                          :label="0">否</el-radio>
-                          </el-form-item>
-                        </div>
-                      </el-col>
                       <el-col :span="10" style="margin-left: 30px">
                         <div class="grid-content bg-purple-light">
                           <el-form-item label="状态" prop="status">
-                                <el-radio v-model="editServiceConditionForm.status" :label="1">可用</el-radio>
-                                <el-radio v-model="editServiceConditionForm.status" :label="0">禁用</el-radio>
+                                <el-radio v-model="editAssetOwnershipForm.status" :label="1">可用</el-radio>
+                                <el-radio v-model="editAssetOwnershipForm.status" :label="0">禁用</el-radio>
                           </el-form-item>
                         </div>
                       </el-col>
@@ -271,7 +241,7 @@
                       <el-row>
                           <el-col>
                           <el-form-item label="备注" prop="remark">
-                              <el-input type="textarea" v-model="editServiceConditionForm.remark"
+                              <el-input type="textarea" v-model="editAssetOwnershipForm.remark"
                                         style="width: 86%" :rows="3"></el-input>
                           </el-form-item>
                           </el-col>
@@ -281,19 +251,19 @@
                 <template #footer>
                 <span class="dialog-footer">
           <el-button @click="editDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="updateServiceCondition" :disabled="btnDisabled"
+          <el-button type="primary" @click="updateAssetOwnership" :disabled="btnDisabled"
                      :loading="btnLoading">确 定</el-button>
         </span>
                 </template>
             </el-dialog>
             <!-- 上传弹出框 -->
-            <el-dialog title="导入使用状态" v-model="uploadDialogVisible" @close="importCloseDialog" width="40%" center>
+            <el-dialog title="导入产权归属" v-model="uploadDialogVisible" @close="importCloseDialog" width="40%" center>
         <span style="display: inline-block;">
           <el-upload
                   accept=".xls,.xlsx"
                   class="upload-demo"
                   ref="upload"
-                  :action="server + '/asset/metadata/servicecondition/importServiceCondition'"
+                  :action="server + '/asset/metadata/assetownership/importAssetOwnership'"
                   :file-list="fileList"
                   :on-remove="handleRemove"
                   :on-change="handleChange"
@@ -304,7 +274,7 @@
                  <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
               </template>
                 <el-button style="margin-left: 10px;" size="small" type="success"
-                           @click="importServiceCondition">导入文件</el-button>
+                           @click="importAssetOwnership">导入文件</el-button>
           <div slot="tip" class="el-upload__tip">只能上传xls/xlsx文件，单个文件大小不能超过20MB，总文件大小不能超过100MB</div>
         </el-upload>
         </span>
@@ -318,15 +288,15 @@
     import {ElMessage, ElLoading, ElNotification, ElMessageBox} from "element-plus";
     import utils from '../../../api/common/utils';
     import {
-        getServiceConditionListApi,
-        changeServiceConditionStatusApi,
-        exportServiceConditionExcelApi,
-        addServiceConditionApi,
-        updateServiceConditionApi,
-        deleteServiceConditionApi,
-        deleteServiceConditionByBatchIdApi,
-        importServiceConditionApi,
-    } from '../../../api/asset/metadata/serviceCondition'
+        getAssetOwnershipListApi,
+        changeAssetOwnershipStatusApi,
+        exportAssetOwnershipExcelApi,
+        addAssetOwnershipApi,
+        updateAssetOwnershipApi,
+        deleteAssetOwnershipApi,
+        deleteAssetOwnershipByBatchIdApi,
+        importAssetOwnershipApi,
+    } from '../../../api/asset/metadata/assetOwnership'
 
     export default {
 
@@ -338,11 +308,11 @@
             const addDialogVisible = ref(false)
             const editDialogVisible = ref(false)
             const uploadDialogVisible = ref(false)
-            const editServiceConditionForm = ref(null)
+            const editAssetOwnershipForm = ref(null)
             const total = ref(0)
-            const serviceConditions = ref([])
-            const addServiceConditionFormRef = ref(null)
-            const editServiceConditionFormRef = ref(null)
+            const assetOwnerships = ref([])
+            const addAssetOwnershipFormRef = ref(null)
+            const editAssetOwnershipFormRef = ref(null)
             const timeRange = ref([])
             const fileList = ref([])
             const fileDatas = ref([])
@@ -406,33 +376,28 @@
             })
 
             const formRules = ref({
-                serviceConditionId: [
-                    {required: true, message: "请输入使用状态ID", trigger: "blur"},
+                assetOwnershipId: [
+                    {required: true, message: "请输入产权归属ID", trigger: "blur"},
                     {pattern: /^[+]?(0|([0-9]\d*))?$/, message: '请输入正确格式'}
                 ],
-                serviceConditionName: [
-                    {required: true, message: "请输入使用状态名称", trigger: "blur"}
-                ],
-                accrualDepreciation: [
-                    {required: true, message: "请选择是否计提折旧", trigger: "blur"}
+                assetOwnershipName: [
+                    {required: true, message: "请输入产权归属名称", trigger: "blur"}
                 ],
                 status: [
                     {required: true, message: "请选择状态", trigger: "blur"}
                 ],
             })
 
-            const addServiceConditionForm = ref({
-                serviceConditionId: null,
-                serviceConditionName: null,
-                accrualDepreciation: 1,
+            const addAssetOwnershipForm = ref({
+                assetOwnershipId: null,
+                assetOwnershipName: null,
                 status: 1,
                 remark: null
             }) //添加表单
 
             const queryMap = reactive({
-                serviceConditionId: null,
-                serviceConditionName: null,
-                accrualDepreciation: null,
+                assetOwnershipId: null,
+                assetOwnershipName: null,
                 status: null,
                 isAccurate: 0,
                 startCreateTime: null,
@@ -447,11 +412,9 @@
              * 重置
              */
             const reset = () => {
-                queryMap.serviceConditionId = null;
-                queryMap.serviceConditionName = null;
-                queryMap.accrualDepreciation = null;
+                queryMap.assetOwnershipId = null;
+                queryMap.assetOwnershipName = null;
                 queryMap.status = null;
-                queryMap.netResidualValue = null;
                 queryMap.isAccurate = 0;
                 queryMap.startCreateTime = null;
                 queryMap.endCreateTime = null;
@@ -461,11 +424,11 @@
                 queryMap.pageNum = 1;
                 queryMap.pageSize = 10;
 
-                getServiceConditionList()
+                getAssetOwnershipList()
             }
 
-            //加载使用状态数据
-            const getServiceConditionList = () => {
+            //加载产权归属数据
+            const getAssetOwnershipList = () => {
 
                 if (timeRange.value != null && timeRange.value.length === 1) {
                     queryMap.startCreateTime = timeRange.value[0];
@@ -474,16 +437,16 @@
                     queryMap.endCreateTime = timeRange.value[1];
                 }
 
-                if (!utils.isEmpty(queryMap.serviceConditionId) && !utils.isIneger(queryMap.serviceConditionId)) {
+                if (!utils.isEmpty(queryMap.assetOwnershipId) && !utils.isIneger(queryMap.assetOwnershipId)) {
                     ElMessage.error("请输入数值类型ID");
                     return;
                 }
                 loading.value = true;
-                serviceConditions.value = [];
+                assetOwnerships.value = [];
 
-                getServiceConditionListApi(queryMap).then((res) => {
+                getAssetOwnershipListApi(queryMap).then((res) => {
                     if (!res.data.success) return ElMessage.error("查询失败：" + res.data.data.errorMsg);
-                    serviceConditions.value = res.data.data.rows;
+                    assetOwnerships.value = res.data.data.rows;
                     total.value = res.data.data.total;
                     loading.value = false;
                 }).catch((res) => {
@@ -495,11 +458,11 @@
             /**
              * 导出
              */
-            const exportServiceCondition = () => {
-                exportServiceConditionExcelApi().then((res) => {
+            const exportAssetOwnership = () => {
+                exportAssetOwnershipExcelApi().then((res) => {
                     if (res.headers["content-type"] === "application/json") {
                         return ElMessage.error(
-                            "Subject does not have permission [asset:metadata:serviceCondition:export]"
+                            "Subject does not have permission [asset:metadata:assetOwnership:export]"
                         );
                     }
                     const data = res.data;
@@ -507,7 +470,7 @@
                     const a = document.createElement("a");
                     document.body.appendChild(a);
                     a.href = url;
-                    a.download = "使用状态列表.xlsx";
+                    a.download = "产权归属列表.xlsx";
                     a.click();
                     window.URL.revokeObjectURL(url);
                 }).catch((res) => {
@@ -516,15 +479,15 @@
             }
 
             /**
-             * 禁用启用状态
+             * 禁用启用产权归属
              */
-            const changeServiceConditionStatus = (row) => {
-                changeServiceConditionStatusApi(row.serviceConditionId, row.status).then((res) => {
+            const changeAssetOwnershipStatus = (row) => {
+                changeAssetOwnershipStatusApi(row.assetOwnershipId, row.status).then((res) => {
                     if (!res.data.success) {
-                        ElMessage.error("更新使用状态状态失败:" + res.data.data.errorMsg);
+                        ElMessage.error("更新产权归属状态失败:" + res.data.data.errorMsg);
                         row.status = row.status == 1 ? 0 : 1;
                     } else {
-                        const message = row.status == 1 ? '使用状态状态已启用' : '使用状态状态已禁用';
+                        const message = row.status == 1 ? '产权归属已启用' : '产权归属已禁用';
                         ElNotification({
                             type: 'success',
                             title: '操作成功',
@@ -532,84 +495,84 @@
                         });
                     }
                 }).catch((res) => {
-                    ElMessage.error("更新使用状态状态失败:" + res);
+                    ElMessage.error("更新产权归属状态失败:" + res);
                 });
             }
 
-            //添加使用状态
-            const addServiceCondition = () => {
-                addServiceConditionFormRef.value.validate(valid => {
+            //添加产权归属
+            const addAssetOwnership = () => {
+                addAssetOwnershipFormRef.value.validate(valid => {
                     if (!valid) {
                         return;
                     } else {
                         btnLoading.value = true;
                         btnDisabled.value = true;
 
-                        addServiceConditionApi(addServiceConditionForm.value).then((res) => {
+                        addAssetOwnershipApi(addAssetOwnershipForm.value).then((res) => {
                             if (res.data.success) {
-                                ElMessage.success("使用状态添加成功");
-                                getServiceConditionList();
+                                ElMessage.success("产权归属添加成功");
+                                getAssetOwnershipList();
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
                             } else {
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
-                                return ElMessage.error("使用状态添加失败:" + res.data.data.errorMsg);
+                                return ElMessage.error("产权归属添加失败:" + res.data.data.errorMsg);
                             }
                             addDialogVisible.value = false;
                         }).catch((res) => {
                             addDialogVisible.value = false;
                             btnLoading.value = false;
                             btnDisabled.value = false;
-                            ElMessage.error("使用状态添加失败:" + res);
+                            ElMessage.error("产权归属添加失败:" + res);
                         });
                     }
                 });
             }
 
-            //修改使用状态
-            const updateServiceCondition = () => {
-                editServiceConditionFormRef.value.validate(valid => {
+            //修改产权归属
+            const updateAssetOwnership = () => {
+                editAssetOwnershipFormRef.value.validate(valid => {
                     if (!valid) {
                         return;
                     } else {
                         btnLoading.value = true;
                         btnDisabled.value = true;
-                        updateServiceConditionApi(editServiceConditionForm.value).then((res) => {
+                        updateAssetOwnershipApi(editAssetOwnershipForm.value).then((res) => {
                             if (res.data.success) {
                                 ElNotification({
                                     title: "成功",
-                                    message: "使用状态信息更新成功",
+                                    message: "产权归属信息更新成功",
                                     type: "success"
                                 });
-                                getServiceConditionList();
+                                getAssetOwnershipList();
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
                             } else {
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
-                                ElMessage.error("使用状态信息更新失败:" + res.data.data.errorMsg);
+                                ElMessage.error("产权归属信息更新失败:" + res.data.data.errorMsg);
                             }
                             editDialogVisible.value = false;
                         }).catch((res) => {
                             btnLoading.value = false;
                             btnDisabled.value = false;
                             editDialogVisible.value = false;
-                            ElMessage.error("使用状态信息更新失败:" + res);
+                            ElMessage.error("产权归属信息更新失败:" + res);
                         });
                     }
                 });
             }
 
-            //删除使用状态
-            const deleteServiceCondition = (row) => {
+            //删除产权归属
+            const deleteAssetOwnership = (row) => {
                 if (row.assetQuantity > 0) {
-                    ElMessage.error('该状态存在资产，无法删除');
+                    ElMessage.error('该产权归属存在资产，无法删除');
                     return;
                 }
 
                 ElMessageBox.confirm(
-                    "此操作将永久删除该使用状态, 是否继续?",
+                    "此操作将永久删除该产权归属, 是否继续?",
                     "提示",
                     {
                         confirmButtonText: "确定",
@@ -618,10 +581,10 @@
                     }
                 ).then((res) => {
                     if (res === "confirm") {
-                        deleteServiceConditionApi(row.serviceConditionId).then((res) => {
+                        deleteAssetOwnershipApi(row.assetOwnershipId).then((res) => {
                             if (res.data.success) {
-                                ElMessage.success("使用状态删除成功");
-                                getServiceConditionList();
+                                ElMessage.success("产权归属删除成功");
+                                getAssetOwnershipList();
                             } else {
                                 ElMessage.error(res.data.data.errorMsg);
                             }
@@ -637,9 +600,9 @@
                 });
             }
 
-            //批量删除使用状态
-            const deleteServiceConditionByBatchId = () => {
-                let serviceConditionIds = selections.value.map(item => item.serviceConditionId);
+            //批量删除产权归属
+            const deleteAssetOwnershipByBatchId = () => {
+                let assetOwnershipIds = selections.value.map(item => item.assetOwnershipId);
 
                 let flag = true;
                 selections.value.forEach(item => {
@@ -653,7 +616,7 @@
                     return;
                 }
                 ElMessageBox.confirm(
-                    "此操作将永久删除使用状态, 是否继续?",
+                    "此操作将永久删除产权归属, 是否继续?",
                     "提示",
                     {
                         confirmButtonText: "确定",
@@ -662,10 +625,10 @@
                     }
                 ).then((res) => {
                     if (res === "confirm") {
-                        deleteServiceConditionByBatchIdApi(serviceConditionIds).then((res) => {
+                        deleteAssetOwnershipByBatchIdApi(assetOwnershipIds).then((res) => {
                             if (res.data.success) {
-                                ElMessage.success("使用状态批量删除成功");
-                                getServiceConditionList();
+                                ElMessage.success("产权归属批量删除成功");
+                                getAssetOwnershipList();
                             } else {
                                 ElMessage.error(res.data.data.errorMsg);
                             }
@@ -681,8 +644,8 @@
                 });
             }
 
-            //导入使用状态
-            const importServiceCondition = () => {
+            //导入产权归属
+            const importAssetOwnership = () => {
                 let fullLoading = ElLoading.service({
                     lock: true,
                     text: 'Loading',
@@ -699,15 +662,15 @@
                     //所有文件保存在formData中
                     formData.append(`file${index}`, file)
                 })
-                importServiceConditionApi(formData).then((res) => {
+                importAssetOwnershipApi(formData).then((res) => {
                     if (res.data.success) {
                         ElNotification({
                             title: "成功",
-                            message: "导入使用状态成功",
+                            message: "导入产权归属成功",
                             type: "success"
                         });
 
-                        getServiceConditionList();
+                        getAssetOwnershipList();
                         uploadDialogVisible.value = false;
                         clearImportDialog(fullLoading);
                     } else {
@@ -724,20 +687,20 @@
             const handleSizeChange = (newSize) => {
                 queryMap.pageSize = newSize;
                 queryMap.pageNum = 1;
-                getServiceConditionList();
+                getAssetOwnershipList();
             }
             //翻页
             const handleCurrentChange = (current) => {
                 queryMap.pageNum = current;
-                getServiceConditionList();
+                getAssetOwnershipList();
             }
 
             /**
-             * 搜索状态
+             * 搜索产权归属
              */
-            const searchServiceCondition = () => {
+            const searchAssetOwnership = () => {
                 queryMap.pageNum = 1;
-                getServiceConditionList();
+                getAssetOwnershipList();
             }
 
             //改变排序
@@ -745,7 +708,7 @@
                 if (column.prop == null || column.order == null) {
                     queryMap.isAsc = null;
                     queryMap.sortColumn = null;
-                    getServiceConditionList();
+                    getAssetOwnershipList();
                     return;
                 }
                 if (column.order == 'ascending') {
@@ -754,7 +717,7 @@
                     queryMap.isAsc = false;
                 }
                 queryMap.sortColumn = utils.camelToSnakeCase(column.prop);
-                getServiceConditionList();
+                getAssetOwnershipList();
             }
 
             //打开添加
@@ -765,7 +728,7 @@
             //打开修改
             const openEditDialog = (row) => {
                 let newObj = {};
-                editServiceConditionForm.value = utils.cloneObj(row, newObj);
+                editAssetOwnershipForm.value = utils.cloneObj(row, newObj);
                 editDialogVisible.value = true;
             }
 
@@ -776,12 +739,12 @@
 
             //关闭弹出框
             const addCloseDialog = () => {
-                addServiceConditionFormRef.value.clearValidate();
-                addServiceConditionForm.value = {};
+                addAssetOwnershipFormRef.value.clearValidate();
+                addAssetOwnershipForm.value = {};
             }
             const editCloseDialog = () => {
-                editServiceConditionFormRef.value.clearValidate();
-                editServiceConditionForm.value = {};
+                editAssetOwnershipFormRef.value.clearValidate();
+                editAssetOwnershipForm.value = {};
             }
             const importCloseDialog = () => {
                 fileList.value = [];
@@ -842,7 +805,7 @@
                 })
             }
 
-            getServiceConditionList();
+            getAssetOwnershipList();
 
             return {
                 selections,
@@ -853,30 +816,30 @@
                 addDialogVisible,
                 editDialogVisible,
                 uploadDialogVisible,
-                editServiceConditionForm,
-                addServiceConditionForm,
+                editAssetOwnershipForm,
+                addAssetOwnershipForm,
                 formRules,
                 total,
                 queryMap,
-                serviceConditions,
-                addServiceConditionFormRef,
-                editServiceConditionFormRef,
+                assetOwnerships,
+                addAssetOwnershipFormRef,
+                editAssetOwnershipFormRef,
                 timeRange,
                 fileList,
                 fileDatas,
                 server,
                 reset,
-                getServiceConditionList,
-                exportServiceCondition,
-                changeServiceConditionStatus,
-                addServiceCondition,
-                updateServiceCondition,
-                deleteServiceCondition,
-                deleteServiceConditionByBatchId,
-                importServiceCondition,
+                getAssetOwnershipList,
+                exportAssetOwnership,
+                changeAssetOwnershipStatus,
+                addAssetOwnership,
+                updateAssetOwnership,
+                deleteAssetOwnership,
+                deleteAssetOwnershipByBatchId,
+                importAssetOwnership,
                 handleSizeChange,
                 handleCurrentChange,
-                searchServiceCondition,
+                searchAssetOwnership,
                 sortChange,
                 openAddDialog,
                 openEditDialog,

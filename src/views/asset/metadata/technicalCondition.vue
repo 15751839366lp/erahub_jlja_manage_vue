@@ -154,7 +154,7 @@
             ></el-pagination>
 
             <!-- 添加弹出框 -->
-            <el-dialog title="添加分类" v-model="addDialogVisible" @close="addCloseDialog" width="50%">
+            <el-dialog title="添加技术状态" v-model="addDialogVisible" @close="addCloseDialog" width="50%">
                 <span>
                   <el-form
                           :model="addTechnicalConditionForm"
@@ -208,7 +208,7 @@
             </el-dialog>
 
             <!-- 编辑弹出框 -->
-            <el-dialog title="编辑分类" v-model="editDialogVisible" @close="editCloseDialog" width="50%">
+            <el-dialog title="编辑技术状态" v-model="editDialogVisible" @close="editCloseDialog" width="50%">
         <span>
           <el-form :model="editTechnicalConditionForm" :rules="formRules" ref="editTechnicalConditionFormRef"
                    label-width="100px">
@@ -263,7 +263,7 @@
                   accept=".xls,.xlsx"
                   class="upload-demo"
                   ref="upload"
-                  :action="server + '/asset/metadata/assetsource/importTechnicalCondition'"
+                  :action="server + '/asset/metadata/technicalcondition/importTechnicalCondition'"
                   :file-list="fileList"
                   :on-remove="handleRemove"
                   :on-change="handleChange"
@@ -377,11 +377,11 @@
 
             const formRules = ref({
                 technicalConditionId: [
-                    {required: true, message: "请输入分类ID", trigger: "blur"},
+                    {required: true, message: "请输入技术状态ID", trigger: "blur"},
                     {pattern: /^[+]?(0|([0-9]\d*))?$/, message: '请输入正确格式'}
                 ],
                 technicalConditionName: [
-                    {required: true, message: "请输入分类名称", trigger: "blur"}
+                    {required: true, message: "请输入技术状态名称", trigger: "blur"}
                 ],
                 status: [
                     {required: true, message: "请选择状态", trigger: "blur"}
@@ -427,7 +427,7 @@
                 getTechnicalConditionList()
             }
 
-            //加载分类数据
+            //加载技术状态数据
             const getTechnicalConditionList = () => {
 
                 if (timeRange.value != null && timeRange.value.length === 1) {
@@ -499,7 +499,7 @@
                 });
             }
 
-            //添加分类
+            //添加技术状态
             const addTechnicalCondition = () => {
                 addTechnicalConditionFormRef.value.validate(valid => {
                     if (!valid) {
@@ -510,27 +510,27 @@
 
                         addTechnicalConditionApi(addTechnicalConditionForm.value).then((res) => {
                             if (res.data.success) {
-                                ElMessage.success("分类添加成功");
+                                ElMessage.success("技术状态添加成功");
                                 getTechnicalConditionList();
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
                             } else {
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
-                                return ElMessage.error("分类添加失败:" + res.data.data.errorMsg);
+                                return ElMessage.error("技术状态添加失败:" + res.data.data.errorMsg);
                             }
                             addDialogVisible.value = false;
                         }).catch((res) => {
                             addDialogVisible.value = false;
                             btnLoading.value = false;
                             btnDisabled.value = false;
-                            ElMessage.error("分类添加失败:" + res);
+                            ElMessage.error("技术状态添加失败:" + res);
                         });
                     }
                 });
             }
 
-            //修改分类
+            //修改技术状态
             const updateTechnicalCondition = () => {
                 editTechnicalConditionFormRef.value.validate(valid => {
                     if (!valid) {
@@ -542,7 +542,7 @@
                             if (res.data.success) {
                                 ElNotification({
                                     title: "成功",
-                                    message: "分类信息更新成功",
+                                    message: "技术状态信息更新成功",
                                     type: "success"
                                 });
                                 getTechnicalConditionList();
@@ -551,20 +551,20 @@
                             } else {
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
-                                ElMessage.error("分类信息更新失败:" + res.data.data.errorMsg);
+                                ElMessage.error("技术状态信息更新失败:" + res.data.data.errorMsg);
                             }
                             editDialogVisible.value = false;
                         }).catch((res) => {
                             btnLoading.value = false;
                             btnDisabled.value = false;
                             editDialogVisible.value = false;
-                            ElMessage.error("分类信息更新失败:" + res);
+                            ElMessage.error("技术状态信息更新失败:" + res);
                         });
                     }
                 });
             }
 
-            //删除分类
+            //删除技术状态
             const deleteTechnicalCondition = (row) => {
                 if (row.assetQuantity > 0) {
                     ElMessage.error('该技术状态存在资产，无法删除');
@@ -572,7 +572,7 @@
                 }
 
                 ElMessageBox.confirm(
-                    "此操作将永久删除该分类, 是否继续?",
+                    "此操作将永久删除该技术状态, 是否继续?",
                     "提示",
                     {
                         confirmButtonText: "确定",
@@ -583,7 +583,7 @@
                     if (res === "confirm") {
                         deleteTechnicalConditionApi(row.technicalConditionId).then((res) => {
                             if (res.data.success) {
-                                ElMessage.success("分类删除成功");
+                                ElMessage.success("技术状态删除成功");
                                 getTechnicalConditionList();
                             } else {
                                 ElMessage.error(res.data.data.errorMsg);
@@ -600,7 +600,7 @@
                 });
             }
 
-            //批量删除分类
+            //批量删除技术状态
             const deleteTechnicalConditionByBatchId = () => {
                 let technicalConditionIds = selections.value.map(item => item.technicalConditionId);
 
@@ -616,7 +616,7 @@
                     return;
                 }
                 ElMessageBox.confirm(
-                    "此操作将永久删除分类, 是否继续?",
+                    "此操作将永久删除技术状态, 是否继续?",
                     "提示",
                     {
                         confirmButtonText: "确定",
@@ -627,7 +627,7 @@
                     if (res === "confirm") {
                         deleteTechnicalConditionByBatchIdApi(technicalConditionIds).then((res) => {
                             if (res.data.success) {
-                                ElMessage.success("分类批量删除成功");
+                                ElMessage.success("技术状态批量删除成功");
                                 getTechnicalConditionList();
                             } else {
                                 ElMessage.error(res.data.data.errorMsg);
@@ -644,7 +644,7 @@
                 });
             }
 
-            //导入分类
+            //导入技术状态
             const importTechnicalCondition = () => {
                 let fullLoading = ElLoading.service({
                     lock: true,
@@ -666,7 +666,7 @@
                     if (res.data.success) {
                         ElNotification({
                             title: "成功",
-                            message: "导入分类成功",
+                            message: "导入技术状态成功",
                             type: "success"
                         });
 

@@ -179,7 +179,7 @@
             ></el-pagination>
 
             <!-- 添加弹出框 -->
-            <el-dialog title="添加分类" v-model="addDialogVisible" @close="addCloseDialog" width="50%">
+            <el-dialog title="添加减少方式" v-model="addDialogVisible" @close="addCloseDialog" width="50%">
                 <span>
                   <el-form
                           :model="addDecreaseMethodForm"
@@ -247,7 +247,7 @@
             </el-dialog>
 
             <!-- 编辑弹出框 -->
-            <el-dialog title="编辑分类" v-model="editDialogVisible" @close="editCloseDialog" width="50%">
+            <el-dialog title="编辑减少方式" v-model="editDialogVisible" @close="editCloseDialog" width="50%">
         <span>
           <el-form :model="editDecreaseMethodForm" :rules="formRules" ref="editDecreaseMethodFormRef"
                    label-width="100px">
@@ -316,7 +316,7 @@
                   accept=".xls,.xlsx"
                   class="upload-demo"
                   ref="upload"
-                  :action="server + '/asset/metadata/assetsource/importDecreaseMethod'"
+                  :action="server + '/asset/metadata/decreasemethod/importDecreaseMethod'"
                   :file-list="fileList"
                   :on-remove="handleRemove"
                   :on-change="handleChange"
@@ -449,11 +449,11 @@
 
             const formRules = ref({
                 decreaseMethodId: [
-                    {required: true, message: "请输入分类ID", trigger: "blur"},
+                    {required: true, message: "请输入减少方式ID", trigger: "blur"},
                     {pattern: /^[+]?(0|([0-9]\d*))?$/, message: '请输入正确格式'}
                 ],
                 decreaseMethodName: [
-                    {required: true, message: "请输入分类名称", trigger: "blur"}
+                    {required: true, message: "请输入减少方式名称", trigger: "blur"}
                 ],
                 methodMark: [
                     {required: true, message: "请选择资源标记", trigger: "blur"}
@@ -505,7 +505,7 @@
                 getDecreaseMethodList()
             }
 
-            //加载分类数据
+            //加载减少方式数据
             const getDecreaseMethodList = () => {
 
                 if (timeRange.value != null && timeRange.value.length === 1) {
@@ -577,7 +577,7 @@
                 });
             }
 
-            //添加分类
+            //添加减少方式
             const addDecreaseMethod = () => {
                 addDecreaseMethodFormRef.value.validate(valid => {
                     if (!valid) {
@@ -588,27 +588,27 @@
 
                         addDecreaseMethodApi(addDecreaseMethodForm.value).then((res) => {
                             if (res.data.success) {
-                                ElMessage.success("分类添加成功");
+                                ElMessage.success("减少方式添加成功");
                                 getDecreaseMethodList();
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
                             } else {
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
-                                return ElMessage.error("分类添加失败:" + res.data.data.errorMsg);
+                                return ElMessage.error("减少方式添加失败:" + res.data.data.errorMsg);
                             }
                             addDialogVisible.value = false;
                         }).catch((res) => {
                             addDialogVisible.value = false;
                             btnLoading.value = false;
                             btnDisabled.value = false;
-                            ElMessage.error("分类添加失败:" + res);
+                            ElMessage.error("减少方式添加失败:" + res);
                         });
                     }
                 });
             }
 
-            //修改分类
+            //修改减少方式
             const updateDecreaseMethod = () => {
                 editDecreaseMethodFormRef.value.validate(valid => {
                     if (!valid) {
@@ -620,7 +620,7 @@
                             if (res.data.success) {
                                 ElNotification({
                                     title: "成功",
-                                    message: "分类信息更新成功",
+                                    message: "减少方式信息更新成功",
                                     type: "success"
                                 });
                                 getDecreaseMethodList();
@@ -629,20 +629,20 @@
                             } else {
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
-                                ElMessage.error("分类信息更新失败:" + res.data.data.errorMsg);
+                                ElMessage.error("减少方式信息更新失败:" + res.data.data.errorMsg);
                             }
                             editDialogVisible.value = false;
                         }).catch((res) => {
                             btnLoading.value = false;
                             btnDisabled.value = false;
                             editDialogVisible.value = false;
-                            ElMessage.error("分类信息更新失败:" + res);
+                            ElMessage.error("减少方式信息更新失败:" + res);
                         });
                     }
                 });
             }
 
-            //删除分类
+            //删除减少方式
             const deleteDecreaseMethod = (row) => {
                 if (row.assetQuantity > 0) {
                     ElMessage.error('该减少方式存在资产，无法删除');
@@ -650,7 +650,7 @@
                 }
 
                 ElMessageBox.confirm(
-                    "此操作将永久删除该分类, 是否继续?",
+                    "此操作将永久删除该减少方式, 是否继续?",
                     "提示",
                     {
                         confirmButtonText: "确定",
@@ -661,7 +661,7 @@
                     if (res === "confirm") {
                         deleteDecreaseMethodApi(row.decreaseMethodId).then((res) => {
                             if (res.data.success) {
-                                ElMessage.success("分类删除成功");
+                                ElMessage.success("减少方式删除成功");
                                 getDecreaseMethodList();
                             } else {
                                 ElMessage.error(res.data.data.errorMsg);
@@ -678,7 +678,7 @@
                 });
             }
 
-            //批量删除分类
+            //批量删除减少方式
             const deleteDecreaseMethodByBatchId = () => {
                 let decreaseMethodIds = selections.value.map(item => item.decreaseMethodId);
 
@@ -694,7 +694,7 @@
                     return;
                 }
                 ElMessageBox.confirm(
-                    "此操作将永久删除分类, 是否继续?",
+                    "此操作将永久删除减少方式, 是否继续?",
                     "提示",
                     {
                         confirmButtonText: "确定",
@@ -705,7 +705,7 @@
                     if (res === "confirm") {
                         deleteDecreaseMethodByBatchIdApi(decreaseMethodIds).then((res) => {
                             if (res.data.success) {
-                                ElMessage.success("分类批量删除成功");
+                                ElMessage.success("减少方式批量删除成功");
                                 getDecreaseMethodList();
                             } else {
                                 ElMessage.error(res.data.data.errorMsg);
@@ -722,7 +722,7 @@
                 });
             }
 
-            //导入分类
+            //导入减少方式
             const importDecreaseMethod = () => {
                 let fullLoading = ElLoading.service({
                     lock: true,
@@ -744,7 +744,7 @@
                     if (res.data.success) {
                         ElNotification({
                             title: "成功",
-                            message: "导入分类成功",
+                            message: "导入减少方式成功",
                             type: "success"
                         });
 

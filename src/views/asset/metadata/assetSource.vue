@@ -179,7 +179,7 @@
             ></el-pagination>
 
             <!-- 添加弹出框 -->
-            <el-dialog title="添加分类" v-model="addDialogVisible" @close="addCloseDialog" width="50%">
+            <el-dialog title="添加资产来源" v-model="addDialogVisible" @close="addCloseDialog" width="50%">
                 <span>
                   <el-form
                           :model="addAssetSourceForm"
@@ -247,7 +247,7 @@
             </el-dialog>
 
             <!-- 编辑弹出框 -->
-            <el-dialog title="编辑分类" v-model="editDialogVisible" @close="editCloseDialog" width="50%">
+            <el-dialog title="编辑资产来源" v-model="editDialogVisible" @close="editCloseDialog" width="50%">
         <span>
           <el-form :model="editAssetSourceForm" :rules="formRules" ref="editAssetSourceFormRef"
                    label-width="100px">
@@ -449,11 +449,11 @@
 
             const formRules = ref({
                 assetSourceId: [
-                    {required: true, message: "请输入分类ID", trigger: "blur"},
+                    {required: true, message: "请输入资产来源ID", trigger: "blur"},
                     {pattern: /^[+]?(0|([0-9]\d*))?$/, message: '请输入正确格式'}
                 ],
                 assetSourceName: [
-                    {required: true, message: "请输入分类名称", trigger: "blur"}
+                    {required: true, message: "请输入资产来源名称", trigger: "blur"}
                 ],
                 sourceMark: [
                     {required: true, message: "请选择资源标记", trigger: "blur"}
@@ -505,7 +505,7 @@
                 getAssetSourceList()
             }
 
-            //加载分类数据
+            //加载资产来源数据
             const getAssetSourceList = () => {
 
                 if (timeRange.value != null && timeRange.value.length === 1) {
@@ -577,7 +577,7 @@
                 });
             }
 
-            //添加分类
+            //添加资产来源
             const addAssetSource = () => {
                 addAssetSourceFormRef.value.validate(valid => {
                     if (!valid) {
@@ -588,27 +588,27 @@
 
                         addAssetSourceApi(addAssetSourceForm.value).then((res) => {
                             if (res.data.success) {
-                                ElMessage.success("分类添加成功");
+                                ElMessage.success("资产来源添加成功");
                                 getAssetSourceList();
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
                             } else {
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
-                                return ElMessage.error("分类添加失败:" + res.data.data.errorMsg);
+                                return ElMessage.error("资产来源添加失败:" + res.data.data.errorMsg);
                             }
                             addDialogVisible.value = false;
                         }).catch((res) => {
                             addDialogVisible.value = false;
                             btnLoading.value = false;
                             btnDisabled.value = false;
-                            ElMessage.error("分类添加失败:" + res);
+                            ElMessage.error("资产来源添加失败:" + res);
                         });
                     }
                 });
             }
 
-            //修改分类
+            //修改资产来源
             const updateAssetSource = () => {
                 editAssetSourceFormRef.value.validate(valid => {
                     if (!valid) {
@@ -620,7 +620,7 @@
                             if (res.data.success) {
                                 ElNotification({
                                     title: "成功",
-                                    message: "分类信息更新成功",
+                                    message: "资产来源信息更新成功",
                                     type: "success"
                                 });
                                 getAssetSourceList();
@@ -629,20 +629,20 @@
                             } else {
                                 btnLoading.value = false;
                                 btnDisabled.value = false;
-                                ElMessage.error("分类信息更新失败:" + res.data.data.errorMsg);
+                                ElMessage.error("资产来源信息更新失败:" + res.data.data.errorMsg);
                             }
                             editDialogVisible.value = false;
                         }).catch((res) => {
                             btnLoading.value = false;
                             btnDisabled.value = false;
                             editDialogVisible.value = false;
-                            ElMessage.error("分类信息更新失败:" + res);
+                            ElMessage.error("资产来源信息更新失败:" + res);
                         });
                     }
                 });
             }
 
-            //删除分类
+            //删除资产来源
             const deleteAssetSource = (row) => {
                 if (row.assetQuantity > 0) {
                     ElMessage.error('该资产来源存在资产，无法删除');
@@ -650,7 +650,7 @@
                 }
 
                 ElMessageBox.confirm(
-                    "此操作将永久删除该分类, 是否继续?",
+                    "此操作将永久删除该资产来源, 是否继续?",
                     "提示",
                     {
                         confirmButtonText: "确定",
@@ -661,7 +661,7 @@
                     if (res === "confirm") {
                         deleteAssetSourceApi(row.assetSourceId).then((res) => {
                             if (res.data.success) {
-                                ElMessage.success("分类删除成功");
+                                ElMessage.success("资产来源删除成功");
                                 getAssetSourceList();
                             } else {
                                 ElMessage.error(res.data.data.errorMsg);
@@ -678,7 +678,7 @@
                 });
             }
 
-            //批量删除分类
+            //批量删除资产来源
             const deleteAssetSourceByBatchId = () => {
                 let assetSourceIds = selections.value.map(item => item.assetSourceId);
 
@@ -694,7 +694,7 @@
                     return;
                 }
                 ElMessageBox.confirm(
-                    "此操作将永久删除分类, 是否继续?",
+                    "此操作将永久删除资产来源, 是否继续?",
                     "提示",
                     {
                         confirmButtonText: "确定",
@@ -705,7 +705,7 @@
                     if (res === "confirm") {
                         deleteAssetSourceByBatchIdApi(assetSourceIds).then((res) => {
                             if (res.data.success) {
-                                ElMessage.success("分类批量删除成功");
+                                ElMessage.success("资产来源批量删除成功");
                                 getAssetSourceList();
                             } else {
                                 ElMessage.error(res.data.data.errorMsg);
@@ -722,7 +722,7 @@
                 });
             }
 
-            //导入分类
+            //导入资产来源
             const importAssetSource = () => {
                 let fullLoading = ElLoading.service({
                     lock: true,
@@ -744,7 +744,7 @@
                     if (res.data.success) {
                         ElNotification({
                             title: "成功",
-                            message: "导入分类成功",
+                            message: "导入资产来源成功",
                             type: "success"
                         });
 

@@ -63,6 +63,30 @@ const assetCategory = [
         },
         component: () => import( '../../../views/asset/metadata/technicalCondition.vue'),
     },
+    {
+        path: '/asset/metadata/assetProject',
+        name: 'assetProject',
+        meta:{
+            title: "工程项目"
+        },
+        component: () => import( '../../../views/asset/metadata/assetProject.vue'),
+    },
+    {
+        path: '/asset/metadata/assetOwnership',
+        name: 'assetOwnership',
+        meta:{
+            title: "产权归属"
+        },
+        component: () => import( '../../../views/asset/metadata/assetOwnership.vue'),
+    },
+    {
+        path: '/asset/metadata/assetEconomicUse',
+        name: 'assetEconomicUse',
+        meta:{
+            title: "经济用途"
+        },
+        component: () => import( '../../../views/asset/metadata/assetEconomicUse.vue'),
+    },
 ]
 
 export default assetCategory
